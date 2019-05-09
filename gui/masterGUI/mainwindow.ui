@@ -10,39 +10,102 @@
     <height>720</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>1280</width>
+    <height>720</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Study Foo Bar</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(186, 189, 182);</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QWidget" name="widgetPics" native="true">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>20</y>
+      <x>30</x>
+      <y>10</y>
       <width>1201</width>
-      <height>581</height>
+      <height>331</height>
      </rect>
     </property>
-    <widget class="QLabel" name="picLeft">
+    <widget class="QLabel" name="picShow">
      <property name="geometry">
       <rect>
-       <x>70</x>
-       <y>110</y>
-       <width>421</width>
-       <height>341</height>
+       <x>470</x>
+       <y>30</y>
+       <width>256</width>
+       <height>256</height>
       </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>256</width>
+       <height>256</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
      </property>
      <property name="text">
       <string>TextLabel</string>
      </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
     </widget>
-    <widget class="QLabel" name="picRight">
+   </widget>
+   <widget class="QWidget" name="widgetButtons" native="true">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>610</y>
+      <width>1201</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <widget class="QPushButton" name="pushButtonCat1">
      <property name="geometry">
       <rect>
-       <x>680</x>
-       <y>110</y>
-       <width>421</width>
-       <height>341</height>
+       <x>289</x>
+       <y>10</y>
+       <width>91</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Category 1</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButtonCat2">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>10</y>
+       <width>91</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Category 2</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelTimer">
+     <property name="geometry">
+      <rect>
+       <x>1130</x>
+       <y>10</y>
+       <width>67</width>
+       <height>39</height>
       </rect>
      </property>
      <property name="text">
@@ -50,83 +113,81 @@
      </property>
     </widget>
    </widget>
-   <widget class="QLabel" name="labelTimer">
+   <widget class="QListWidget" name="listWidgetCat1">
     <property name="geometry">
      <rect>
-      <x>1136</x>
-      <y>600</y>
-      <width>141</width>
-      <height>20</height>
+      <x>30</x>
+      <y>340</y>
+      <width>561</width>
+      <height>271</height>
      </rect>
     </property>
-    <property name="text">
-     <string>TextLabel</string>
+    <property name="styleSheet">
+     <string notr="true">gridline-color: rgb(0, 0, 0);
+background-color: rgb(186, 189, 182);</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>2</number>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>128</width>
+      <height>128</height>
+     </size>
+    </property>
+    <property name="viewMode">
+     <enum>QListView::IconMode</enum>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QListWidget" name="listWidgetCat2">
     <property name="geometry">
      <rect>
-      <x>1</x>
-      <y>621</y>
-      <width>1281</width>
-      <height>29</height>
+      <x>670</x>
+      <y>340</y>
+      <width>561</width>
+      <height>271</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonTrue">
-       <property name="text">
-        <string>True</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonFalse">
-       <property name="text">
-        <string>False</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(186, 189, 182);
+gridline-color: rgb(0, 0, 0);</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>2</number>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="dragDropMode">
+     <enum>QAbstractItemView::DragDrop</enum>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::NoSelection</enum>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>128</width>
+      <height>128</height>
+     </size>
+    </property>
+    <property name="viewMode">
+     <enum>QListView::IconMode</enum>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -143,6 +204,7 @@
      <string>Testing</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionReset"/>
    </widget>
    <addaction name="menuTesting"/>
   </widget>
@@ -166,15 +228,20 @@
     <string>Open</string>
    </property>
   </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>Reset</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections>
   <connection>
-   <sender>pushButtonFalse</sender>
+   <sender>pushButtonCat2</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>resetTimer()</slot>
+   <slot>category2()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>869</x>
@@ -187,10 +254,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButtonTrue</sender>
+   <sender>pushButtonCat1</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>resetTimer()</slot>
+   <slot>category1()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>412</x>
@@ -202,8 +269,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionReset</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>resetTimer()</slot>
+  <slot>category1()</slot>
+  <slot>category2()</slot>
+  <slot>reset()</slot>
  </slots>
 </ui>
