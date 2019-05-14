@@ -45,6 +45,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.done = True
             self.pushButtonCat1.setDisabled(True)
             self.pushButtonCat2.setDisabled(True)
+            self.picShow.hide()
 
     def load_dataset(self):
         self.pics = DatasetLoader.load_problem1(self.directory, True)
@@ -78,6 +79,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def reset(self):
+        self.picShow.show()
         self.pushButtonCat1.setDisabled(False)
         self.pushButtonCat2.setDisabled(False)
         self.pics_iter = iter(self.pics)
