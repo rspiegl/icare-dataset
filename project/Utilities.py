@@ -8,9 +8,9 @@ class DatasetLoader:
     DATASETS_PATH = 'datasets/problem1/'
 
     @staticmethod
-    def load_problem1(shuff=True):
-        images_false = [[f, False] for f in glob.glob(DatasetLoader.DATASETS_PATH + '*_0_*.png')]
-        images_true = [[f, True] for f in glob.glob(DatasetLoader.DATASETS_PATH + '*_1_*.png')]
+    def load_problem1(path, shuff=True):
+        images_false = [[f, False] for f in glob.glob(path + '/*_0_*.png')]
+        images_true = [[f, True] for f in glob.glob(path + '/*_1_*.png')]
         images = images_false + images_true
 
         if shuff:

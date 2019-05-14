@@ -2,6 +2,7 @@ import sys
 import time
 
 from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QPixmap
 from gui.mainwindow import Ui_MainWindow
 
@@ -14,13 +15,14 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.pics = DatasetLoader.load_problem1(True)
-        self.pics_iter = iter(self.pics)
+        self.directory = DatasetLoader.DATASETS_PATH
+        self.pics, self.pics_iter = None, None
         self.pic, self.pixmap = None, None
         self.duration = 0
         self.done = False
         self.data = []
 
+        self.load_dataset()
         self.next_picture()
         self.timer = time.perf_counter()
 
@@ -44,6 +46,10 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.done = True
             self.pushButtonCat1.setDisabled(True)
             self.pushButtonCat2.setDisabled(True)
+
+    def load_dataset(self):
+        self.pics = DatasetLoader.load_problem1(self.directory, True)
+        self.pics_iter = iter(self.pics)
 
     @QtCore.pyqtSlot()
     def category1(self):
@@ -83,6 +89,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.next_picture()
         self.timer = time.perf_counter()
 
+    @QtCore.pyqtSlot()
+    def selectDirectory(self):
+        self.directory = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        self.load_dataset()
+        self.reset()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

@@ -203,8 +203,9 @@ gridline-color: rgb(0, 0, 0);</string>
     <property name="title">
      <string>Testing</string>
     </property>
-    <addaction name="actionOpen"/>
+    <addaction name="actionSelectDirectory"/>
     <addaction name="actionReset"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menuTesting"/>
   </widget>
@@ -223,14 +224,19 @@ gridline-color: rgb(0, 0, 0);</string>
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen">
+  <action name="actionSelectDirectory">
    <property name="text">
-    <string>Open</string>
+    <string>Select Directory</string>
    </property>
   </action>
   <action name="actionReset">
    <property name="text">
     <string>Reset</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>
@@ -285,10 +291,43 @@ gridline-color: rgb(0, 0, 0);</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSelectDirectory</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selectDirectory()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>category1()</slot>
   <slot>category2()</slot>
   <slot>reset()</slot>
+  <slot>selectDirectory()</slot>
  </slots>
 </ui>

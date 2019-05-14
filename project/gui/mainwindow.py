@@ -79,18 +79,23 @@ class Ui_MainWindow(object):
         self.statusBar = QtWidgets.QStatusBar(MainWindow)
         self.statusBar.setObjectName("statusBar")
         MainWindow.setStatusBar(self.statusBar)
-        self.actionOpen = QtWidgets.QAction(MainWindow)
-        self.actionOpen.setObjectName("actionOpen")
+        self.actionSelectDirectory = QtWidgets.QAction(MainWindow)
+        self.actionSelectDirectory.setObjectName("actionSelectDirectory")
         self.actionReset = QtWidgets.QAction(MainWindow)
         self.actionReset.setObjectName("actionReset")
-        self.menuTesting.addAction(self.actionOpen)
+        self.actionExit = QtWidgets.QAction(MainWindow)
+        self.actionExit.setObjectName("actionExit")
+        self.menuTesting.addAction(self.actionSelectDirectory)
         self.menuTesting.addAction(self.actionReset)
+        self.menuTesting.addAction(self.actionExit)
         self.menuBar.addAction(self.menuTesting.menuAction())
 
         self.retranslateUi(MainWindow)
         self.pushButtonCat2.clicked.connect(MainWindow.category2)
         self.pushButtonCat1.clicked.connect(MainWindow.category1)
         self.actionReset.triggered.connect(MainWindow.reset)
+        self.actionSelectDirectory.triggered.connect(MainWindow.selectDirectory)
+        self.actionExit.triggered.connect(MainWindow.close)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -101,7 +106,8 @@ class Ui_MainWindow(object):
         self.pushButtonCat2.setText(_translate("MainWindow", "Category 2"))
         self.labelTimer.setText(_translate("MainWindow", "TextLabel"))
         self.menuTesting.setTitle(_translate("MainWindow", "Testing"))
-        self.actionOpen.setText(_translate("MainWindow", "Open"))
+        self.actionSelectDirectory.setText(_translate("MainWindow", "Select Directory"))
         self.actionReset.setText(_translate("MainWindow", "Reset"))
+        self.actionExit.setText(_translate("MainWindow", "Exit"))
 
 
