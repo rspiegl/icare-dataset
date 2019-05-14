@@ -37,9 +37,6 @@ class Ui_MainWindow(object):
         self.pushButtonCat2 = QtWidgets.QPushButton(self.widgetButtons)
         self.pushButtonCat2.setGeometry(QtCore.QRect(750, 10, 91, 27))
         self.pushButtonCat2.setObjectName("pushButtonCat2")
-        self.labelTimer = QtWidgets.QLabel(self.widgetButtons)
-        self.labelTimer.setGeometry(QtCore.QRect(1130, 10, 67, 39))
-        self.labelTimer.setObjectName("labelTimer")
         self.listWidgetCat1 = QtWidgets.QListWidget(self.centralWidget)
         self.listWidgetCat1.setGeometry(QtCore.QRect(30, 340, 561, 271))
         self.listWidgetCat1.setStyleSheet("gridline-color: rgb(0, 0, 0);\n"
@@ -104,7 +101,6 @@ class Ui_MainWindow(object):
         self.picShow.setText(_translate("MainWindow", "TextLabel"))
         self.pushButtonCat1.setText(_translate("MainWindow", "Category 1"))
         self.pushButtonCat2.setText(_translate("MainWindow", "Category 2"))
-        self.labelTimer.setText(_translate("MainWindow", "TextLabel"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionSelectDirectory.setText(_translate("MainWindow", "Select Directory"))
         self.actionReset.setText(_translate("MainWindow", "Reset"))

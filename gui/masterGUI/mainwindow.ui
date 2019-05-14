@@ -99,19 +99,6 @@
       <string>Category 2</string>
      </property>
     </widget>
-    <widget class="QLabel" name="labelTimer">
-     <property name="geometry">
-      <rect>
-       <x>1130</x>
-       <y>10</y>
-       <width>67</width>
-       <height>39</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
    </widget>
    <widget class="QListWidget" name="listWidgetCat1">
     <property name="geometry">

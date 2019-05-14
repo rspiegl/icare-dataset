@@ -30,9 +30,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         super().setupUi(mainWindow)
 
     def reset_timer(self):
-        self.duration = round(time.perf_counter() - self.timer, 4)  # end timer
-        self.labelTimer.setText(str(self.duration))
-        self.timer = time.perf_counter()  # start timer
+        self.duration = round(time.perf_counter() - self.timer, 4)
+        self.timer = time.perf_counter()  
 
     def classify(self, category):
         self.data.append([self.pic, self.duration, category])
