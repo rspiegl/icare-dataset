@@ -199,15 +199,15 @@ gridline-color: rgb(0, 0, 0);</string>
      <height>24</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuTesting">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>Testing</string>
+     <string>File</string>
     </property>
     <addaction name="actionSelectDirectory"/>
     <addaction name="actionReset"/>
     <addaction name="actionExit"/>
    </widget>
-   <addaction name="menuTesting"/>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="enabled">
