@@ -20,7 +20,7 @@ class DatasetLoader:
 
     @staticmethod
     def save_to_file(data):
-        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
         with open(timestamp+'.txt', 'w') as file:
             for line in data:

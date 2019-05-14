@@ -46,10 +46,14 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.pushButtonCat1.setDisabled(True)
             self.pushButtonCat2.setDisabled(True)
             self.picShow.hide()
+            self.save_data()
 
     def load_dataset(self):
         self.pics = DatasetLoader.load_problem1(self.directory, True)
         self.pics_iter = iter(self.pics)
+
+    def save_data(self):
+        DatasetLoader.save_to_file(self.data)
 
     @QtCore.pyqtSlot()
     def category1(self):
@@ -101,5 +105,4 @@ if __name__ == "__main__":
     mw = MainWindowUI()
     mw.show()
     app.exec()
-    DatasetLoader.save_to_file(mw.data)
     sys.exit()
