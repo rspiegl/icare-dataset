@@ -1,6 +1,6 @@
 import random
-import time
 import sys
+import time
 
 
 class DatasetLoader:
@@ -29,6 +29,6 @@ class DatasetLoader:
     def save_to_file(data):
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 
-        with open(timestamp+'.txt', 'w') as file:
+        with open(timestamp + '.txt', 'w') as file:
             for line in data:
                 file.write(str(line) + '\n')

@@ -2,11 +2,11 @@ import sys
 import time
 
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QPixmap
-from gui.mainwindow import Ui_MainWindow
+from PyQt5.QtWidgets import QFileDialog
 
 from Utilities import DatasetLoader
+from gui.mainwindow import Ui_MainWindow
 
 
 class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -29,7 +29,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def reset_timer(self):
         self.duration = round(time.perf_counter() - self.timer, 4)
-        self.timer = time.perf_counter()  
+        self.timer = time.perf_counter()
 
     def classify(self, category):
         self.data.append([self.pic, self.duration, category])
@@ -97,6 +97,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.directory = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
         self.load_dataset()
         self.reset()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
