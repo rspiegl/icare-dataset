@@ -41,8 +41,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.picShow.setPixmap(self.pixmap)
         except StopIteration:
             self.done = True
-            self.pushButtonCat1.setDisabled(True)
-            self.pushButtonCat2.setDisabled(True)
+            self.pushButtonTrue.setDisabled(True)
+            self.pushButtonFalse.setDisabled(True)
             self.picShow.hide()
             self.save_data()
 
@@ -54,20 +54,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         DatasetLoader.save_to_file(self.data)
 
     @QtCore.pyqtSlot()
-    def category1(self):
-        self.reset_timer()
-        self.classify(0)
-
-        item = QtWidgets.QListWidgetItem()
-        icon = QtGui.QIcon()
-        icon.addPixmap(self.pixmap)
-        item.setIcon(icon)
-        self.listWidgetCat1.addItem(item)
-
-        self.next_picture()
-
-    @QtCore.pyqtSlot()
-    def category2(self):
+    def categoryTrue(self):
         self.reset_timer()
         self.classify(1)
 
@@ -75,19 +62,32 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         icon = QtGui.QIcon()
         icon.addPixmap(self.pixmap)
         item.setIcon(icon)
-        self.listWidgetCat2.addItem(item)
+        self.listPicturesTrue.addItem(item)
+
+        self.next_picture()
+
+    @QtCore.pyqtSlot()
+    def categoryFalse(self):
+        self.reset_timer()
+        self.classify(0)
+
+        item = QtWidgets.QListWidgetItem()
+        icon = QtGui.QIcon()
+        icon.addPixmap(self.pixmap)
+        item.setIcon(icon)
+        self.listPicturesFalse.addItem(item)
 
         self.next_picture()
 
     @QtCore.pyqtSlot()
     def reset(self):
         self.picShow.show()
-        self.pushButtonCat1.setDisabled(False)
-        self.pushButtonCat2.setDisabled(False)
+        self.pushButtonTrue.setDisabled(False)
+        self.pushButtonFalse.setDisabled(False)
         self.pics_iter = iter(self.pics)
         self.data = []
-        self.listWidgetCat1.clear()
-        self.listWidgetCat2.clear()
+        self.listPicturesTrue.clear()
+        self.listPicturesFalse.clear()
 
         self.next_picture()
         self.timer = time.perf_counter()

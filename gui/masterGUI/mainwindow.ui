@@ -25,7 +25,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0" colspan="2">
-     <widget class="QWidget" name="widgetPics" native="true">
+     <widget class="QWidget" name="widgetPic" native="true">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -68,7 +68,7 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QListWidget" name="listWidgetCat1">
+     <widget class="QListWidget" name="listPicturesTrue">
       <property name="styleSheet">
        <string notr="true">gridline-color: rgb(0, 0, 0);
 background-color: rgb(186, 189, 182);</string>
@@ -97,7 +97,7 @@ background-color: rgb(186, 189, 182);</string>
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QListWidget" name="listWidgetCat2">
+     <widget class="QListWidget" name="listPicturesFalse">
       <property name="styleSheet">
        <string notr="true">background-color: rgb(186, 189, 182);
 gridline-color: rgb(0, 0, 0);</string>
@@ -141,7 +141,7 @@ gridline-color: rgb(0, 0, 0);</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="pushButtonCat1">
+        <widget class="QPushButton" name="pushButtonTrue">
          <property name="maximumSize">
           <size>
            <width>100</width>
@@ -149,12 +149,12 @@ gridline-color: rgb(0, 0, 0);</string>
           </size>
          </property>
          <property name="text">
-          <string>Category 1</string>
+          <string>True</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButtonCat2">
+        <widget class="QPushButton" name="pushButtonFalse">
          <property name="maximumSize">
           <size>
            <width>100</width>
@@ -162,7 +162,7 @@ gridline-color: rgb(0, 0, 0);</string>
           </size>
          </property>
          <property name="text">
-          <string>Category 2</string>
+          <string>False</string>
          </property>
         </widget>
        </item>
@@ -272,10 +272,10 @@ gridline-color: rgb(0, 0, 0);</string>
    </hints>
   </connection>
   <connection>
-   <sender>pushButtonCat2</sender>
+   <sender>pushButtonFalse</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>category2()</slot>
+   <slot>categoryFalse()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>869</x>
@@ -288,10 +288,10 @@ gridline-color: rgb(0, 0, 0);</string>
    </hints>
   </connection>
   <connection>
-   <sender>pushButtonCat1</sender>
+   <sender>pushButtonTrue</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>category1()</slot>
+   <slot>categoryTrue()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>412</x>
@@ -305,8 +305,8 @@ gridline-color: rgb(0, 0, 0);</string>
   </connection>
  </connections>
  <slots>
-  <slot>category1()</slot>
-  <slot>category2()</slot>
+  <slot>categoryTrue()</slot>
+  <slot>categoryFalse()</slot>
   <slot>reset()</slot>
   <slot>selectDirectory()</slot>
  </slots>
