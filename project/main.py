@@ -94,7 +94,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def selectDirectory(self):
-        self.directory = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        self.directory = str(QFileDialog.getExistingDirectory(self, "Select Directory")) + '/'
         self.load_dataset()
         self.reset()
 
