@@ -1,19 +1,26 @@
-import glob
 import random
 import time
+import sys
 
 
 class DatasetLoader:
-
     DATASETS_PATH = 'datasets/problem1/'
 
     @staticmethod
-    def load_problem1(path, shuff=True):
-        images_false = [[f, False] for f in glob.glob(path + '/*_0_*.png')]
-        images_true = [[f, True] for f in glob.glob(path + '/*_1_*.png')]
-        images = images_false + images_true
+    def load_problem(path=DATASETS_PATH, shuffle=True):
+        try:
+            file = open(path + 'labels.txt', 'r')
+        except FileNotFoundError as fnfe:
+            print(path + 'labels.txt does not exist')
+            raise fnfe
+        except Exception as exc:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise exc
 
-        if shuff:
+        lines = file.readlines()
+        images = [[path + item.split()[0], int(item.split()[1])] for item in lines]
+
+        if shuffle:
             random.shuffle(images)
 
         return images

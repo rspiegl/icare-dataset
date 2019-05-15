@@ -8,8 +8,6 @@ from gui.mainwindow import Ui_MainWindow
 
 from Utilities import DatasetLoader
 
-CATEGORY1 = 1
-CATEGORY2 = 2
 
 class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -49,7 +47,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.save_data()
 
     def load_dataset(self):
-        self.pics = DatasetLoader.load_problem1(self.directory, True)
+        self.pics = DatasetLoader.load_problem(self.directory, True)
         self.pics_iter = iter(self.pics)
 
     def save_data(self):
@@ -58,7 +56,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def category1(self):
         self.reset_timer()
-        self.classify(CATEGORY1)
+        self.classify(0)
 
         item = QtWidgets.QListWidgetItem()
         icon = QtGui.QIcon()
@@ -71,7 +69,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def category2(self):
         self.reset_timer()
-        self.classify(CATEGORY2)
+        self.classify(1)
 
         item = QtWidgets.QListWidgetItem()
         icon = QtGui.QIcon()
