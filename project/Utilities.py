@@ -3,12 +3,17 @@ import random
 import sys
 import time
 
+from datasets.Dataset import Dataset
+
 
 class DatasetLoader:
     DATASETS_PATH = 'datasets/problem1/'
 
     @staticmethod
     def load_problem(path=DATASETS_PATH, shuffle=True):
+        description = 'Same'
+        button1 = 'True'
+        button2 = 'False'
         try:
             with open(path + 'labels.txt', 'r') as file:
                 lines = file.readlines()
@@ -19,6 +24,12 @@ class DatasetLoader:
         except Exception as exc:
             print("Unexpected error:", sys.exc_info()[0])
             raise exc
+
+        if '[config]' in lines[0]:
+            description = lines[1].split('=')[1].strip()
+            button1 = lines[2].split('=')[1].strip()
+            button2 = lines[3].split('=')[1].strip()
+            lines = lines[5:]
 
         splitted_lines = [[path + line.split()[0], int(line.split()[1])] for line in lines]
 
@@ -38,7 +49,7 @@ class DatasetLoader:
         if shuffle:
             random.shuffle(splitted_lines)
 
-        return splitted_lines
+        return Dataset(splitted_lines, button1, button2, description)
 
     @staticmethod
     def save_to_file(data):

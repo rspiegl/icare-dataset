@@ -18,6 +18,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pic, self.pixmap = None, None
         self.duration = 0
         self.done = False
+        self.dataset = None
         self.data = []
 
         self.load_dataset()
@@ -32,7 +33,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.timer = time.perf_counter()
 
     def classify(self, category):
-        self.data.append([self.pic, self.duration, category])
+        self.data.append([self.pic, category, self.duration])
 
     def next_picture(self):
         try:
@@ -47,8 +48,12 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.save_data()
 
     def load_dataset(self):
-        self.pics = DatasetLoader.load_problem(self.directory, True)
+        self.dataset = DatasetLoader.load_problem(self.directory, True)
+        self.pics = self.dataset.data
         self.pics_iter = iter(self.pics)
+        self.pushButtonTrue.setText(self.dataset.text1)
+        self.pushButtonFalse.setText(self.dataset.text2)
+        self.descriptionLabel.setText(self.dataset.description)
 
     def save_data(self):
         DatasetLoader.save_to_file(self.data)
