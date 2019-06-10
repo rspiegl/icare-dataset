@@ -5,11 +5,14 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
+from Evaluation import Evaluation
 from Utilities import DatasetLoader
 from gui.mainwindow import Ui_MainWindow
 
 
 class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
+    evaluation = None
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -45,6 +48,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.pushButtonTrue.setDisabled(True)
             self.pushButtonFalse.setDisabled(True)
             self.picShow.hide()
+
+            self.evaluation = Evaluation(self.dataset, self.data)
             self.save_data()
 
     def load_dataset(self):
