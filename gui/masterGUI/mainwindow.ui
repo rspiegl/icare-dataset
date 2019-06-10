@@ -24,78 +24,6 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" colspan="2">
-     <widget class="QWidget" name="widgetPic" native="true">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>280</height>
-       </size>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="picShow">
-         <property name="minimumSize">
-          <size>
-           <width>256</width>
-           <height>256</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>256</width>
-           <height>256</height>
-          </size>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
-         </property>
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-         <property name="scaledContents">
-          <bool>true</bool>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QListWidget" name="listPicturesTrue">
-      <property name="styleSheet">
-       <string notr="true">gridline-color: rgb(0, 0, 0);
-background-color: rgb(186, 189, 182);</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Box</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
-      </property>
-      <property name="lineWidth">
-       <number>2</number>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>128</width>
-        <height>128</height>
-       </size>
-      </property>
-      <property name="viewMode">
-       <enum>QListView::IconMode</enum>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="1">
      <widget class="QListWidget" name="listPicturesFalse">
       <property name="styleSheet">
@@ -131,6 +59,78 @@ gridline-color: rgb(0, 0, 0);</string>
       </property>
      </widget>
     </item>
+    <item row="1" column="0">
+     <widget class="QListWidget" name="listPicturesTrue">
+      <property name="styleSheet">
+       <string notr="true">gridline-color: rgb(0, 0, 0);
+background-color: rgb(186, 189, 182);</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>2</number>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>128</width>
+        <height>128</height>
+       </size>
+      </property>
+      <property name="viewMode">
+       <enum>QListView::IconMode</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QWidget" name="widgetPic" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>280</height>
+       </size>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="picShow">
+         <property name="minimumSize">
+          <size>
+           <width>256</width>
+           <height>256</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>256</width>
+           <height>256</height>
+          </size>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="text">
+          <string>ImageLabel</string>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="2" column="0" colspan="2">
      <widget class="QWidget" name="widgetButtons" native="true">
       <property name="minimumSize">
@@ -148,8 +148,39 @@ gridline-color: rgb(0, 0, 0);</string>
            <height>16777215</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Shortcut: Left Arrow</string>
+         </property>
          <property name="text">
           <string>True</string>
+         </property>
+         <property name="shortcut">
+          <string>Left</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="descriptionLabel">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>360</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Description</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -161,8 +192,14 @@ gridline-color: rgb(0, 0, 0);</string>
            <height>16777215</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Shortcut: Right Arrow</string>
+         </property>
          <property name="text">
           <string>False</string>
+         </property>
+         <property name="shortcut">
+          <string>Right</string>
          </property>
         </widget>
        </item>
