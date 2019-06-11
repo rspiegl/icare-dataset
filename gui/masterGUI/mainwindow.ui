@@ -93,7 +93,7 @@ background-color: rgb(186, 189, 182);</string>
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>280</height>
+        <height>360</height>
        </size>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -101,14 +101,14 @@ background-color: rgb(186, 189, 182);</string>
         <widget class="QLabel" name="picShow">
          <property name="minimumSize">
           <size>
-           <width>256</width>
-           <height>256</height>
+           <width>350</width>
+           <height>350</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>256</width>
-           <height>256</height>
+           <width>350</width>
+           <height>350</height>
           </size>
          </property>
          <property name="frameShape">
@@ -133,10 +133,16 @@ background-color: rgb(186, 189, 182);</string>
     </item>
     <item row="2" column="0" colspan="2">
      <widget class="QWidget" name="widgetButtons" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>20</height>
+        <height>45</height>
        </size>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
