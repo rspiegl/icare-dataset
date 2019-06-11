@@ -1,7 +1,6 @@
 import os.path
 import random
 import sys
-import time
 
 from datasets.Dataset import Dataset
 
@@ -50,11 +49,3 @@ class DatasetLoader:
             random.shuffle(splitted_lines)
 
         return Dataset(splitted_lines, button1, button2, description)
-
-    @staticmethod
-    def save_to_file(data):
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-
-        with open(timestamp + '.txt', 'w') as file:
-            for line in data:
-                file.write(str(line) + '\n')

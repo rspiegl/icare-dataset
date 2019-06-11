@@ -49,7 +49,7 @@ class Evaluation:
         self.data["true_data"] = self.dataset.data
         self.data["tester_data"] = self.tester_data
 
-    def save_to_file(self, path):
+    def save_to_file(self):
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 
         with open(timestamp + '.txt', 'w') as file:

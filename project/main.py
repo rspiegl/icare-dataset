@@ -50,7 +50,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.picShow.hide()
 
             self.evaluation = Evaluation(self.dataset, self.data)
-            self.save_data()
+            self.evaluation.save_to_file()
 
     def load_dataset(self):
         self.dataset = DatasetLoader.load_problem(self.directory, True)
@@ -59,9 +59,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonTrue.setText(self.dataset.text1)
         self.pushButtonFalse.setText(self.dataset.text2)
         self.descriptionLabel.setText(self.dataset.description)
-
-    def save_data(self):
-        DatasetLoader.save_to_file(self.data)
 
     @QtCore.pyqtSlot()
     def categoryTrue(self):
