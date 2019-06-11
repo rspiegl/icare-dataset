@@ -5,22 +5,20 @@ import time
 
 class Evaluation:
 
-    def __init__(self, dataset, tester_data):
-        self.dataset = dataset
+    def __init__(self, tester_data):
         self.tester_data = tester_data
         self.data = {}
 
         self.evaluate()
 
     def evaluate(self):
-        self.data["p"] = sum(i.count(1) for i in self.dataset.data)
-        self.data["n"] = sum(i.count(0) for i in self.dataset.data)
-        real_dict = dict(self.dataset.data)
+        self.data["p"] = sum(i[0].count(1) for i in self.tester_data)
+        self.data["n"] = sum(i[0].count(0) for i in self.tester_data)
         durations = list(zip(*self.tester_data))[2]
         tp, fn, fp, tn = 0, 0, 0, 0
 
         for case in self.tester_data:
-            true_condition = real_dict[case[0]]
+            true_condition = case[0][1]
             pred_condition = case[1]
             if true_condition:
                 if pred_condition:
@@ -46,7 +44,6 @@ class Evaluation:
         self.data["mean"] = statistics.mean(durations)
         self.data["variance"] = statistics.pvariance(durations)
 
-        self.data["true_data"] = self.dataset.data
         self.data["tester_data"] = self.tester_data
 
     def save_to_file(self):

@@ -49,7 +49,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.pushButtonFalse.setDisabled(True)
             self.picShow.hide()
 
-            self.evaluation = Evaluation(self.dataset, self.data)
+            self.evaluation = Evaluation(self.data)
             self.evaluation.save_to_file()
 
     def load_dataset(self):
