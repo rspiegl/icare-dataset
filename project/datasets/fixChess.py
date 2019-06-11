@@ -11,7 +11,13 @@ def relabel(path):
 if __name__ == '__main__':
     datasets = ['camerarot_diff1/labels.txt',
                 'camerarot_diff5/labels.txt',
-                'camerarot_diff10/labels.txt',]
+                'camerarot_diff10/labels.txt',
+                'random_board_images_big_diff1/labels.txt',
+                'random_board_images_big_diff5/labels.txt',
+                'random_board_images_big_diff10/labels.txt',
+                'rot_images_diff1/labels.txt',
+                'rot_images_diff5/labels.txt',
+                'rot_images_diff10/labels.txt',]
 
     for dataset in datasets:
         relabel(dataset)
