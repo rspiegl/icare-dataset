@@ -554,3 +554,7 @@ compile_commands.json
 # Qt Creator backups
 
 # End of https://www.gitignore.io/api/qt,latex,python,pycharm,qtcreator
+
+# User specified ignores
+project/.idea/
+project/datasets
