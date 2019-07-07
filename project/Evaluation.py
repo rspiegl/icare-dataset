@@ -5,8 +5,9 @@ import time
 
 class Evaluation:
 
-    def __init__(self, tester_data):
+    def __init__(self, tester_data, tracker_data):
         self.tester_data = tester_data
+        self.tracker_data = tracker_data
         self.data = {}
 
         self.evaluate()
@@ -51,6 +52,13 @@ class Evaluation:
 
         with open(timestamp + '.txt', 'w') as file:
             file.write(str(self.data))
+
+    def save_tracker_data_to_file(self):
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+
+        with open(timestamp + '_eyetracking.txt', 'w') as file:
+            for data in self.tracker_data:
+                file.write(str(data) + '\n')
 
     def load_from_file(self, path):
         with open(path, 'r') as file:

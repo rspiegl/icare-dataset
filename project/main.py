@@ -9,6 +9,7 @@ from Evaluation import Evaluation
 from Utilities import DatasetLoader
 from gui.mainwindow import Ui_MainWindow
 
+import tobii_research as tr
 
 class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     evaluation = None
@@ -23,10 +24,13 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.done = False
         self.dataset = None
         self.data = []
+        self.tracker = None
+        self.eyetracker_data = []
 
         self.load_dataset()
         self.next_picture()
         self.timer = time.perf_counter()
+        self.init_eyetracker()
 
     def setupUi(self, mainWindow):
         super().setupUi(mainWindow)
@@ -43,14 +47,20 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.pic = next(self.pics_iter)
             self.pixmap = QPixmap(self.pic[0])
             self.picShow.setPixmap(self.pixmap)
+
         except StopIteration:
+            if self.tracker:
+                self.tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback)
+
             self.done = True
             self.pushButtonTrue.setDisabled(True)
             self.pushButtonFalse.setDisabled(True)
             self.picShow.hide()
 
-            self.evaluation = Evaluation(self.data)
+            self.evaluation = Evaluation(self.data, self.eyetracker_data)
             self.evaluation.save_to_file()
+            if self.eyetracker_data:
+                self.evaluation.save_tracker_data_to_file()
 
     def load_dataset(self):
         self.dataset = DatasetLoader.load_problem(self.directory, True)
@@ -59,6 +69,19 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonTrue.setText(self.dataset.text1)
         self.pushButtonFalse.setText(self.dataset.text2)
         self.descriptionLabel.setText(self.dataset.description)
+
+    def gaze_data_callback(self, gaze_data):
+        print(gaze_data)
+        self.eyetracker_data.append(gaze_data)
+
+    def init_eyetracker(self):
+        found = tr.find_all_eyetrackers()
+        if found:
+            self.tracker = found[0]
+            self.tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback, as_dictionary=True)
+        else:
+            print("No EyeTrackers found.")
+
 
     @QtCore.pyqtSlot()
     def categoryTrue(self):
