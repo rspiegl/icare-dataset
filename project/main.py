@@ -1,5 +1,4 @@
 import sys
-import time
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtGui import QPixmap
@@ -11,6 +10,10 @@ from gui.mainwindow import Ui_MainWindow
 
 import tobii_research as tr
 
+
+def current_micro_time(): return tr.get_system_time_stamp()
+
+
 class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     evaluation = None
 
@@ -20,7 +23,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.directory = DatasetLoader.DATASETS_PATH
         self.pics, self.pics_iter = None, None
         self.pic, self.pixmap = None, None
-        self.duration = 0
+        self.duration, self.timer_old_start, self.timer_end = 0, 0, 0
         self.done = False
         self.dataset = None
         self.data = []
@@ -29,18 +32,20 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.load_dataset()
         self.next_picture()
-        self.timer = time.perf_counter()
+        self.timer_start = current_micro_time()
         self.init_eyetracker()
 
     def setupUi(self, mainWindow):
         super().setupUi(mainWindow)
 
     def reset_timer(self):
-        self.duration = round(time.perf_counter() - self.timer, 4)
-        self.timer = time.perf_counter()
+        self.timer_end = current_micro_time()
+        self.timer_old_start = self.timer_start
+        self.duration = self.timer_end - self.timer_start
+        self.timer_start = current_micro_time()
 
     def classify(self, category):
-        self.data.append([self.pic, category, self.duration])
+        self.data.append([self.pic, category, self.duration, (self.timer_old_start, self.timer_end) ])
 
     def next_picture(self):
         try:
@@ -62,6 +67,9 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             if self.eyetracker_data:
                 self.evaluation.save_tracker_data_to_file()
 
+            print('\n\n' + str(self.picShow.pos()) + '\n')
+            print(str(self.picShow.geometry()))
+
     def load_dataset(self):
         self.dataset = DatasetLoader.load_problem(self.directory, True)
         self.pics = self.dataset.data
@@ -71,7 +79,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.descriptionLabel.setText(self.dataset.description)
 
     def gaze_data_callback(self, gaze_data):
-        print(gaze_data)
         self.eyetracker_data.append(gaze_data)
 
     def init_eyetracker(self):
@@ -120,7 +127,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.listPicturesFalse.clear()
 
         self.next_picture()
-        self.timer = time.perf_counter()
+        self.timer_start = current_micro_time()
 
     @QtCore.pyqtSlot()
     def selectDirectory(self):
@@ -132,6 +139,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     mw = MainWindowUI()
-    mw.show()
+    mw.showMaximized()
     app.exec()
     sys.exit()

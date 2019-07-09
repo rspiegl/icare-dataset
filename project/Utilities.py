@@ -6,7 +6,7 @@ from datasets.Dataset import Dataset
 
 
 class DatasetLoader:
-    DATASETS_PATH = 'datasets/problem1/'
+    DATASETS_PATH = 'datasets/camerarot_diff1/'
 
     @staticmethod
     def load_problem(path=DATASETS_PATH, shuffle=True):
