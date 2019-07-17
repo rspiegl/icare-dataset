@@ -12,9 +12,12 @@ class Evaluation:
         if data:
             self.data = data
         else:
+            self.data = {}
             self.evaluate()
 
     def evaluate(self):
+        self.data["screen_resolution"] = (1920, 1200)
+
         self.data["p"] = sum(i[0].count(1) for i in self.tester_data)
         self.data["n"] = sum(i[0].count(0) for i in self.tester_data)
         durations = list(zip(*self.tester_data))[2]
@@ -48,6 +51,9 @@ class Evaluation:
         self.data["variance"] = statistics.pvariance(durations)
 
         self.data["tester_data"] = self.tester_data
+
+    def set_pic_geometry(self, geometry):
+        self.data["pic_geometry"] = geometry
 
     def save_to_file(self):
         timestamp = time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())

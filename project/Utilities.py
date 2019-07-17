@@ -10,9 +10,8 @@ class DatasetLoader:
 
     @staticmethod
     def load_problem(path=DATASETS_PATH, shuffle=True):
-        description = 'Same'
-        button1 = 'True'
-        button2 = 'False'
+        button1 = 'Category 1'
+        button2 = 'Category 2'
         try:
             with open(path + 'labels.txt', 'r') as file:
                 lines = file.readlines()
@@ -25,10 +24,9 @@ class DatasetLoader:
             raise exc
 
         if '[config]' in lines[0]:
-            description = lines[1].split('=')[1].strip()
-            button1 = lines[2].split('=')[1].strip()
-            button2 = lines[3].split('=')[1].strip()
-            lines = lines[5:]
+            button1 = lines[1].split('=')[1].strip()
+            button2 = lines[2].split('=')[1].strip()
+            lines = lines[4:]
 
         splitted_lines = [[path + line.split()[0], int(line.split()[1])] for line in lines]
 
@@ -48,4 +46,4 @@ class DatasetLoader:
         if shuffle:
             random.shuffle(splitted_lines)
 
-        return Dataset(splitted_lines, button1, button2, description)
+        return Dataset(splitted_lines, button1, button2)
