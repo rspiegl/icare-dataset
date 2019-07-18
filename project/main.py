@@ -4,7 +4,7 @@ import time
 import tobii_research as tr
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QThread, QObject, pyqtSignal
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QPalette
 from PyQt5.QtWidgets import QFileDialog
 
 from Evaluation import Evaluation
@@ -113,8 +113,10 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         # display text
         if classification == self.pic[1]:
             classified = "Correct!"
+            self.widgetButtons.setStyleSheet("background-color: rgb(138, 226, 52);")  # light green
         else:
             classified = "Incorrect"
+            self.widgetButtons.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
         self.descriptionLabel.setText(classified)
         # disable buttons
         self._disable_buttons(True)
@@ -154,6 +156,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def start_trial(self):
+        # remove background
+        self.widgetButtons.setStyleSheet("")
         # enable buttons
         self._disable_buttons(False)
         # start timer
