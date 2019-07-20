@@ -557,4 +557,8 @@ compile_commands.json
 
 # User specified ignores
 project/.idea/
-project/datasets
+project/datasets/chessboard
+project/datasets/psvrt
+project/datasets/svrt
+project/*.txt
+tests/
