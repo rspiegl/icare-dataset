@@ -6,10 +6,10 @@ from datasets.Dataset import Dataset
 
 
 class DatasetLoader:
-    DATASETS_PATH = 'datasets/camerarot_diff1/'
+    DATASETS_PATH = 'datasets/chessboard/similarity/camerarot_diff1/'
 
     @staticmethod
-    def load_problem(path=DATASETS_PATH, shuffle=True):
+    def load_problem(path=DATASETS_PATH, number=50, balance=True):
         button1 = 'Category 1'
         button2 = 'Category 2'
         try:
@@ -43,7 +43,14 @@ class DatasetLoader:
 
             splitted_lines = [line for index, line in enumerate(splitted_lines) if index not in not_existing]
 
-        if shuffle:
-            random.shuffle(splitted_lines)
+        if balance:
+            set_false = [x for x in splitted_lines if x[1] == 0]
+            set_true = [x for x in splitted_lines if x[1] == 1]
+            random.shuffle(set_false)
+            random.shuffle(set_true)
+            half = int(number/2)
+            splitted_lines = set_false[:half] + set_true[:half]
 
-        return Dataset(splitted_lines, button1, button2)
+        random.shuffle(splitted_lines)
+
+        return Dataset(splitted_lines, text1=button1, text2=button2)

@@ -83,10 +83,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def classify(self, category):
         duration = self.timer_end - self.timer_start
-        self.data.append([self.pic, category, duration, (self.timer_start, self.timer_end)])
+        self.data.append([self.pic, category, duration, (self.timer_start, self.timer_end), self.eyetracker_data])
+        self.eyetracker_data = []
 
     def load_dataset(self):
-        self.dataset = DatasetLoader.load_problem(self.directory, True)
+        self.dataset = DatasetLoader.load_problem(self.directory, number=20, balance=True)
         self.reset()
 
     def gaze_data_callback(self, gaze_data):
