@@ -4,7 +4,7 @@ import time
 import tobii_research as tr
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QThread, QObject, pyqtSignal
-from PyQt5.QtGui import QPixmap, QPalette
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
 from Evaluation import Evaluation
