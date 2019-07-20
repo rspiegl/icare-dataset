@@ -53,7 +53,10 @@ class Evaluation:
         self.data["tester_data"] = self.tester_data
 
     def set_pic_geometry(self, geometry):
-        self.data["pic_geometry"] = geometry
+        self.data["pic_geometry_global"] = geometry
+
+    def set_central_widget_geometry(self, geometry):
+        self.data["central_widget_geometry_global"] = geometry
 
     def save_to_file(self):
         timestamp = time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())

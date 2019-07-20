@@ -3,12 +3,13 @@ import time
 
 import tobii_research as tr
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QThread, QObject, pyqtSignal
+from PyQt5.QtCore import QThread, QObject, pyqtSignal, QPoint
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
 from Evaluation import Evaluation
 from Utilities import DatasetLoader
+from gui.GazeWidget import GazeWidget
 from gui.mainwindow import Ui_MainWindow
 
 
@@ -138,10 +139,19 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def end_test(self):
         self.descriptionLabel.setText("Saving...")
         self.evaluation = Evaluation(self.data, self.eyetracker_data)
-        self.evaluation.set_pic_geometry((self.picShow.geometry().x(),
-                                          self.picShow.geometry().y(),
+
+        pic_global_top_left = self.centralWidget.mapToGlobal(self.picShow.geometry().topLeft())
+        self.evaluation.set_pic_geometry((pic_global_top_left.x(),
+                                          pic_global_top_left.y(),
                                           self.picShow.geometry().width(),
                                           self.picShow.geometry().height()))
+
+        central_widget_global_top_left = self.centralWidget.mapToGlobal(QPoint(0, 0))
+        self.evaluation.set_central_widget_geometry((central_widget_global_top_left.x(),
+                                                     central_widget_global_top_left.y(),
+                                                     self.centralWidget.geometry().width(),
+                                                     self.centralWidget.geometry().height()))
+
         self.save_thread.set_evaluation(self.evaluation)
         self.save_thread.start()
 
