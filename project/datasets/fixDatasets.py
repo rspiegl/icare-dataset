@@ -20,6 +20,15 @@ def label(path):
                     labels.write(file + ' ' + category + '\n')
 
 
+def label_p(path):
+    with open(path + 'labels.txt', 'w') as labels:
+        for root, directories, files in os.walk(path):
+            for file in files:
+                if '.jpg' in file or '.png' in file:
+                    category = 1 - int(file[file.find('_')+1])
+                    labels.write(file + ' ' + str(category) + '\n')
+
+
 datasets = [
             ('chessboard/symmetry/rot_images_diff1/labels.txt', switch_label),
             ('chessboard/symmetry/rot_images_diff5/labels.txt', switch_label),
@@ -37,7 +46,7 @@ datasets = [
             ('svrt/results_problem_20/', label),
             ('svrt/results_problem_21/', label),
             ('svrt/results_problem_22/', label),
-            ('psvrt/', label),
+            ('psvrt/', label_p),
             ]
 
 if __name__ == '__main__':
