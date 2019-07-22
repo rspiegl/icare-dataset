@@ -5,8 +5,9 @@
 ### Prerequisites
 
 ```
-python=3.5
+python=3.6
 tobii-research=1.7.0
-qt5-base=5.12.3-2
-pyqt5-common=5.12.2-1
+qt5-base=5.13.0-7
+pyqt5-common=5.13.0-1
+PyQt5 5.12.1
 ```
