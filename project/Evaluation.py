@@ -59,13 +59,13 @@ class Evaluation:
         self.data["central_widget_geometry_global"] = geometry
 
     def save_to_file(self):
-        timestamp = time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())
+        timestamp = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
 
         with open(timestamp + '.txt', 'w') as file:
             file.write(str(self.data))
 
     def save_tracker_data_to_file(self):
-        timestamp = time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime())
+        timestamp = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
 
         with open(timestamp + '_eyetracking.txt', 'w') as file:
             for data in self.tracker_data:
