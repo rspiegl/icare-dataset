@@ -1,0 +1,25 @@
+camrot_1: 7 minutes
+camrot_5: 4 minutes
+camrot_10: 4 minutes a 50 pic
+ranboa10: 5 min
+ranboa5: 5 min
+ranboa1: 8 min
+rotima5: 8 min a 50 pic; 5 a 40
+rotima1: 11min a 50; 6 a 40
+svrt1: 3
+svrt5: 3
+svrt7: 3
+svrt15: 2
+svrt19: 2.20
+svrt20:2.30
+svrt21:3.30
+svrt22:2
+psvrtSD: 2
+
+chess identity: count number of pawns in column/row/diagonal
+chess symmetry: check symmetry line after another if same amount of pawns in each row (perpendicular to line)
+                hard to distinguish pawns in some rotated images (check by reference of top of pawn [circle])
+
+svrt: hard because of scaling and pixel (aliasing), sometimes they don't look perfectly alike, else the rules are clear
+
+psvrt: pretty easy
