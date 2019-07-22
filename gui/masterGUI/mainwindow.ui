@@ -237,7 +237,60 @@ background-color: rgb(186, 189, 182);</string>
     <addaction name="actionReset"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuDatasets">
+    <property name="title">
+     <string>Chessboard</string>
+    </property>
+    <widget class="QMenu" name="menuCamera_Rotation">
+     <property name="title">
+      <string>Camrot</string>
+     </property>
+     <addaction name="actionCamRot_1"/>
+     <addaction name="actionCamRot_5"/>
+     <addaction name="actionCamRot_10"/>
+    </widget>
+    <widget class="QMenu" name="menuRandom_Board_Images">
+     <property name="title">
+      <string>Ranboaima</string>
+     </property>
+     <addaction name="actionRanBoa_1"/>
+     <addaction name="actionRanBoa_5"/>
+     <addaction name="actionRanBoa_10"/>
+    </widget>
+    <widget class="QMenu" name="menuRotated_Images">
+     <property name="title">
+      <string>Rotima</string>
+     </property>
+     <addaction name="actionRotIm_1"/>
+     <addaction name="actionRotIm_5"/>
+    </widget>
+    <addaction name="menuCamera_Rotation"/>
+    <addaction name="menuRandom_Board_Images"/>
+    <addaction name="menuRotated_Images"/>
+   </widget>
+   <widget class="QMenu" name="menuSVRT">
+    <property name="title">
+     <string>SVRT</string>
+    </property>
+    <addaction name="actionSVRT_1"/>
+    <addaction name="actionSVRT_5"/>
+    <addaction name="actionSVRT_7"/>
+    <addaction name="actionSVRT_15"/>
+    <addaction name="actionSVRT_19"/>
+    <addaction name="actionSVRT_20"/>
+    <addaction name="actionSVRT_21"/>
+    <addaction name="actionSVRT_22"/>
+   </widget>
+   <widget class="QMenu" name="menuPSVRT">
+    <property name="title">
+     <string>PSVRT</string>
+    </property>
+    <addaction name="actionPSVRT_SD"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuDatasets"/>
+   <addaction name="menuSVRT"/>
+   <addaction name="menuPSVRT"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="enabled">
@@ -266,6 +319,91 @@ background-color: rgb(186, 189, 182);</string>
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionCamRot_1">
+   <property name="text">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="actionCamRot_5">
+   <property name="text">
+    <string>5</string>
+   </property>
+  </action>
+  <action name="actionCamRot_10">
+   <property name="text">
+    <string>10</string>
+   </property>
+  </action>
+  <action name="actionRanBoa_1">
+   <property name="text">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="actionRanBoa_5">
+   <property name="text">
+    <string>5</string>
+   </property>
+  </action>
+  <action name="actionRotIm_1">
+   <property name="text">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="actionRotIm_5">
+   <property name="text">
+    <string>5</string>
+   </property>
+  </action>
+  <action name="actionSVRT_1">
+   <property name="text">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="actionSVRT_5">
+   <property name="text">
+    <string>5</string>
+   </property>
+  </action>
+  <action name="actionSVRT_7">
+   <property name="text">
+    <string>7</string>
+   </property>
+  </action>
+  <action name="actionSVRT_15">
+   <property name="text">
+    <string>15</string>
+   </property>
+  </action>
+  <action name="actionSVRT_19">
+   <property name="text">
+    <string>19</string>
+   </property>
+  </action>
+  <action name="actionSVRT_20">
+   <property name="text">
+    <string>20</string>
+   </property>
+  </action>
+  <action name="actionSVRT_21">
+   <property name="text">
+    <string>21</string>
+   </property>
+  </action>
+  <action name="actionPSVRT_SD">
+   <property name="text">
+    <string>SD</string>
+   </property>
+  </action>
+  <action name="actionSVRT_22">
+   <property name="text">
+    <string>22</string>
+   </property>
+  </action>
+  <action name="actionRanBoa_10">
+   <property name="text">
+    <string>10</string>
    </property>
   </action>
  </widget>
@@ -352,11 +490,300 @@ background-color: rgb(186, 189, 182);</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionCamRot_1</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuCamRot_1()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCamRot_5</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuCamRot_5()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCamRot_10</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuCamRot_10()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRanBoa_1</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuRanBoa_1()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRanBoa_5</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuRanBoa_5()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRanBoa_10</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuRanBoa_10()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRotIm_1</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuRotIma_1()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRotIm_5</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuRotIma_5()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSVRT_1</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuSVRT_1()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSVRT_15</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuSVRT_15()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSVRT_19</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuSVRT_19()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSVRT_20</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuSVRT_20()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSVRT_21</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuSVRT_21()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSVRT_22</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuSVRT_22()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSVRT_5</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuSVRT_5()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSVRT_7</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuSVRT_7()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPSVRT_SD</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuPSVRT_SD()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>categoryTrue()</slot>
   <slot>categoryFalse()</slot>
   <slot>reset()</slot>
   <slot>selectDirectory()</slot>
+  <slot>menuCamRot_1()</slot>
+  <slot>menuCamRot_5()</slot>
+  <slot>menuCamRot_10()</slot>
+  <slot>menuRanBoa_1()</slot>
+  <slot>menuRanBoa_5()</slot>
+  <slot>menuRanBoa_10()</slot>
+  <slot>menuRotIma_1()</slot>
+  <slot>menuRotIma_5()</slot>
+  <slot>menuSVRT_1()</slot>
+  <slot>menuSVRT_5()</slot>
+  <slot>menuSVRT_7()</slot>
+  <slot>menuSVRT_15()</slot>
+  <slot>menuSVRT_19()</slot>
+  <slot>menuSVRT_20()</slot>
+  <slot>menuSVRT_21()</slot>
+  <slot>menuSVRT_22()</slot>
+  <slot>menuPSVRT_SD()</slot>
  </slots>
 </ui>

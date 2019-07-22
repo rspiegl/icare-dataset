@@ -6,10 +6,49 @@ from datasets.Dataset import Dataset
 
 
 class DatasetLoader:
-    DATASETS_PATH = 'datasets/chessboard/similarity/camerarot_diff1/'
+    DATASET_CAMROT = 'datasets/chessboard/similarity/camerarot_diff%s/'
+    DATASET_RANBOA = 'datasets/chessboard/similarity/random_board_images_big_diff%s/'
+    DATASET_ROTIMA = 'datasets/chessboard/symmetry/rot_images_diff%s/'
+    DATASET_SVRT = 'datasets/svrt/results_problem_%s/'
+    DATASET_PSVRT = 'datasets/psvrt/'
+
+    IDENTIFIER_CAMROT = 'camrot'
+    IDENTIFIER_RANBOA = 'ranboa'
+    IDENTIFIER_ROTIMA = 'rotima'
+    IDENTIFIER_SVRT = 'svrt'
+    IDENTIFIER_PSVRT = 'psvrt'
 
     @staticmethod
-    def load_problem(path=DATASETS_PATH, number=50, balance=True):
+    def get_dataset_path(identifier='camrot', number=1):
+        if identifier is DatasetLoader.IDENTIFIER_CAMROT:
+            if number not in [1, 5, 10]:
+                raise Exception("Wrong number for dataset camerarot.")
+            path = DatasetLoader.DATASET_CAMROT % number
+
+        elif identifier is DatasetLoader.IDENTIFIER_RANBOA:
+            if number not in [1, 5, 10]:
+                raise Exception("Wrong number for dataset random_board.")
+            path = DatasetLoader.DATASET_RANBOA % number
+
+        elif identifier is DatasetLoader.IDENTIFIER_ROTIMA:
+            if number not in [1, 5]:
+                raise Exception("Wrong number for dataset rot_images.")
+            path = DatasetLoader.DATASET_ROTIMA % number
+
+        elif identifier is DatasetLoader.IDENTIFIER_SVRT:
+            if number not in [1, 5, 7, 15, 19, 20, 21, 22]:
+                raise Exception("Wrong number for dataset svrt.")
+            path = DatasetLoader.DATASET_SVRT % number
+
+        elif identifier is DatasetLoader.IDENTIFIER_PSVRT:
+            path = DatasetLoader.DATASET_PSVRT
+        else:
+            raise Exception("Wrong dataset identifier.")
+
+        return path
+
+    @staticmethod
+    def load_problem(path=(DATASET_CAMROT % 1), number=50, balance=True):
         button1 = 'Category 1'
         button2 = 'Category 2'
         try:
