@@ -18,6 +18,8 @@ class DatasetLoader:
     IDENTIFIER_SVRT = 'svrt'
     IDENTIFIER_PSVRT = 'psvrt'
 
+    EXAMPLE_PICTURE = 'datasets/nan_test.jpg'
+
     @staticmethod
     def get_dataset_path(identifier='camrot', number=1):
         if identifier is DatasetLoader.IDENTIFIER_CAMROT:

@@ -1,3 +1,4 @@
+import math
 import sys
 import time
 
@@ -15,7 +16,7 @@ from gui.mainwindow import Ui_MainWindow
 def current_micro_time(): return tr.get_system_time_stamp()
 
 
-class ItiSignal(QObject):
+class SleepSignal(QObject):
     """A signal that gets emitted when the Intertrial Interval is over."""
     sig = pyqtSignal()
 
@@ -25,15 +26,16 @@ class SaveSignal(QObject):
     sig = pyqtSignal()
 
 
-class ItiThread(QThread):
+class SleepThread(QThread):
     """A class used to signal the GUI when the Intertrial Interval is over."""
 
-    def __init__(self, parent=None):
+    def __init__(self, sleep, parent=None):
         QThread.__init__(self, parent)
-        self.signal = ItiSignal()
+        self.sleep = sleep
+        self.signal = SleepSignal()
 
     def run(self):
-        time.sleep(1)
+        time.sleep(self.sleep)
         self.signal.sig.emit()
 
 
@@ -65,6 +67,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pics, self.pics_iter = None, None
         self.pic, self.pixmap = None, None
         self.timer_start, self.timer_end = 0, 0
+        self.nan_counter = 0
         self.done = False
         self.start = True
         self.dataset = None
@@ -72,11 +75,15 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tracker = None
         self.eyetracker_data = []
 
-        self.iti_thread = ItiThread()
-        self.response_thread = ItiThread()
+        self.iti_thread = SleepThread(1)
+        self.response_thread = SleepThread(1)
+        self.nan_test_thread = SleepThread(1)
+        self.start_test_thread = SleepThread(2)
         self.save_thread = SaveThread()
         self.iti_thread.signal.sig.connect(self.start_trial)
         self.response_thread.signal.sig.connect(self.remove_response)
+        self.nan_test_thread.signal.sig.connect(self.nan_test_end)
+        self.start_test_thread.signal.sig.connect(self.start_trial)
         self.save_thread.signal.sig.connect(self.saving_complete)
 
         self.init_eyetracker()
@@ -96,6 +103,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def gaze_data_callback(self, gaze_data):
         self.eyetracker_data.append(gaze_data)
+
+    def gaze_data_callback_test(self, gaze_data):
+        self.eyetracker_data.append(gaze_data)
+        if math.isnan(gaze_data['left_pupil_diameter']):
+            self.nan_counter += 1
 
     def init_eyetracker(self):
         found = tr.find_all_eyetrackers()
@@ -133,13 +145,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.response_thread.start()
             self.end_test()
 
-    def start_test(self):
-        if self.start:
-            self.start = False
-            self._disable_buttons(False)
-            self.descriptionLabel.clear()
-            self.start_trial()
-
     def end_test(self):
         self.descriptionLabel.setText("Saving...")
         self.evaluation = Evaluation(self.data, self.eyetracker_data)
@@ -161,9 +166,34 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
-            self.start_test()
+            if self.start:
+                self.start = False
+                if self.tracker:
+                    self.nan_test()
+                else:
+                    self.start_trial()
         else:
             super().keyPressEvent(event)
+
+    def nan_test(self):
+        pixmap = QPixmap(DatasetLoader.EXAMPLE_PICTURE)
+        self.picShow.setPixmap(pixmap)
+        self.nan_counter = 0
+        self.tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback_test, as_dictionary=True)
+
+        self.descriptionLabel.setText("Checking Eyetracker setup.")
+        self.nan_test_thread.start()
+
+    @QtCore.pyqtSlot()
+    def nan_test_end(self):
+        self.tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback_test)
+        self.picShow.clear()
+        if self.nan_counter > (len(self.eyetracker_data)/2):
+            self.descriptionLabel.setText("Check Eyetracker setup -- too few values.")
+            self.start = True
+        else:
+            self.descriptionLabel.setText("Everything is fine -- Test starts in 2 seconds.")
+            self.start_test_thread.start()
 
     @QtCore.pyqtSlot()
     def saving_complete(self):
@@ -177,6 +207,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def start_trial(self):
         # remove background
         self.remove_response()
+        self.descriptionLabel.clear()
         # enable buttons
         self._disable_buttons(False)
         # start timer
@@ -212,7 +243,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def selectDirectory(self):
         self.directory = str(QFileDialog.getExistingDirectory(self, "Select Directory")) + '/'
-        self.load_dataset(self.directory)
+        self.load_dataset(self.directory, 50, True)
         self.reset()
 
     @QtCore.pyqtSlot()
