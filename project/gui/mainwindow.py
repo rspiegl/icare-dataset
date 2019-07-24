@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
@@ -162,14 +162,14 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionSelectDirectory)
         self.menuFile.addAction(self.actionReset)
         self.menuFile.addAction(self.actionExit)
-        self.menuCamera_Rotation.addAction(self.actionCamRot_1)
-        self.menuCamera_Rotation.addAction(self.actionCamRot_5)
         self.menuCamera_Rotation.addAction(self.actionCamRot_10)
-        self.menuRandom_Board_Images.addAction(self.actionRanBoa_1)
-        self.menuRandom_Board_Images.addAction(self.actionRanBoa_5)
+        self.menuCamera_Rotation.addAction(self.actionCamRot_5)
+        self.menuCamera_Rotation.addAction(self.actionCamRot_1)
         self.menuRandom_Board_Images.addAction(self.actionRanBoa_10)
-        self.menuRotated_Images.addAction(self.actionRotIm_1)
+        self.menuRandom_Board_Images.addAction(self.actionRanBoa_5)
+        self.menuRandom_Board_Images.addAction(self.actionRanBoa_1)
         self.menuRotated_Images.addAction(self.actionRotIm_5)
+        self.menuRotated_Images.addAction(self.actionRotIm_1)
         self.menuDatasets.addAction(self.menuCamera_Rotation.menuAction())
         self.menuDatasets.addAction(self.menuRandom_Board_Images.menuAction())
         self.menuDatasets.addAction(self.menuRotated_Images.menuAction())

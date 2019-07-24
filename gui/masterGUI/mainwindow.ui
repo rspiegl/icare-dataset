@@ -245,24 +245,24 @@ background-color: rgb(186, 189, 182);</string>
      <property name="title">
       <string>Camrot</string>
      </property>
-     <addaction name="actionCamRot_1"/>
-     <addaction name="actionCamRot_5"/>
      <addaction name="actionCamRot_10"/>
+     <addaction name="actionCamRot_5"/>
+     <addaction name="actionCamRot_1"/>
     </widget>
     <widget class="QMenu" name="menuRandom_Board_Images">
      <property name="title">
       <string>Ranboaima</string>
      </property>
-     <addaction name="actionRanBoa_1"/>
-     <addaction name="actionRanBoa_5"/>
      <addaction name="actionRanBoa_10"/>
+     <addaction name="actionRanBoa_5"/>
+     <addaction name="actionRanBoa_1"/>
     </widget>
     <widget class="QMenu" name="menuRotated_Images">
      <property name="title">
       <string>Rotima</string>
      </property>
-     <addaction name="actionRotIm_1"/>
      <addaction name="actionRotIm_5"/>
+     <addaction name="actionRotIm_1"/>
     </widget>
     <addaction name="menuCamera_Rotation"/>
     <addaction name="menuRandom_Board_Images"/>
@@ -513,8 +513,8 @@ background-color: rgb(186, 189, 182);</string>
    <slot>menuCamRot_5()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>959</x>
-     <y>584</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>959</x>
