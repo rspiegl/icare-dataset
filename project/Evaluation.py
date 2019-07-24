@@ -3,27 +3,26 @@ import time
 
 CUSTOM_EVAL_NAN = {'nan': float('nan')}
 
+
 class Evaluation:
 
-    def __init__(self, tester_data, tracker_data, data=None):
-        self.tester_data = tester_data
-        self.tracker_data = tracker_data
+    def __init__(self):
+        self.screen_resolution = (1920, 1200)
+        self.p, self.n, self.tp, self.fn, self.fp, self.tn = (0,) * 6
+        self.precision, self.recall, self.tnr, self.fnr, self.accuracy = (0,) * 5
+        self.f1, self.mean, self.variance = (0,) * 3
+        self.pic_geometry_global, self.central_widget_geometry_global = None, None
+        self.picture_data = None
 
-        if data:
-            self.data = data
-        else:
-            self.data = {}
-            self.evaluate()
+    def evaluate(self, picture_data):
+        self.picture_data = picture_data
 
-    def evaluate(self):
-        self.data["screen_resolution"] = (1920, 1200)
-
-        self.data["p"] = sum(i[0].count(1) for i in self.tester_data)
-        self.data["n"] = sum(i[0].count(0) for i in self.tester_data)
-        durations = list(zip(*self.tester_data))[2]
+        self.p = sum(i[0].count(1) for i in self.picture_data)
+        self.n = sum(i[0].count(0) for i in self.picture_data)
+        durations = list(zip(*self.picture_data))[2]
         tp, fn, fp, tn = 0, 0, 0, 0
 
-        for case in self.tester_data:
+        for case in self.picture_data:
             true_condition = case[0][1]
             pred_condition = case[1]
             if true_condition:
@@ -36,61 +35,50 @@ class Evaluation:
                     fp = fp + 1
                 else:
                     tn = tn + 1
-        self.data["tp"] = tp
-        self.data["fn"] = fn
-        self.data["fp"] = fp
-        self.data["tn"] = tn
 
-        self.data["precision"] = tp / (tp + fp)
-        self.data["recall"] = tp / (tp + fn)
-        self.data["tnr"] = tn / (tn + fp)
-        self.data["fnr"] = fn / (fn + tp)
-        self.data["accuracy"] = (tp + tn) / (tp + tn + fp + fn)
-        self.data["f1"] = (2 * tp) / (2 * tp + fp + fn)
-        self.data["mean"] = statistics.mean(durations)
-        self.data["variance"] = statistics.pvariance(durations)
+        self.tp = tp
+        self.fn = fn
+        self.fp = fp
+        self.tn = tn
 
-        self.data["tester_data"] = self.tester_data
+        self.precision = tp / (tp + fp)
+        self.recall = tp / (tp + fn)
+        self.tnr = tn / (tn + fp)
+        self.fnr = fn / (fn + tp)
+        self.accuracy = (tp + tn) / (tp + tn + fp + fn)
+        self.f1 = (2 * tp) / (2 * tp + fp + fn)
+        self.mean = statistics.mean(durations)
+        self.variance = statistics.pvariance(durations)
 
     def set_pic_geometry(self, geometry):
-        self.data["pic_geometry_global"] = geometry
+        self.pic_geometry_global = geometry
 
     def set_central_widget_geometry(self, geometry):
-        self.data["central_widget_geometry_global"] = geometry
+        self.central_widget_geometry_global = geometry
+
+    def as_dict(self):
+        return self.__dict__
 
     def save_to_file(self):
         timestamp = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
 
         with open(timestamp + '.txt', 'w') as file:
-            file.write(str(self.data))
+            file.write(str(self.as_dict()))
 
-    def save_tracker_data_to_file(self):
-        timestamp = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
+    def from_dict(self, dictionary):
+        for item in dictionary.items():
+            self.__setattr__(item[0], item[1])
 
-        with open(timestamp + '_eyetracking.txt', 'w') as file:
-            for data in self.tracker_data:
-                file.write(str(data) + '\n')
+        return self
+
+    @classmethod
+    def create_from_file(cls, path):
+        dictionary = Evaluation._load_from_file(path)
+        return cls().from_dict(dictionary)
 
     @staticmethod
     def _load_from_file(path):
         with open(path, 'r') as file:
-            data = eval(file.read(), CUSTOM_EVAL_NAN)
+            dictionary = eval(file.read(), CUSTOM_EVAL_NAN)
 
-        return data
-
-    @staticmethod
-    def _load_tracker_data_from_file(path):
-        tracker_data = []
-
-        with open(path, 'r') as file:
-            for line in [s.strip() for s in file.readlines()]:
-                tracker_data.append(eval(line, CUSTOM_EVAL_NAN))
-
-        return tracker_data
-
-    @staticmethod
-    def create_from_files(data, tracker):
-        data = Evaluation._load_from_file(data)
-        tracker_data = Evaluation._load_tracker_data_from_file(tracker)
-
-        return Evaluation(data["tester_data"], tracker_data, data)
+        return dictionary

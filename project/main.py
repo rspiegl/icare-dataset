@@ -52,8 +52,6 @@ class SaveThread(QThread):
 
     def run(self):
         self.evaluation.save_to_file()
-        if self.evaluation.tracker_data:
-            self.evaluation.save_tracker_data_to_file()
         self.signal.sig.emit()
 
 
@@ -147,7 +145,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def end_test(self):
         self.descriptionLabel.setText("Saving...")
-        self.evaluation = Evaluation(self.data, self.eyetracker_data)
+        self.evaluation = Evaluation()
+        self.evaluation.evaluate(self.data)
 
         pic_global_top_left = self.centralWidget.mapToGlobal(self.picShow.geometry().topLeft())
         self.evaluation.set_pic_geometry((pic_global_top_left.x(),
