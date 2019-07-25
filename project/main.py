@@ -8,9 +8,9 @@ from PyQt5.QtCore import QThread, QObject, pyqtSignal, QPoint
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
-from Evaluation import Evaluation
 from Utilities import DatasetLoader
 from gui.mainwindow import Ui_MainWindow
+from processing.Evaluation import Evaluation
 
 
 def current_micro_time(): return tr.get_system_time_stamp()

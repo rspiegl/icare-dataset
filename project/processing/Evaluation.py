@@ -1,6 +1,8 @@
 import statistics
 import time
 
+import processing.TestProcessor as processor
+
 CUSTOM_EVAL_NAN = {'nan': float('nan')}
 
 
@@ -62,8 +64,10 @@ class Evaluation:
     def save_to_file(self):
         timestamp = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
 
-        with open(timestamp + '.txt', 'w') as file:
+        with open('processing/' + timestamp + '.txt', 'w') as file:
             file.write(str(self.as_dict()))
+
+        processor.check_nan_counter(processor.process(self.picture_data))
 
     def from_dict(self, dictionary):
         for item in dictionary.items():
