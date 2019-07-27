@@ -81,7 +81,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.iti_thread.signal.sig.connect(self.start_trial)
         self.response_thread.signal.sig.connect(self.remove_response)
         self.nan_test_thread.signal.sig.connect(self.nan_test_end)
-        self.start_test_thread.signal.sig.connect(self.start_trial)
+        self.start_test_thread.signal.sig.connect(self.start_test)
         self.save_thread.signal.sig.connect(self.saving_complete)
 
         self.init_eyetracker()
@@ -116,9 +116,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def end_trial(self, classification: int):
         self.picShow.clear()
-        # unsubscribe
-        if self.tracker:
-            self.tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback)
         # stop timer
         self.timer_end = current_micro_time()
         # save to data
@@ -128,10 +125,10 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         # display text
         if classification == self.pic[1]:
             classified = "Correct!"
-            self.widgetButtons.setStyleSheet("background-color: rgb(138, 226, 52);")  # light green
+            self.picShow.setStyleSheet("background-color: rgb(138, 226, 52);")  # light green
         else:
             classified = "Incorrect"
-            self.widgetButtons.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
+            self.picShow.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
         self.descriptionLabel.setText(classified)
         # disable buttons
         self._disable_buttons(True)
@@ -144,6 +141,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.end_test()
 
     def end_test(self):
+        if self.tracker:
+            self.tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback)
         self.descriptionLabel.setText("Saving...")
         self.evaluation = Evaluation()
         self.evaluation.evaluate(self.data)
@@ -200,20 +199,25 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def remove_response(self):
-        self.widgetButtons.setStyleSheet("")
+        self.picShow.setStyleSheet("")
+        
+    @QtCore.pyqtSlot()
+    def start_test(self):
+        if self.tracker:
+            self.tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback, as_dictionary=True)
+        self.start_trial()
 
     @QtCore.pyqtSlot()
     def start_trial(self):
         # remove background
         self.remove_response()
         self.descriptionLabel.clear()
+        if self.tracker:
+            self.eyetracker_data = []
         # enable buttons
         self._disable_buttons(False)
         # start timer
         self.timer_start = current_micro_time()
-        # subscribe
-        if self.tracker:
-            self.tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback, as_dictionary=True)
         # show next picture
         self.pixmap = QPixmap(self.pic[0])
         self.picShow.setPixmap(self.pixmap)
