@@ -7,11 +7,19 @@ class GazePoint:
         self.right = right
 
     def get(self):
-        middle = ((self.left[0] + self.right[0])/2.0, (self.left[1] + self.right[1])/2.0)
+        if math.isnan(self.left[0]):
+            middle = self.right
+        elif math.isnan(self.right[0]):
+            middle = self.left
+        else:
+            middle = ((self.left[0] + self.right[0])/2.0, (self.left[1] + self.right[1])/2.0)
         return middle
 
-    def has_nan(self):
-        return math.isnan(self.left[0] + self.left[1] + self.right[0] + self.right[1])
+    def is_nan(self):
+        return (math.isnan(self.left[0]) and
+                math.isnan(self.left[1]) and
+                math.isnan(self.right[0]) and
+                math.isnan(self.left[1]))
 
     def __str__(self):
         return "{} {}".format(self.left, self.right)

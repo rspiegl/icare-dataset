@@ -1,11 +1,25 @@
+import math
 import statistics
 
 import processing.Eyetracker as Eyetracker
+
+W = 1920
+H = 1200
+RES = (W, H)
 
 
 def process_gaze_data(gaze_data):
     left = gaze_data['left_gaze_point_on_display_area']
     right = gaze_data['right_gaze_point_on_display_area']
+
+    left = tuple(l*res for l, res in zip(left, RES))
+    right = tuple(r*res for r, res in zip(right, RES))
+
+    if not math.isnan(left[0]):
+        left = tuple(round(l) for l in left)
+
+    if not math.isnan(right[0]):
+        right = tuple(round(r) for r in right)
 
     return Eyetracker.GazePoint(left, right)
 
@@ -50,3 +64,10 @@ def check_nan_counter(processed_data):
 
     print("Mean of all pictures: {}%".format(statistics.mean(percents)))
     print("Pictures with over 75% nan: {}".format(high_percent))
+
+
+def create_heatmaps(processed_data):
+    heatmaps = list()
+    for picture in processed_data:
+        heatmaps.append([picture[0][0], [e.get() for e in picture[3]]])
+    return heatmaps
