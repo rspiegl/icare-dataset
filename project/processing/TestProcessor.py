@@ -52,7 +52,7 @@ def check_nan_counter(processed_data):
     for picture in processed_data:
         counter = 0
         for gazepoint in picture[3]:
-            if gazepoint.has_nan():
+            if gazepoint.is_nan():
                 counter += 1
 
         max = len(picture[3]) if picture[3] else 1
