@@ -12,6 +12,9 @@ from Utilities import DatasetLoader
 from gui.mainwindow import Ui_MainWindow
 from processing.Evaluation import Evaluation
 
+MODE_TEST = 0
+MODE_REPLAY = 1
+
 
 def current_micro_time(): return tr.get_system_time_stamp()
 
@@ -259,97 +262,81 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def menuCamRot_5(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 5)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuCamRot_10(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 10)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuRanBoa_1(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 1)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuRanBoa_5(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 5)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuRanBoa_10(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 10)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuRotIma_1(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 1)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuRotIma_5(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 5)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuSVRT_1(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 1)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuSVRT_5(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 5)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuSVRT_7(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 7)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuSVRT_15(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 15)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuSVRT_19(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 19)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuSVRT_20(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 20)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuSVRT_21(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 21)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuSVRT_22(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 22)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuPSVRT_SD(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     def _disable_buttons(self, disable):
         self.pushButtonFalse.setDisabled(disable)
