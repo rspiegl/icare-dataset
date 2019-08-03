@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
 class Ui_MainWindow(object):
@@ -56,7 +56,7 @@ class Ui_MainWindow(object):
         self.picShow = QtWidgets.QLabel(self.widgetPic)
         self.picShow.setMinimumSize(QtCore.QSize(350, 350))
         self.picShow.setMaximumSize(QtCore.QSize(350, 350))
-        self.picShow.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.picShow.setFrameShape(QtWidgets.QFrame.Panel)
         self.picShow.setFrameShadow(QtWidgets.QFrame.Plain)
         self.picShow.setScaledContents(True)
         self.picShow.setAlignment(QtCore.Qt.AlignCenter)
@@ -230,7 +230,7 @@ class Ui_MainWindow(object):
         self.menuRotated_Images.setTitle(_translate("MainWindow", "Rotima"))
         self.menuSVRT.setTitle(_translate("MainWindow", "SVRT"))
         self.menuPSVRT.setTitle(_translate("MainWindow", "PSVRT"))
-        self.actionSelectDirectory.setText(_translate("MainWindow", "Select Directory"))
+        self.actionSelectDirectory.setText(_translate("MainWindow", "Select Dataset"))
         self.actionReset.setText(_translate("MainWindow", "Reset"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionCamRot_1.setText(_translate("MainWindow", "1"))

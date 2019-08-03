@@ -118,7 +118,7 @@ background-color: rgb(186, 189, 182);</string>
           </size>
          </property>
          <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
+          <enum>QFrame::Panel</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Plain</enum>
@@ -308,7 +308,7 @@ background-color: rgb(186, 189, 182);</string>
   </widget>
   <action name="actionSelectDirectory">
    <property name="text">
-    <string>Select Directory</string>
+    <string>Select Dataset</string>
    </property>
   </action>
   <action name="actionReset">
