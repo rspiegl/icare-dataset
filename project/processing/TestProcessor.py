@@ -98,9 +98,10 @@ def trim_heatmaps(heatmaps, pic_geometry):
 
 
 def create_plot(heatmaps, plot_path):
-    dataset_description = re.findall(r'([^\/]+\/)[^\/]+\.', heatmaps[0][0])[0]
-    if not os.path.isdir(plot_path+dataset_description):
-        os.makedirs(plot_path+dataset_description)
+    dataset_identifier = re.findall(r'([^\/]+\/)[^\/]+\.', heatmaps[0][0])[0]
+    print("Dataset identifier: {}".format(dataset_identifier))
+    if not os.path.isdir(plot_path+dataset_identifier):
+        os.makedirs(plot_path+dataset_identifier)
 
     print("Creating {} plots".format(len(heatmaps)))
 

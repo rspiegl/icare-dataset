@@ -1,7 +1,6 @@
+import re
 import statistics
 import time
-
-import processing.TestProcessor as processor
 
 CUSTOM_EVAL_NAN = {'nan': float('nan')}
 
@@ -62,12 +61,12 @@ class Evaluation:
         return self.__dict__
 
     def save_to_file(self):
-        timestamp = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
+        dataset_identifier = re.findall(r'([^\/]+)\/[^\/]+\.', self.picture_data[0][0][0])[0]
+        timestamp = time.strftime('%m-%d_%H-%M', time.localtime())
+        dir_path = 'processing/'
 
-        with open('processing/' + timestamp + '.txt', 'w') as file:
+        with open(dir_path + dataset_identifier + '_' + timestamp + '.txt', 'w') as file:
             file.write(str(self.as_dict()))
-
-        processor.check_nan_counter(processor.process(self.picture_data))
 
     def from_dict(self, dictionary):
         for item in dictionary.items():
