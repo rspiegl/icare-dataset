@@ -97,7 +97,8 @@ def trim_heatmaps(heatmaps, pic_geometry):
     return maps
 
 
-def create_plot(heatmaps, plot_path):
+def create_plot(heatmaps, participant_id):
+    plot_path = "plots/{}/".format(participant_id)
     dataset_identifier = re.findall(r'([^\/]+\/)[^\/]+\.', heatmaps[0][0])[0]
     print("Dataset identifier: {}".format(dataset_identifier))
     if not os.path.isdir(plot_path+dataset_identifier):
@@ -126,8 +127,8 @@ def create_plot(heatmaps, plot_path):
         axes[2].invert_yaxis()
         axes[2].imshow(img, zorder=1)
 
-        pic_name = re.findall(r'([^\/]+\/[^\/]+\.)', heatmap[0])[0]
-        path = plot_path + pic_name + "png"
+        pic_name = re.findall(r'([^\/]+\/[^\/]+)\.', heatmap[0])[0]
+        path = plot_path + pic_name + "_{}.png".format(participant_id)
         path = _duplicate_path(path)
         fig.savefig(path)
         plt.close(fig)
@@ -142,7 +143,7 @@ def main_pipeline(paths, participant_id):
 
         heatmaps = create_heatmaps(processed)
         trimmed = trim_heatmaps(heatmaps, e.pic_geometry_global)
-        create_plot(trimmed, 'plots/{}/'.format(participant_id))
+        create_plot(trimmed, participant_id)
 
         total_time += calculate_stats(processed)
 
