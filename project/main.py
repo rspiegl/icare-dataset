@@ -16,12 +16,7 @@ from processing.Evaluation import Evaluation
 def current_micro_time(): return tr.get_system_time_stamp()
 
 
-class SleepSignal(QObject):
-    """A signal that gets emitted when the Intertrial Interval is over."""
-    sig = pyqtSignal()
-
-
-class SaveSignal(QObject):
+class Signal(QObject):
     """Gets emitted when saving is complete."""
     sig = pyqtSignal()
 
@@ -32,7 +27,7 @@ class SleepThread(QThread):
     def __init__(self, sleep, parent=None):
         QThread.__init__(self, parent)
         self.sleep = sleep
-        self.signal = SleepSignal()
+        self.signal = Signal()
 
     def run(self):
         time.sleep(self.sleep)
@@ -45,7 +40,7 @@ class SaveThread(QThread):
     def __init__(self):
         QThread.__init__(self)
         self.evaluation = None
-        self.signal = SaveSignal()
+        self.signal = Signal()
 
     def set_evaluation(self, evaluation):
         self.evaluation = evaluation
