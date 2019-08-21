@@ -12,9 +12,6 @@ from Utilities import DatasetLoader
 from gui.mainwindow import Ui_MainWindow
 from processing.Evaluation import Evaluation
 
-MODE_TEST = 0
-MODE_REPLAY = 1
-
 
 def current_micro_time(): return tr.get_system_time_stamp()
 
