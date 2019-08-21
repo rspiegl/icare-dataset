@@ -67,21 +67,16 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.timer_start, self.timer_end = 0, 0
         self.nan_counter = 0
         self.done = False
-        self.start = True
-        self.inter_trial = False
+        self.inter_trial = True
         self.dataset = None
         self.data = []
         self.tracker = None
-        self.eyetracker_data, calibration_data = [], []
+        self.eyetracker_data, self.calibration_data = [], []
         self.calibrate_pixmap = QPixmap(DatasetLoader.CALIBRATE_PICTURE)
 
         self.response_thread = SleepThread(1)
-        self.nan_test_thread = SleepThread(1)
-        self.start_test_thread = SleepThread(2)
         self.save_thread = SaveThread()
         self.response_thread.signal.sig.connect(self.remove_response)
-        self.nan_test_thread.signal.sig.connect(self.nan_test_end)
-        self.start_test_thread.signal.sig.connect(self.start_test)
         self.save_thread.signal.sig.connect(self.saving_complete)
 
         self.init_eyetracker()
@@ -94,7 +89,9 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def classify(self, category):
         duration = self.timer_end - self.timer_start
-        self.data.append([self.pic, category, duration, (self.timer_start, self.timer_end), self.eyetracker_data])
+        self.data.append([self.pic, category, duration,
+                          (self.timer_start, self.timer_end), self.eyetracker_data,
+                          self.calibration_data])
         self.eyetracker_data = []
 
     def load_dataset(self, dir_path, number, balance):
@@ -104,17 +101,14 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def gaze_data_callback(self, gaze_data):
         self.eyetracker_data.append(gaze_data)
 
-    def gaze_data_callback_test(self, gaze_data):
-        self.eyetracker_data.append(gaze_data)
-        if math.isnan(gaze_data['left_pupil_diameter']):
-            self.nan_counter += 1
-
     def init_eyetracker(self):
         found = tr.find_all_eyetrackers()
         if found:
             self.tracker = found[0]
+            self.tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback, as_dictionary=True)
         else:
             print("No EyeTrackers found.")
+            time.sleep(1)
 
     def end_trial(self, classification: int):
         self.picShow.clear()
@@ -129,15 +123,15 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             classified = "Correct!"
             self.picShow.setStyleSheet("background-color: rgb(138, 226, 52);")  # light green
         else:
-            classified = "Incorrect"
+            classified = "Incorrect!"
             self.picShow.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
         self.picShow.setPixmap(self.calibrate_pixmap)
         self.inter_trial = True
 
-        self.descriptionLabel.setText(classified)
+        self.descriptionLabel.setText(classified + " Press Enter to continue")
         # disable buttons
         self._disable_buttons(True)
-        # sleep 1s
+
         try:
             self.pic = next(self.pics_iter)
         except StopIteration:
@@ -168,37 +162,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
-            if self.start:
-                self.start = False
-                if self.tracker:
-                    self.nan_test()
-                else:
-                    self.start_trial()
-            elif self.inter_trial:
+            if self.inter_trial:
                 self.inter_trial = False
                 self.start_trial()
         else:
             super().keyPressEvent(event)
-
-    def nan_test(self):
-        pixmap = QPixmap(DatasetLoader.EXAMPLE_PICTURE)
-        self.picShow.setPixmap(pixmap)
-        self.nan_counter = 0
-        self.tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback_test, as_dictionary=True)
-
-        self.descriptionLabel.setText("Checking Eyetracker setup.")
-        self.nan_test_thread.start()
-
-    @QtCore.pyqtSlot()
-    def nan_test_end(self):
-        self.tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback_test)
-        self.picShow.clear()
-        if self.nan_counter > (len(self.eyetracker_data)/2):
-            self.descriptionLabel.setText("Check Eyetracker setup -- too few values.")
-            self.start = True
-        else:
-            self.descriptionLabel.setText("Everything is fine -- Test starts in 2 seconds.")
-            self.start_test_thread.start()
 
     @QtCore.pyqtSlot()
     def saving_complete(self):
@@ -211,8 +179,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         
     @QtCore.pyqtSlot()
     def start_test(self):
-        if self.tracker:
-            self.tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback, as_dictionary=True)
         self.start_trial()
 
     @QtCore.pyqtSlot()
@@ -221,6 +187,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.remove_response()
         self.descriptionLabel.clear()
         if self.tracker:
+            self.calibration_data = self.eyetracker_data[-30:]
             self.eyetracker_data = []
         # enable buttons
         self._disable_buttons(False)
@@ -240,14 +207,16 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def reset(self):
-        self.picShow.clear()
+        self.remove_response()
+        self.picShow.setPixmap(self.calibrate_pixmap)
         self.pics = self.dataset.data
         self.pics_iter = iter(self.pics)
         self.pic = next(self.pics_iter)
         self.data = []
+        self.eyetracker_data = []
         self.listPicturesTrue.clear()
         self.listPicturesFalse.clear()
-        self.start = True
+        self.inter_trial = True
         self._disable_buttons(True)
         self.descriptionLabel.setText("Press Enter key to start.")
 
@@ -255,13 +224,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def selectDirectory(self):
         self.directory = str(QFileDialog.getExistingDirectory(self, "Select Directory")) + '/'
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuCamRot_1(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 1)
         self.load_dataset(self.directory, 50, True)
-        self.reset()
 
     @QtCore.pyqtSlot()
     def menuCamRot_5(self):
