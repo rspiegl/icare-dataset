@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setSpacing(6)
         self.gridLayout.setObjectName("gridLayout")
         self.listPicturesFalse = QtWidgets.QListWidget(self.centralWidget)
-        self.listPicturesFalse.setMaximumSize(QtCore.QSize(800, 16777215))
+        self.listPicturesFalse.setMaximumSize(QtCore.QSize(800, 532))
         self.listPicturesFalse.setStyleSheet("background-color: rgb(186, 189, 182);\n"
 "gridline-color: rgb(0, 0, 0);")
         self.listPicturesFalse.setFrameShape(QtWidgets.QFrame.Box)
@@ -36,7 +36,7 @@ class Ui_MainWindow(object):
         self.listPicturesFalse.setObjectName("listPicturesFalse")
         self.gridLayout.addWidget(self.listPicturesFalse, 1, 1, 1, 1)
         self.listPicturesTrue = QtWidgets.QListWidget(self.centralWidget)
-        self.listPicturesTrue.setMaximumSize(QtCore.QSize(800, 16777215))
+        self.listPicturesTrue.setMaximumSize(QtCore.QSize(800, 532))
         self.listPicturesTrue.setStyleSheet("gridline-color: rgb(0, 0, 0);\n"
 "background-color: rgb(186, 189, 182);")
         self.listPicturesTrue.setFrameShape(QtWidgets.QFrame.Box)
@@ -52,7 +52,7 @@ class Ui_MainWindow(object):
         self.widgetPic.setMinimumSize(QtCore.QSize(0, 360))
         self.widgetPic.setObjectName("widgetPic")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.widgetPic)
-        self.horizontalLayout_2.setContentsMargins(11, 0, 11, 0)
+        self.horizontalLayout_2.setContentsMargins(11, 0, 11, 11)
         self.horizontalLayout_2.setSpacing(6)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.picLeft = QtWidgets.QLabel(self.widgetPic)

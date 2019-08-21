@@ -35,7 +35,7 @@
       <property name="maximumSize">
        <size>
         <width>800</width>
-        <height>16777215</height>
+        <height>532</height>
        </size>
       </property>
       <property name="styleSheet">
@@ -73,7 +73,7 @@ gridline-color: rgb(0, 0, 0);</string>
       <property name="maximumSize">
        <size>
         <width>800</width>
-        <height>16777215</height>
+        <height>532</height>
        </size>
       </property>
       <property name="styleSheet">
@@ -116,9 +116,6 @@ background-color: rgb(186, 189, 182);</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
