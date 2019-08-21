@@ -71,18 +71,17 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.nan_counter = 0
         self.done = False
         self.start = True
+        self.inter_trial = False
         self.dataset = None
         self.data = []
         self.tracker = None
-        self.eyetracker_data = []
+        self.eyetracker_data, calibration_data = [], []
         self.calibrate_pixmap = QPixmap(DatasetLoader.CALIBRATE_PICTURE)
 
-        self.iti_thread = SleepThread(1)
         self.response_thread = SleepThread(1)
         self.nan_test_thread = SleepThread(1)
         self.start_test_thread = SleepThread(2)
         self.save_thread = SaveThread()
-        self.iti_thread.signal.sig.connect(self.start_trial)
         self.response_thread.signal.sig.connect(self.remove_response)
         self.nan_test_thread.signal.sig.connect(self.nan_test_end)
         self.start_test_thread.signal.sig.connect(self.start_test)
@@ -136,13 +135,14 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             classified = "Incorrect"
             self.picShow.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
         self.picShow.setPixmap(self.calibrate_pixmap)
+        self.inter_trial = True
+
         self.descriptionLabel.setText(classified)
         # disable buttons
         self._disable_buttons(True)
         # sleep 1s
         try:
             self.pic = next(self.pics_iter)
-            self.iti_thread.start()
         except StopIteration:
             self.response_thread.start()
             self.end_test()
@@ -177,6 +177,9 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.nan_test()
                 else:
                     self.start_trial()
+            elif self.inter_trial:
+                self.inter_trial = False
+                self.start_trial()
         else:
             super().keyPressEvent(event)
 
