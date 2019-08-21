@@ -4,7 +4,7 @@ import time
 
 import tobii_research as tr
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QThread, QObject, pyqtSignal, QPoint
+from PyQt5.QtCore import QThread, QObject, pyqtSignal, QPoint, QSize
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
@@ -92,6 +92,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def setupUi(self, mainWindow):
         super().setupUi(mainWindow)
+        self.listPicturesFalse.setSpacing(2)
+        self.listPicturesTrue.setSpacing(2)
 
     def classify(self, category):
         duration = self.timer_end - self.timer_start
@@ -222,7 +224,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         # start timer
         self.timer_start = current_micro_time()
         # show next picture
-        self.pixmap = QPixmap(self.pic[0])
+        self.pixmap = QPixmap(self.pic[0]).scaledToWidth(512)
         self.picShow.setPixmap(self.pixmap)
 
     @QtCore.pyqtSlot()
@@ -334,9 +336,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def _create_list_item(self):
         item = QtWidgets.QListWidgetItem()
+        item.setSizeHint(QSize(256, 256))
         icon = QtGui.QIcon()
-        icon.addPixmap(self.pixmap)
+        icon.addPixmap(self.pixmap.scaledToWidth(256))
         item.setIcon(icon)
+
         if self.pic[1] == 1:
             self.listPicturesTrue.addItem(item)
         else:

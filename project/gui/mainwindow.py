@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
@@ -23,26 +23,28 @@ class Ui_MainWindow(object):
         self.gridLayout.setSpacing(6)
         self.gridLayout.setObjectName("gridLayout")
         self.listPicturesFalse = QtWidgets.QListWidget(self.centralWidget)
+        self.listPicturesFalse.setMaximumSize(QtCore.QSize(800, 16777215))
         self.listPicturesFalse.setStyleSheet("background-color: rgb(186, 189, 182);\n"
 "gridline-color: rgb(0, 0, 0);")
         self.listPicturesFalse.setFrameShape(QtWidgets.QFrame.Box)
         self.listPicturesFalse.setFrameShadow(QtWidgets.QFrame.Plain)
         self.listPicturesFalse.setLineWidth(2)
         self.listPicturesFalse.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.listPicturesFalse.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
         self.listPicturesFalse.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
-        self.listPicturesFalse.setIconSize(QtCore.QSize(128, 128))
+        self.listPicturesFalse.setIconSize(QtCore.QSize(256, 256))
         self.listPicturesFalse.setViewMode(QtWidgets.QListView.IconMode)
         self.listPicturesFalse.setObjectName("listPicturesFalse")
         self.gridLayout.addWidget(self.listPicturesFalse, 1, 1, 1, 1)
         self.listPicturesTrue = QtWidgets.QListWidget(self.centralWidget)
+        self.listPicturesTrue.setMaximumSize(QtCore.QSize(800, 16777215))
         self.listPicturesTrue.setStyleSheet("gridline-color: rgb(0, 0, 0);\n"
 "background-color: rgb(186, 189, 182);")
         self.listPicturesTrue.setFrameShape(QtWidgets.QFrame.Box)
         self.listPicturesTrue.setFrameShadow(QtWidgets.QFrame.Plain)
         self.listPicturesTrue.setLineWidth(2)
         self.listPicturesTrue.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.listPicturesTrue.setIconSize(QtCore.QSize(128, 128))
+        self.listPicturesTrue.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        self.listPicturesTrue.setIconSize(QtCore.QSize(256, 256))
         self.listPicturesTrue.setViewMode(QtWidgets.QListView.IconMode)
         self.listPicturesTrue.setObjectName("listPicturesTrue")
         self.gridLayout.addWidget(self.listPicturesTrue, 1, 0, 1, 1)
@@ -50,18 +52,29 @@ class Ui_MainWindow(object):
         self.widgetPic.setMinimumSize(QtCore.QSize(0, 360))
         self.widgetPic.setObjectName("widgetPic")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.widgetPic)
-        self.horizontalLayout_2.setContentsMargins(11, 11, 11, 11)
+        self.horizontalLayout_2.setContentsMargins(11, 0, 11, 0)
         self.horizontalLayout_2.setSpacing(6)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.picLeft = QtWidgets.QLabel(self.widgetPic)
+        self.picLeft.setMaximumSize(QtCore.QSize(512, 512))
+        self.picLeft.setAlignment(QtCore.Qt.AlignCenter)
+        self.picLeft.setObjectName("picLeft")
+        self.horizontalLayout_2.addWidget(self.picLeft)
         self.picShow = QtWidgets.QLabel(self.widgetPic)
-        self.picShow.setMinimumSize(QtCore.QSize(350, 350))
-        self.picShow.setMaximumSize(QtCore.QSize(350, 350))
+        self.picShow.setMinimumSize(QtCore.QSize(512, 512))
+        self.picShow.setMaximumSize(QtCore.QSize(512, 512))
         self.picShow.setFrameShape(QtWidgets.QFrame.Panel)
         self.picShow.setFrameShadow(QtWidgets.QFrame.Plain)
         self.picShow.setScaledContents(True)
         self.picShow.setAlignment(QtCore.Qt.AlignCenter)
         self.picShow.setObjectName("picShow")
         self.horizontalLayout_2.addWidget(self.picShow)
+        self.picRight = QtWidgets.QLabel(self.widgetPic)
+        self.picRight.setMinimumSize(QtCore.QSize(512, 512))
+        self.picRight.setMaximumSize(QtCore.QSize(512, 512))
+        self.picRight.setAlignment(QtCore.Qt.AlignCenter)
+        self.picRight.setObjectName("picRight")
+        self.horizontalLayout_2.addWidget(self.picRight)
         self.gridLayout.addWidget(self.widgetPic, 0, 0, 1, 2)
         self.widgetButtons = QtWidgets.QWidget(self.centralWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
@@ -206,7 +219,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Study Foo Bar"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Humans vs CNNs"))
         self.picShow.setText(_translate("MainWindow", "ImageLabel"))
         self.pushButtonTrue.setToolTip(_translate("MainWindow", "Shortcut: Left Arrow"))
         self.pushButtonTrue.setText(_translate("MainWindow", "Category 1"))
