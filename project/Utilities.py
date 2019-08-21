@@ -23,12 +23,12 @@ class DatasetLoader:
     @staticmethod
     def get_dataset_path(identifier='camrot', number=1):
         if identifier is DatasetLoader.IDENTIFIER_CAMROT:
-            if number not in [1, 5, 10]:
+            if number not in [1, 5]:
                 raise Exception("Wrong number for dataset camerarot.")
             path = DatasetLoader.DATASET_CAMROT % number
 
         elif identifier is DatasetLoader.IDENTIFIER_RANBOA:
-            if number not in [1, 5, 10]:
+            if number not in [1, 5]:
                 raise Exception("Wrong number for dataset random_board.")
             path = DatasetLoader.DATASET_RANBOA % number
 

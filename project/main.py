@@ -264,11 +264,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.load_dataset(self.directory, 50, True)
 
     @QtCore.pyqtSlot()
-    def menuCamRot_10(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 10)
-        self.load_dataset(self.directory, 50, True)
-
-    @QtCore.pyqtSlot()
     def menuRanBoa_1(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 1)
         self.load_dataset(self.directory, 50, True)
@@ -276,11 +271,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def menuRanBoa_5(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 5)
-        self.load_dataset(self.directory, 50, True)
-
-    @QtCore.pyqtSlot()
-    def menuRanBoa_10(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 10)
         self.load_dataset(self.directory, 50, True)
 
     @QtCore.pyqtSlot()

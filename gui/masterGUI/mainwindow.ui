@@ -245,7 +245,6 @@ background-color: rgb(186, 189, 182);</string>
      <property name="title">
       <string>Camrot</string>
      </property>
-     <addaction name="actionCamRot_10"/>
      <addaction name="actionCamRot_5"/>
      <addaction name="actionCamRot_1"/>
     </widget>
@@ -253,7 +252,6 @@ background-color: rgb(186, 189, 182);</string>
      <property name="title">
       <string>Ranboaima</string>
      </property>
-     <addaction name="actionRanBoa_10"/>
      <addaction name="actionRanBoa_5"/>
      <addaction name="actionRanBoa_1"/>
     </widget>
@@ -331,11 +329,6 @@ background-color: rgb(186, 189, 182);</string>
     <string>5</string>
    </property>
   </action>
-  <action name="actionCamRot_10">
-   <property name="text">
-    <string>10</string>
-   </property>
-  </action>
   <action name="actionRanBoa_1">
    <property name="text">
     <string>1</string>
@@ -399,11 +392,6 @@ background-color: rgb(186, 189, 182);</string>
   <action name="actionSVRT_22">
    <property name="text">
     <string>22</string>
-   </property>
-  </action>
-  <action name="actionRanBoa_10">
-   <property name="text">
-    <string>10</string>
    </property>
   </action>
  </widget>
@@ -523,22 +511,6 @@ background-color: rgb(186, 189, 182);</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionCamRot_10</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>menuCamRot_10()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>959</x>
-     <y>584</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionRanBoa_1</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -559,22 +531,6 @@ background-color: rgb(186, 189, 182);</string>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>menuRanBoa_5()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>959</x>
-     <y>584</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRanBoa_10</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>menuRanBoa_10()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -770,10 +726,8 @@ background-color: rgb(186, 189, 182);</string>
   <slot>selectDirectory()</slot>
   <slot>menuCamRot_1()</slot>
   <slot>menuCamRot_5()</slot>
-  <slot>menuCamRot_10()</slot>
   <slot>menuRanBoa_1()</slot>
   <slot>menuRanBoa_5()</slot>
-  <slot>menuRanBoa_10()</slot>
   <slot>menuRotIma_1()</slot>
   <slot>menuRotIma_5()</slot>
   <slot>menuSVRT_1()</slot>
