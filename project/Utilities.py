@@ -19,6 +19,7 @@ class DatasetLoader:
     IDENTIFIER_PSVRT = 'psvrt'
 
     EXAMPLE_PICTURE = 'datasets/nan_test.jpg'
+    CALIBRATE_PICTURE = 'datasets/calibrate_point.png'
 
     @staticmethod
     def get_dataset_path(identifier='camrot', number=1):

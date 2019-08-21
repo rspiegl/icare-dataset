@@ -75,6 +75,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.data = []
         self.tracker = None
         self.eyetracker_data = []
+        self.calibrate_pixmap = QPixmap(DatasetLoader.CALIBRATE_PICTURE)
 
         self.iti_thread = SleepThread(1)
         self.response_thread = SleepThread(1)
@@ -134,6 +135,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             classified = "Incorrect"
             self.picShow.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
+        self.picShow.setPixmap(self.calibrate_pixmap)
         self.descriptionLabel.setText(classified)
         # disable buttons
         self._disable_buttons(True)
@@ -205,6 +207,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def remove_response(self):
         self.picShow.setStyleSheet("")
+        self.picShow.clear()
         
     @QtCore.pyqtSlot()
     def start_test(self):
