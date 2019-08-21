@@ -342,9 +342,9 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         item.setIcon(icon)
 
         if self.pic[1] == 1:
-            self.listPicturesTrue.addItem(item)
+            self.listPicturesTrue.insertItem(0, item)
         else:
-            self.listPicturesFalse.addItem(item)
+            self.listPicturesFalse.insertItem(0, item)
 
 
 if __name__ == "__main__":
