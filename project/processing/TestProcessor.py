@@ -1,13 +1,13 @@
+import glob
 import math
 import os
 import re
 import statistics
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-
 import seaborn as sns
 from PIL import Image
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 import processing.Eyetracker as Eyetracker
 from processing import Evaluation
@@ -221,3 +221,8 @@ def _copy_path(path, counter):
         return _copy_path(path[:-5]+str(counter)+path[-4:], counter+1)
     else:
         return path
+
+
+if __name__ == '__main__':
+    paths = [f for f in glob.glob('*.txt')]
+    main_pipeline(paths, 1)
