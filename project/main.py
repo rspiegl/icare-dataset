@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QFileDialog
 from Utilities import DatasetLoader
 from gui.mainwindow import Ui_MainWindow
 from processing.Evaluation import Evaluation
+import processing.TestProcessor as Processor
 
 
 def current_micro_time(): return tr.get_system_time_stamp()
@@ -19,6 +20,11 @@ def current_micro_time(): return tr.get_system_time_stamp()
 class Signal(QObject):
     """Gets emitted when saving is complete."""
     sig = pyqtSignal()
+
+
+class ProcessSignal(QObject):
+    """Emits histogram and calibration pixmap when processing is done."""
+    sig = pyqtSignal(QPixmap, QPixmap)
 
 
 class SleepThread(QThread):
@@ -50,8 +56,39 @@ class SaveThread(QThread):
         self.signal.sig.emit()
 
 
+class ProcessThread(QThread):
+    """Generates histograms for calibration and eyetracking data and then shows it."""
+
+    def __init__(self, data=None, pic_geometry=None):
+        QThread.__init__(self)
+        self.data = data
+        self.pic_geometry = pic_geometry
+        self.signal = ProcessSignal()
+
+    def set_data(self, data):
+        self.data = data
+
+    def set_pic_geometry(self, pic_geometry):
+        self.pic_geometry = pic_geometry
+
+    def run(self):
+        if self.data[4] and self.data[5]:
+            processed_pic = Processor.process_picture_eyetracking_data(self.data[4])
+            pic_heat = Processor.create_heatmap(processed_pic)
+            pic_trim = Processor.trim_heatmap(pic_heat, self.pic_geometry)
+            histogram = Processor.create_histogram_temp(pic_trim, self.data[0][0], name='histo')
+            histogram = QPixmap(histogram)
+
+            processed_cali = Processor.process_picture_eyetracking_data(self.data[5])
+            cali_heat = Processor.create_heatmap(processed_cali)
+            cali_trim = Processor.trim_heatmap(cali_heat, self.pic_geometry)
+            calibration = Processor.create_histogram_temp(cali_trim, DatasetLoader.CALIBRATE_PICTURE, name='cali')
+            calibration = QPixmap(calibration)
+
+            self.signal.sig.emit(histogram, calibration)
+
+
 class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
-    evaluation = None
 
     def __init__(self):
         super().__init__()
@@ -62,17 +99,22 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.timer_start, self.timer_end = 0, 0
         self.nan_counter = 0
         self.done = False
-        self.inter_trial = True
+        self.start = True
+        self.inter_trial = False
         self.dataset = None
+        self.evaluation = None
         self.data = []
         self.tracker = None
         self.eyetracker_data, self.calibration_data = [], []
         self.calibrate_pixmap = QPixmap(DatasetLoader.CALIBRATE_PICTURE)
+        self.central_widget_geometry, self.pic_geometry = None, None
 
         self.response_thread = SleepThread(1)
-        self.save_thread = SaveThread()
         self.response_thread.signal.sig.connect(self.remove_response)
+        self.save_thread = SaveThread()
         self.save_thread.signal.sig.connect(self.saving_complete)
+        self.process_thread = ProcessThread()
+        self.process_thread.signal.sig.connect(self.show_histogram_calibration)
 
         self.init_eyetracker()
         self.load_dataset(self.directory, 2, True)
@@ -103,7 +145,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback, as_dictionary=True)
         else:
             print("No EyeTrackers found.")
-            time.sleep(1)
 
     def end_trial(self, classification: int):
         self.picShow.clear()
@@ -129,6 +170,9 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
         try:
             self.pic = next(self.pics_iter)
+            self.process_thread.set_data(self.data[-1])
+            self.process_thread.set_pic_geometry(self.pic_geometry)
+            self.process_thread.start()
         except StopIteration:
             self.response_thread.start()
             self.end_test()
@@ -140,28 +184,26 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.evaluation = Evaluation()
         self.evaluation.evaluate(self.data)
 
-        pic_global_top_left = self.centralWidget.mapToGlobal(self.picShow.geometry().topLeft())
-        self.evaluation.set_pic_geometry((pic_global_top_left.x(),
-                                          pic_global_top_left.y(),
-                                          self.picShow.geometry().width(),
-                                          self.picShow.geometry().height()))
-
-        central_widget_global_top_left = self.centralWidget.mapToGlobal(QPoint(0, 0))
-        self.evaluation.set_central_widget_geometry((central_widget_global_top_left.x(),
-                                                     central_widget_global_top_left.y(),
-                                                     self.centralWidget.geometry().width(),
-                                                     self.centralWidget.geometry().height()))
+        self.evaluation.set_pic_geometry(self.pic_geometry)
+        self.evaluation.set_central_widget_geometry(self.central_widget_geometry)
 
         self.save_thread.set_evaluation(self.evaluation)
         self.save_thread.start()
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
-            if self.inter_trial:
+            if self.start:
+                self.start = False
+                self.start_test()
+            elif self.inter_trial:
                 self.inter_trial = False
                 self.start_trial()
         else:
             super().keyPressEvent(event)
+
+    def show_histogram_calibration(self, histogram, calibration):
+        self.picRight.setPixmap(histogram)
+        self.picLeft.setPixmap(calibration)
 
     @QtCore.pyqtSlot()
     def saving_complete(self):
@@ -171,12 +213,22 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def remove_response(self):
         self.picShow.setStyleSheet("")
         self.picShow.clear()
-        
-    @QtCore.pyqtSlot()
+
     def start_test(self):
+        central_widget_global_top_left = self.centralWidget.mapToGlobal(QPoint(0, 0))
+        pic_global_top_left = self.centralWidget.mapToGlobal(self.picShow.geometry().topLeft())
+
+        self.central_widget_geometry = (central_widget_global_top_left.x(),
+                                        central_widget_global_top_left.y(),
+                                        self.centralWidget.geometry().width(),
+                                        self.centralWidget.geometry().height())
+        self.pic_geometry = (pic_global_top_left.x(),
+                             pic_global_top_left.y(),
+                             self.picShow.geometry().width(),
+                             self.picShow.geometry().height())
+
         self.start_trial()
 
-    @QtCore.pyqtSlot()
     def start_trial(self):
         # remove background
         self.remove_response()
@@ -211,6 +263,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.eyetracker_data = []
         self.listPicturesTrue.clear()
         self.listPicturesFalse.clear()
+        self.start = True
         self.inter_trial = True
         self._disable_buttons(True)
         self.descriptionLabel.setText("Press Enter key to start.")
