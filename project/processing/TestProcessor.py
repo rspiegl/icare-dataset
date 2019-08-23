@@ -4,10 +4,13 @@ import os
 import re
 import statistics
 
-import seaborn as sns
-from PIL import Image
+import matplotlib
+matplotlib.use('qt5agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+
+import seaborn as sns
+from PIL import Image
 
 import processing.Eyetracker as Eyetracker
 from processing import Evaluation

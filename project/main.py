@@ -75,12 +75,18 @@ class ProcessThread(QThread):
         if self.data[4] and self.data[5]:
             processed_pic = Processor.process_picture_eyetracking_data(self.data[4])
             pic_heat = Processor.create_heatmap(processed_pic)
+            if not pic_heat:
+                print("no data after creation of heatmap")
+                return
             pic_trim = Processor.trim_heatmap(pic_heat, self.pic_geometry)
             histogram = Processor.create_histogram_temp(pic_trim, self.data[0][0], name='histo')
             histogram = QPixmap(histogram)
 
             processed_cali = Processor.process_picture_eyetracking_data(self.data[5])
             cali_heat = Processor.create_heatmap(processed_cali)
+            if not cali_heat:
+                print("no data after creation of calibration")
+                return
             cali_trim = Processor.trim_heatmap(cali_heat, self.pic_geometry)
             calibration = Processor.create_histogram_temp(cali_trim, DatasetLoader.CALIBRATE_PICTURE, name='cali')
             calibration = QPixmap(calibration)
@@ -113,8 +119,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.response_thread.signal.sig.connect(self.remove_response)
         self.save_thread = SaveThread()
         self.save_thread.signal.sig.connect(self.saving_complete)
-        self.process_thread = ProcessThread()
-        self.process_thread.signal.sig.connect(self.show_histogram_calibration)
 
         self.init_eyetracker()
         self.load_dataset(self.directory, 2, True)
@@ -168,6 +172,10 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         # disable buttons
         self._disable_buttons(True)
 
+        self.process_thread = ProcessThread(self.data[-1], self.pic_geometry)
+        self.process_thread.signal.sig.connect(self.show_histogram_calibration)
+        self.process_thread.start()
+
         try:
             self.pic = next(self.pics_iter)
             self.process_thread.set_data(self.data[-1])
@@ -178,8 +186,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.end_test()
 
     def end_test(self):
-        if self.tracker:
-            self.tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback)
+        self.inter_trial = False
         self.descriptionLabel.setText("Saving...")
         self.evaluation = Evaluation()
         self.evaluation.evaluate(self.data)
@@ -200,6 +207,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.start_trial()
         else:
             super().keyPressEvent(event)
+
+    def closeEvent(self, event):
+        if self.tracker:
+            self.tracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback)
+        event.accept()
 
     def show_histogram_calibration(self, histogram, calibration):
         self.picRight.setPixmap(histogram)
@@ -241,6 +253,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         # start timer
         self.timer_start = current_micro_time()
         # show next picture
+        self.picRight.clear()
+        self.picLeft.clear()
         self.pixmap = QPixmap(self.pic[0]).scaledToWidth(512)
         self.picShow.setPixmap(self.pixmap)
 
@@ -260,7 +274,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pics_iter = iter(self.pics)
         self.pic = next(self.pics_iter)
         self.data = []
-        self.eyetracker_data = []
         self.listPicturesTrue.clear()
         self.listPicturesFalse.clear()
         self.start = True
