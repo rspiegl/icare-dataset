@@ -178,9 +178,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
         try:
             self.pic = next(self.pics_iter)
-            self.process_thread.set_data(self.data[-1])
-            self.process_thread.set_pic_geometry(self.pic_geometry)
-            self.process_thread.start()
         except StopIteration:
             self.response_thread.start()
             self.end_test()
