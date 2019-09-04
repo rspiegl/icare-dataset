@@ -5,16 +5,16 @@ import re
 import statistics
 
 import matplotlib
-matplotlib.use('qt5agg')
+import seaborn as sns
+from PIL import Image
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-import seaborn as sns
-from PIL import Image
-
+import Utilities
 import processing.Eyetracker as Eyetracker
 from processing import Evaluation
 
+matplotlib.use('qt5agg')
 W = 1920
 H = 1200
 RES = (W, H)
@@ -24,6 +24,8 @@ plot_size = [plot_width, plot_height]
 dpi = 100
 fig_size = [plot_width/dpi, plot_height/dpi]
 plot_range = [[0, plot_width], [0, plot_height]]
+
+identifier_regex = r'([^\/]+\/[^\/]+)\.'
 
 
 def process_gaze_data(gaze_data):
@@ -58,6 +60,8 @@ def process_picture(picture_data):
     data.append(picture_data[1])
     data.append(round(picture_data[2] / 1000, 2))
     data.append(process_picture_eyetracking_data(picture_data[4]))
+    if len(picture_data) >= 5:
+        data.append(process_picture_eyetracking_data(picture_data[5]))
 
     return data
 
@@ -94,8 +98,11 @@ def create_heatmaps(processed_data):
     heatmaps = list()
     for picture in processed_data:
         buf = create_heatmap(picture[3])
+        buf_cali = list()
+        if len(picture) >= 5:
+            buf_cali = create_heatmap(picture[4])
         if buf:
-            heatmaps.append([picture[0][0], buf])
+            heatmaps.append([picture[0][0], buf, buf_cali])
 
     return heatmaps
 
@@ -109,9 +116,19 @@ def create_heatmap(processed_data):
 def trim_heatmaps(heatmaps, pic_geometry):
     maps = list()
     for heatmap in heatmaps:
-        xs, ys = trim_heatmap(heatmap[1], pic_geometry)
+        buf = list()
+        buf.append(heatmap[0])
 
-        maps.append([heatmap[0], [xs, ys]])
+        xs, ys = trim_heatmap(heatmap[1], pic_geometry)
+        buf.append([xs, ys])
+
+        if len(heatmap) >= 3:
+            cali_x, cali_y = trim_heatmap(heatmap[2], pic_geometry)
+            buf.append([cali_x, cali_y])
+        else:
+            buf.append([])
+
+        maps.append(buf)
 
     return maps
 
@@ -140,29 +157,89 @@ def create_plots(heatmaps, participant_id):
             print("Gazedata less than 5 for {}".format(heatmap[0]))
             continue
 
-        img = Image.open(heatmap[0])
-        img = img.resize(plot_size)
+        pic_name = re.findall(identifier_regex, heatmap[0])[0]
 
-        figure = Figure(figsize=(8.4, 4.8), dpi=100)
-        canvas = FigureCanvas(figure)
+        if len(heatmap) >= 3:
+            create_quadruple_plot(heatmap, participant_id, plot_path+pic_name)
+        else:
+            create_triple_plot(heatmap, participant_id, plot_path+pic_name)
 
-        axes = figure.subplots(ncols=3, nrows=1)
-        axes[0].set_title('Original')
-        axes[0].imshow(img, zorder=1)
-        axes[1].set_title('KDE')
-        sns.kdeplot(heatmap[1][0], heatmap[1][1], cmap='YlOrRd', alpha=0.5, zorder=2, shade=True, shade_lowest=False,
-                    n_levels=7, ax=axes[1])
-        axes[1].imshow(img, zorder=1)
-        axes[2].set_title('2D Histogram')
-        axes[2].hist2d(heatmap[1][0], heatmap[1][1], bins=40, range=plot_range, alpha=0.6, zorder=2, cmin=0.01)
-        axes[2].invert_yaxis()
-        axes[2].imshow(img, zorder=1)
 
-        pic_name = re.findall(r'([^\/]+\/[^\/]+)\.', heatmap[0])[0]
-        path = plot_path + pic_name + "_{}.png".format(participant_id)
-        path = _duplicate_path(path)
-        figure.canvas.print_png(path)
-        figure.clf()
+def create_triple_plot(heatmap, participant_id, plot_path):
+    img = Image.open(heatmap[0])
+    img = img.resize(plot_size)
+    figure = Figure(figsize=(8.4, 4.8), dpi=100)
+    canvas = FigureCanvas(figure)
+    axes = figure.subplots(ncols=3, nrows=1)
+    axes[0].set_title('Original')
+    axes[0].imshow(img, zorder=1)
+    axes[1].set_title('KDE')
+    sns.kdeplot(heatmap[1][0], heatmap[1][1], cmap='YlOrRd', alpha=0.5, zorder=2, shade=True, shade_lowest=False,
+                n_levels=7, ax=axes[1])
+    axes[1].imshow(img, zorder=1)
+    axes[2].set_title('2D Histogram')
+    axes[2].hist2d(heatmap[1][0], heatmap[1][1], bins=40, range=plot_range, alpha=0.6, zorder=2, cmin=0.01)
+    axes[2].invert_yaxis()
+    axes[2].imshow(img, zorder=1)
+    path = plot_path + "_{}.png".format(participant_id)
+    path = _duplicate_path(path)
+    figure.canvas.print_png(path)
+    figure.clf()
+
+
+def create_quadruple_plot(heatmap, participant_id, plot_path):
+    img = Image.open(heatmap[0])
+    img = img.resize(plot_size)
+
+    figure = Figure(figsize=(8.4, 8.4), dpi=100)
+    canvas = FigureCanvas(figure)
+    axes = figure.subplots(ncols=2, nrows=2)
+
+    axes[0][0].set_title('Original')
+    axes[0][0].imshow(img, zorder=1)
+
+    axes[0][1].set_title('KDE')
+    sns.kdeplot(heatmap[1][0], heatmap[1][1], cmap='YlOrRd', alpha=0.5, zorder=2, shade=True, shade_lowest=False,
+                n_levels=7, ax=axes[0][1])
+    axes[0][1].imshow(img, zorder=1)
+
+    axes[1][0].set_title('2D Histogram')
+    axes[1][0].hist2d(heatmap[1][0], heatmap[1][1], bins=40, range=plot_range, alpha=0.6, zorder=2, cmin=0.01)
+    axes[1][0].invert_yaxis()
+    axes[1][0].imshow(img, zorder=1)
+
+    img = Image.open(Utilities.DatasetLoader.CALIBRATE_PICTURE)
+    img = img.resize(plot_size)
+
+    axes[1][1].set_title('Calibration')
+    axes[1][1].hist2d(heatmap[2][0], heatmap[2][1], bins=40, range=plot_range, alpha=0.6, zorder=2, cmin=0.01)
+    axes[1][1].invert_yaxis()
+    axes[1][1].imshow(img, zorder=1)
+
+    path = plot_path + "_{}.png".format(participant_id)
+    path = _duplicate_path(path)
+    figure.canvas.print_png(path)
+    figure.clf()
+
+
+def create_calibration_plot(heatmap, participant_id, plot_path):
+    figure = Figure(figsize=fig_size, dpi=dpi, frameon=False)  # frameoff for transparent background
+    canvas = FigureCanvas(figure)
+
+    img = Image.open(Utilities.DatasetLoader.CALIBRATE_PICTURE)
+    img = img.resize(plot_size)
+
+    ax = figure.gca()
+    ax.axis('off')
+    ax.hist2d(heatmap[2][0], heatmap[2][1], bins=40, range=plot_range, alpha=0.6, zorder=2, cmin=0.01)
+    ax.invert_yaxis()
+    ax.imshow(img, zorder=1)
+
+    path = plot_path + "_calibration_{}.png".format(participant_id)
+    path = _duplicate_path(path)
+    figure.canvas.print_png(path)
+    figure.clf()
+    pass
 
 
 def create_histogram_temp(heatmap, img_path, name='cali'):
