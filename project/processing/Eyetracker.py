@@ -12,7 +12,7 @@ class GazePoint:
         elif math.isnan(self.right[0]):
             middle = self.left
         else:
-            middle = ((self.left[0] + self.right[0])//2, (self.left[1] + self.right[1])//2)
+            middle = ((self.left[0] + self.right[0]) // 2, (self.left[1] + self.right[1]) // 2)
         return middle
 
     def is_nan(self):

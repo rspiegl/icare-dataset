@@ -22,7 +22,7 @@ RES = (W, H)
 plot_width = plot_height = 512
 plot_size = [plot_width, plot_height]
 dpi = 100
-fig_size = [plot_width/dpi, plot_height/dpi]
+fig_size = [plot_width / dpi, plot_height / dpi]
 plot_range = [[0, plot_width], [0, plot_height]]
 
 identifier_regex = r'([^\/]+\/[^\/]+)\.'
@@ -32,8 +32,8 @@ def process_gaze_data(gaze_data):
     left = gaze_data['left_gaze_point_on_display_area']
     right = gaze_data['right_gaze_point_on_display_area']
 
-    left = tuple(l*res for l, res in zip(left, RES))
-    right = tuple(r*res for r, res in zip(right, RES))
+    left = tuple(l * res for l, res in zip(left, RES))
+    right = tuple(r * res for r, res in zip(right, RES))
 
     if not math.isnan(left[0]):
         left = tuple(round(l) for l in left)
@@ -84,7 +84,7 @@ def check_nan_counter(processed_data):
                 counter += 1
 
         max = len(picture[3]) if picture[3] else 1
-        percent = round(counter/max*100, 2)
+        percent = round(counter / max * 100, 2)
         if percent >= 75.0:
             high_percent += 1
         print("{}%: {} from {}".format(percent, counter, max))
@@ -146,8 +146,8 @@ def create_plots(heatmaps, participant_id):
     plot_path = "plots/{}/".format(participant_id)
     dataset_identifier = re.findall(r'([^\/]+\/)[^\/]+\.', heatmaps[0][0])[0]
     print("Dataset identifier: {}".format(dataset_identifier))
-    if not os.path.isdir(plot_path+dataset_identifier):
-        os.makedirs(plot_path+dataset_identifier)
+    if not os.path.isdir(plot_path + dataset_identifier):
+        os.makedirs(plot_path + dataset_identifier)
 
     print("Creating {} plots".format(len(heatmaps)))
 
@@ -160,9 +160,9 @@ def create_plots(heatmaps, participant_id):
         pic_name = re.findall(identifier_regex, heatmap[0])[0]
 
         if len(heatmap) >= 3:
-            create_quadruple_plot(heatmap, participant_id, plot_path+pic_name)
+            create_quadruple_plot(heatmap, participant_id, plot_path + pic_name)
         else:
-            create_triple_plot(heatmap, participant_id, plot_path+pic_name)
+            create_triple_plot(heatmap, participant_id, plot_path + pic_name)
 
 
 def create_triple_plot(heatmap, participant_id, plot_path):
@@ -265,7 +265,7 @@ def create_histogram_temp(heatmap, img_path, name='cali'):
 def main_pipeline(paths, participant_id):
     total_time = 0
     for index, path in enumerate(paths):
-        print("Starting process of test {} of {} -- {}".format(index+1, len(paths), path))
+        print("Starting process of test {} of {} -- {}".format(index + 1, len(paths), path))
         e = Evaluation.Evaluation.create_from_file(path)
         processed = process(e.picture_data)
 
@@ -276,7 +276,7 @@ def main_pipeline(paths, participant_id):
         total_time += calculate_stats(processed)
 
     print("Total time of this session and participant: {0:.3f} sec or {1} min and {2:.3f} sec".format(
-        total_time, (total_time//60), (total_time % 60)))
+        total_time, (total_time // 60), (total_time % 60)))
 
 
 def calculate_stats(processed):
@@ -285,20 +285,20 @@ def calculate_stats(processed):
     for picture in processed:
         sum += picture[2] / 1000
 
-    print("Time for this dataset: {0:.3f} sec or {1} min and {2:.3f} sec".format(sum, (sum//60), (sum % 60)))
+    print("Time for this dataset: {0:.3f} sec or {1} min and {2:.3f} sec".format(sum, (sum // 60), (sum % 60)))
     return sum
 
 
 def _duplicate_path(path, counter=1):
     if os.path.isfile(path):
-        return _copy_path(path[:-4] + '_' + str(counter) + path[-4:], counter+1)
+        return _copy_path(path[:-4] + '_' + str(counter) + path[-4:], counter + 1)
     else:
         return path
 
 
 def _copy_path(path, counter):
     if os.path.isfile(path):
-        return _copy_path(path[:-5]+str(counter)+path[-4:], counter+1)
+        return _copy_path(path[:-5] + str(counter) + path[-4:], counter + 1)
     else:
         return path
 

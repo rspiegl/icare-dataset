@@ -10,5 +10,3 @@ class Dataset:
 
     def __repr__(self):
         return '[%s, %s, %s]' % (self.text1, self.text2, self.data)
-
-

@@ -16,29 +16,29 @@ def label(path):
         for root, directories, files in os.walk(path):
             for file in files:
                 if '.jpg' in file or '.png' in file:
-                    category = file[file.find('_')+1]
+                    category = file[file.find('_') + 1]
                     labels.write(file + ' ' + category + '\n')
 
 
 datasets = [
-            ('chessboard/symmetry/rot_images_diff1/labels.txt', switch_label),
-            ('chessboard/symmetry/rot_images_diff5/labels.txt', switch_label),
-            ('chessboard/similarity/camerarot_diff1/labels.txt', switch_label),
-            ('chessboard/similarity/camerarot_diff5/labels.txt', switch_label),
-            ('chessboard/similarity/camerarot_diff10/labels.txt', switch_label),
-            ('chessboard/similarity/random_board_images_big_diff1/labels.txt', switch_label),
-            ('chessboard/similarity/random_board_images_big_diff5/labels.txt', switch_label),
-            ('chessboard/similarity/random_board_images_big_diff10/labels.txt', switch_label),
-            ('svrt/results_problem_1/', label),
-            ('svrt/results_problem_5/', label),
-            ('svrt/results_problem_7/', label),
-            ('svrt/results_problem_15/', label),
-            ('svrt/results_problem_19/', label),
-            ('svrt/results_problem_20/', label),
-            ('svrt/results_problem_21/', label),
-            ('svrt/results_problem_22/', label),
-            ('psvrt/', label),
-            ]
+    ('chessboard/symmetry/rot_images_diff1/labels.txt', switch_label),
+    ('chessboard/symmetry/rot_images_diff5/labels.txt', switch_label),
+    ('chessboard/similarity/camerarot_diff1/labels.txt', switch_label),
+    ('chessboard/similarity/camerarot_diff5/labels.txt', switch_label),
+    ('chessboard/similarity/camerarot_diff10/labels.txt', switch_label),
+    ('chessboard/similarity/random_board_images_big_diff1/labels.txt', switch_label),
+    ('chessboard/similarity/random_board_images_big_diff5/labels.txt', switch_label),
+    ('chessboard/similarity/random_board_images_big_diff10/labels.txt', switch_label),
+    ('svrt/results_problem_1/', label),
+    ('svrt/results_problem_5/', label),
+    ('svrt/results_problem_7/', label),
+    ('svrt/results_problem_15/', label),
+    ('svrt/results_problem_19/', label),
+    ('svrt/results_problem_20/', label),
+    ('svrt/results_problem_21/', label),
+    ('svrt/results_problem_22/', label),
+    ('psvrt/', label),
+]
 
 if __name__ == '__main__':
 

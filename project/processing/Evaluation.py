@@ -42,7 +42,7 @@ class Evaluation:
         self.fp = fp
         self.tn = tn
 
-        self.precision = 0 if tp+fp == 0 else tp / (tp + fp)
+        self.precision = 0 if tp + fp == 0 else tp / (tp + fp)
         self.recall = tp / (tp + fn)
         self.tnr = tn / (tn + fp)
         self.fnr = fn / (fn + tp)

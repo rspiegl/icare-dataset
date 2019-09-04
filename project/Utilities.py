@@ -90,7 +90,7 @@ class DatasetLoader:
             set_true = [x for x in splitted_lines if x[1] == 1]
             random.shuffle(set_false)
             random.shuffle(set_true)
-            half = int(number/2)
+            half = int(number / 2)
             splitted_lines = set_false[:half] + set_true[:half]
 
         random.shuffle(splitted_lines)
