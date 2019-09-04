@@ -102,7 +102,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pics, self.pics_iter = None, None
         self.pic, self.pixmap = None, None
         self.timer_start, self.timer_end = 0, 0
-        self.nan_counter = 0
+        self.success_counter = 0
         self.done = False
         self.start = True
         self.inter_trial = False
@@ -135,7 +135,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
                           self.calibration_data])
         self.eyetracker_data = []
 
-    def load_dataset(self, dir_path, number, balance):
+    def load_dataset(self, dir_path, number=35, balance=True):
         self.dataset = DatasetLoader.load_problem(dir_path, number=number, balance=balance)
         self.reset()
 
@@ -160,9 +160,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self._create_list_item()
         # display text
         if classification == self.pic[1]:
+            self.success_counter += 1
             classified = "Correct!"
             self.picShow.setStyleSheet("background-color: rgb(138, 226, 52);")  # light green
         else:
+            self.success_counter = 0
             classified = "Incorrect!"
             self.picShow.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
         self.picShow.setPixmap(self.calibrate_pixmap)
@@ -177,6 +179,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.process_thread.start()
 
         try:
+            if self.success_counter >= 7:
+                raise StopIteration
             self.pic = next(self.pics_iter)
         except StopIteration:
             self.response_thread.start()
@@ -216,7 +220,10 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def saving_complete(self):
-        self.descriptionLabel.setText("Saving complete.")
+        if self.success_counter >= 7:
+            self.descriptionLabel.setText("Successfully classified 7 in a row. Test has ended.")
+        else:
+            self.descriptionLabel.setText("Saving complete.")
 
     @QtCore.pyqtSlot()
     def remove_response(self):
@@ -235,6 +242,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
                              pic_global_top_left.y(),
                              self.picShow.geometry().width(),
                              self.picShow.geometry().height())
+
+        self.success_counter = 0
 
         self.start_trial()
 
@@ -281,82 +290,82 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def selectDirectory(self):
         self.directory = str(QFileDialog.getExistingDirectory(self, "Select Directory")) + '/'
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuCamRot_1(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 1)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuCamRot_5(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 5)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuRanBoa_1(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 1)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuRanBoa_5(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 5)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuRotIma_1(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 1)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuRotIma_5(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 5)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuSVRT_1(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 1)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuSVRT_5(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 5)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuSVRT_7(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 7)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuSVRT_15(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 15)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuSVRT_19(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 19)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuSVRT_20(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 20)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuSVRT_21(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 21)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuSVRT_22(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 22)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
     def menuPSVRT_SD(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT)
-        self.load_dataset(self.directory, 50, True)
+        self.load_dataset(self.directory)
 
     def _disable_buttons(self, disable):
         self.pushButtonFalse.setDisabled(disable)
