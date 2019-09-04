@@ -114,6 +114,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.calibrate_pixmap = QPixmap(DatasetLoader.CALIBRATE_PICTURE)
         self.central_widget_geometry, self.pic_geometry = None, None
 
+        self.process_thread = None
         self.response_thread = SleepThread(1)
         self.response_thread.signal.sig.connect(self.remove_response)
         self.save_thread = SaveThread()
@@ -122,8 +123,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.init_eyetracker()
         self.load_dataset(self.directory, 2, True)
 
-    def setupUi(self, mainWindow):
-        super().setupUi(mainWindow)
+    def setupUi(self, main_window):
+        super().setupUi(main_window)
         self.listPicturesFalse.setSpacing(2)
         self.listPicturesTrue.setSpacing(2)
 
