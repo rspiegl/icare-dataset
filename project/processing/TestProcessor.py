@@ -5,6 +5,7 @@ import re
 import statistics
 
 import matplotlib
+import numpy as np
 import seaborn as sns
 from PIL import Image
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -165,6 +166,31 @@ def create_plots(heatmaps, participant_id):
             create_triple_plot(heatmap, participant_id, plot_path + pic_name)
 
 
+def offset_calibrations(heatmaps, geometry):
+    calibrated = list()
+    for heatmap in heatmaps:
+        calibrated.append(offset_calibration(heatmap, geometry))
+
+    return calibrated
+
+
+def offset_calibration(heatmap, geometry):
+    calibrated = list()
+    calibrated.append(heatmap[0])
+    xybins = 40
+    middle = geometry[2] / xybins / 2
+    rang = [[geometry[0], geometry[0] + geometry[2]], [geometry[1], geometry[1] + geometry[3]]]
+    H, xedges, yedges = np.histogram2d(heatmap[2][0], heatmap[2][1], bins=xybins, range=rang)
+    x_cent, y_cent = np.unravel_index(H.argmax(), H.shape)
+    x_offset = xedges[x_cent] + middle - (geometry[0] + geometry[2] // 2)
+    y_offset = yedges[y_cent] + middle - (geometry[1] + geometry[3] // 2)
+
+    calibrated.append([[x - x_offset for x in heatmap[1][0]], [y - y_offset for y in heatmap[1][1]]])
+    calibrated.append(heatmap[2])
+
+    return calibrated
+
+
 def create_triple_plot(heatmap, participant_id, plot_path):
     img = Image.open(heatmap[0])
     img = img.resize(plot_size)
@@ -270,7 +296,8 @@ def main_pipeline(paths, participant_id):
         processed = process(e.picture_data)
 
         heatmaps = create_heatmaps(processed)
-        trimmed = trim_heatmaps(heatmaps, e.pic_geometry_global)
+        calibrated = offset_calibrations(heatmaps, e.pic_geometry_global)
+        trimmed = trim_heatmaps(calibrated, e.pic_geometry_global)
         create_plots(trimmed, participant_id)
 
         total_time += calculate_stats(processed)
