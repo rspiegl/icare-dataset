@@ -51,7 +51,7 @@ class DatasetLoader:
         return path
 
     @staticmethod
-    def load_problem(path=(DATASET_CAMROT % 1), number=50, balance=True):
+    def load_problem(path=(DATASET_CAMROT % 1), number=35, balance=True):
         button1 = 'Category 1'
         button2 = 'Category 2'
         try:
@@ -90,9 +90,12 @@ class DatasetLoader:
             set_true = [x for x in splitted_lines if x[1] == 1]
             random.shuffle(set_false)
             random.shuffle(set_true)
-            half = int(number / 2)
+            half = int((number + 1) / 2)
             splitted_lines = set_false[:half] + set_true[:half]
 
         random.shuffle(splitted_lines)
+
+        if number % 2 == 1:
+            del splitted_lines[-1]
 
         return Dataset(splitted_lines, text1=button1, text2=button2)
