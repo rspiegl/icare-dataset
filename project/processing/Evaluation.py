@@ -11,16 +11,24 @@ class Evaluation:
         self.screen_resolution = (1920, 1200)
         self.p, self.n, self.tp, self.fn, self.fp, self.tn = (0,) * 6
         self.precision, self.recall, self.tnr, self.fnr, self.accuracy = (0,) * 5
-        self.f1, self.mean, self.variance = (0,) * 3
+        self.f1, self.mean, self.variance, self.number = (0,) * 4
         self.pic_geometry_global, self.central_widget_geometry_global = None, None
         self.picture_data = None
 
-    def evaluate(self, picture_data):
-        self.picture_data = picture_data
+    def evaluate(self, picture_data, number=35):
+        self.number = number
+        if self.number >= len(picture_data):
+            calculation_data = picture_data
+        elif self.number > 0:
+            calculation_data = picture_data[:self.number]
+        elif self.number < 0:
+            calculation_data = picture_data[self.number:]
+        else:
+            raise Exception("Can't calculate score when number of picture data is {}".format(self.number))
 
-        self.p = sum(i[0].count(1) for i in self.picture_data)
-        self.n = sum(i[0].count(0) for i in self.picture_data)
-        durations = list(zip(*self.picture_data))[2]
+        self.p = sum(i[0].count(1) for i in calculation_data)
+        self.n = sum(i[0].count(0) for i in calculation_data)
+        durations = list(zip(*calculation_data))[2]
         tp, fn, fp, tn = 0, 0, 0, 0
 
         for case in self.picture_data:
@@ -50,6 +58,9 @@ class Evaluation:
         self.f1 = (2 * tp) / (2 * tp + fp + fn)
         self.mean = statistics.mean(durations)
         self.variance = statistics.pvariance(durations)
+
+        # backup real picture data
+        self.picture_data = picture_data
 
     def set_pic_geometry(self, geometry):
         self.pic_geometry_global = geometry
