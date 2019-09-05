@@ -31,7 +31,7 @@ class Evaluation:
         durations = list(zip(*calculation_data))[2]
         tp, fn, fp, tn = 0, 0, 0, 0
 
-        for case in self.picture_data:
+        for case in calculation_data:
             true_condition = case[0][1]
             pred_condition = case[1]
             if true_condition:
