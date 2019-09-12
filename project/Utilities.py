@@ -10,7 +10,7 @@ class DatasetLoader:
     DATASET_RANBOA = 'datasets/chessboard/similarity/random_board_images_big_diff%s/'
     DATASET_ROTIMA = 'datasets/chessboard/symmetry/rot_images_diff%s/'
     DATASET_SVRT = 'datasets/svrt/results_problem_%s/'
-    DATASET_PSVRT = 'datasets/psvrt/'
+    DATASET_PSVRT = 'datasets/psvrt/%s/'
 
     IDENTIFIER_CAMROT = 'camrot'
     IDENTIFIER_RANBOA = 'ranboa'
@@ -22,29 +22,29 @@ class DatasetLoader:
     CALIBRATE_PICTURE = 'datasets/calibrate_point.png'
 
     @staticmethod
-    def get_dataset_path(identifier='camrot', number=1):
+    def get_dataset_path(identifier='camrot', specifier=1):
         if identifier is DatasetLoader.IDENTIFIER_CAMROT:
-            if number not in [1, 5]:
+            if specifier not in [1, 5]:
                 raise Exception("Wrong number for dataset camerarot.")
-            path = DatasetLoader.DATASET_CAMROT % number
+            path = DatasetLoader.DATASET_CAMROT % specifier
 
         elif identifier is DatasetLoader.IDENTIFIER_RANBOA:
-            if number not in [1, 5]:
+            if specifier not in [1, 5]:
                 raise Exception("Wrong number for dataset random_board.")
-            path = DatasetLoader.DATASET_RANBOA % number
+            path = DatasetLoader.DATASET_RANBOA % specifier
 
         elif identifier is DatasetLoader.IDENTIFIER_ROTIMA:
-            if number not in [1, 5]:
+            if specifier not in [1, 5]:
                 raise Exception("Wrong number for dataset rot_images.")
-            path = DatasetLoader.DATASET_ROTIMA % number
+            path = DatasetLoader.DATASET_ROTIMA % specifier
 
         elif identifier is DatasetLoader.IDENTIFIER_SVRT:
-            if number not in [1, 5, 7, 15, 19, 20, 21, 22]:
+            if specifier not in [1, 19, 20, 21]:
                 raise Exception("Wrong number for dataset svrt.")
-            path = DatasetLoader.DATASET_SVRT % number
+            path = DatasetLoader.DATASET_SVRT % specifier
 
         elif identifier is DatasetLoader.IDENTIFIER_PSVRT:
-            path = DatasetLoader.DATASET_PSVRT
+            path = DatasetLoader.DATASET_PSVRT % specifier
         else:
             raise Exception("Wrong dataset identifier.")
 

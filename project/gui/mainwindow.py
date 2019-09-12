@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
 class Ui_MainWindow(object):
@@ -152,12 +152,6 @@ class Ui_MainWindow(object):
         self.actionRotIm_5.setObjectName("actionRotIm_5")
         self.actionSVRT_1 = QtWidgets.QAction(MainWindow)
         self.actionSVRT_1.setObjectName("actionSVRT_1")
-        self.actionSVRT_5 = QtWidgets.QAction(MainWindow)
-        self.actionSVRT_5.setObjectName("actionSVRT_5")
-        self.actionSVRT_7 = QtWidgets.QAction(MainWindow)
-        self.actionSVRT_7.setObjectName("actionSVRT_7")
-        self.actionSVRT_15 = QtWidgets.QAction(MainWindow)
-        self.actionSVRT_15.setObjectName("actionSVRT_15")
         self.actionSVRT_19 = QtWidgets.QAction(MainWindow)
         self.actionSVRT_19.setObjectName("actionSVRT_19")
         self.actionSVRT_20 = QtWidgets.QAction(MainWindow)
@@ -166,8 +160,8 @@ class Ui_MainWindow(object):
         self.actionSVRT_21.setObjectName("actionSVRT_21")
         self.actionPSVRT_SD = QtWidgets.QAction(MainWindow)
         self.actionPSVRT_SD.setObjectName("actionPSVRT_SD")
-        self.actionSVRT_22 = QtWidgets.QAction(MainWindow)
-        self.actionSVRT_22.setObjectName("actionSVRT_22")
+        self.actionPSVRT_SR = QtWidgets.QAction(MainWindow)
+        self.actionPSVRT_SR.setObjectName("actionPSVRT_SR")
         self.menuFile.addAction(self.actionSelectDirectory)
         self.menuFile.addAction(self.actionReset)
         self.menuFile.addAction(self.actionExit)
@@ -181,14 +175,11 @@ class Ui_MainWindow(object):
         self.menuDatasets.addAction(self.menuRandom_Board_Images.menuAction())
         self.menuDatasets.addAction(self.menuRotated_Images.menuAction())
         self.menuSVRT.addAction(self.actionSVRT_1)
-        self.menuSVRT.addAction(self.actionSVRT_5)
-        self.menuSVRT.addAction(self.actionSVRT_7)
-        self.menuSVRT.addAction(self.actionSVRT_15)
         self.menuSVRT.addAction(self.actionSVRT_19)
         self.menuSVRT.addAction(self.actionSVRT_20)
         self.menuSVRT.addAction(self.actionSVRT_21)
-        self.menuSVRT.addAction(self.actionSVRT_22)
         self.menuPSVRT.addAction(self.actionPSVRT_SD)
+        self.menuPSVRT.addAction(self.actionPSVRT_SR)
         self.menuBar.addAction(self.menuFile.menuAction())
         self.menuBar.addAction(self.menuDatasets.menuAction())
         self.menuBar.addAction(self.menuSVRT.menuAction())
@@ -207,14 +198,11 @@ class Ui_MainWindow(object):
         self.actionRotIm_1.triggered.connect(MainWindow.menuRotIma_1)
         self.actionRotIm_5.triggered.connect(MainWindow.menuRotIma_5)
         self.actionSVRT_1.triggered.connect(MainWindow.menuSVRT_1)
-        self.actionSVRT_15.triggered.connect(MainWindow.menuSVRT_15)
         self.actionSVRT_19.triggered.connect(MainWindow.menuSVRT_19)
         self.actionSVRT_20.triggered.connect(MainWindow.menuSVRT_20)
         self.actionSVRT_21.triggered.connect(MainWindow.menuSVRT_21)
-        self.actionSVRT_22.triggered.connect(MainWindow.menuSVRT_22)
-        self.actionSVRT_5.triggered.connect(MainWindow.menuSVRT_5)
-        self.actionSVRT_7.triggered.connect(MainWindow.menuSVRT_7)
         self.actionPSVRT_SD.triggered.connect(MainWindow.menuPSVRT_SD)
+        self.actionPSVRT_SR.triggered.connect(MainWindow.menuPSVRT_SR)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -245,13 +233,8 @@ class Ui_MainWindow(object):
         self.actionRotIm_1.setText(_translate("MainWindow", "1"))
         self.actionRotIm_5.setText(_translate("MainWindow", "5"))
         self.actionSVRT_1.setText(_translate("MainWindow", "1"))
-        self.actionSVRT_5.setText(_translate("MainWindow", "5"))
-        self.actionSVRT_7.setText(_translate("MainWindow", "7"))
-        self.actionSVRT_15.setText(_translate("MainWindow", "15"))
         self.actionSVRT_19.setText(_translate("MainWindow", "19"))
         self.actionSVRT_20.setText(_translate("MainWindow", "20"))
         self.actionSVRT_21.setText(_translate("MainWindow", "21"))
         self.actionPSVRT_SD.setText(_translate("MainWindow", "SD"))
-        self.actionSVRT_22.setText(_translate("MainWindow", "22"))
-
-
+        self.actionPSVRT_SR.setText(_translate("MainWindow", "SR"))

@@ -328,21 +328,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
-    def menuSVRT_5(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 5)
-        self.load_dataset(self.directory)
-
-    @QtCore.pyqtSlot()
-    def menuSVRT_7(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 7)
-        self.load_dataset(self.directory)
-
-    @QtCore.pyqtSlot()
-    def menuSVRT_15(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 15)
-        self.load_dataset(self.directory)
-
-    @QtCore.pyqtSlot()
     def menuSVRT_19(self):
         self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 19)
         self.load_dataset(self.directory)
@@ -358,13 +343,13 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
-    def menuSVRT_22(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 22)
+    def menuPSVRT_SD(self):
+        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sd')
         self.load_dataset(self.directory)
 
     @QtCore.pyqtSlot()
-    def menuPSVRT_SD(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT)
+    def menuPSVRT_SR(self):
+        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sr')
         self.load_dataset(self.directory)
 
     def _disable_buttons(self, disable):
