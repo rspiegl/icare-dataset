@@ -18,7 +18,6 @@ class DatasetLoader:
     IDENTIFIER_SVRT = 'svrt'
     IDENTIFIER_PSVRT = 'psvrt'
 
-    EXAMPLE_PICTURE = 'datasets/nan_test.jpg'
     CALIBRATE_PICTURE = 'datasets/calibrate_point.png'
 
     @staticmethod
