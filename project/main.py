@@ -98,7 +98,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 1)
+        self.directory = DatasetLoader.DATASET_CATDOG
         self.pics, self.pics_iter = None, None
         self.pic, self.pixmap = None, None
         self.timer_start, self.timer_end = 0, 0
@@ -121,7 +121,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.save_thread.signal.sig.connect(self.saving_complete)
 
         self.init_eyetracker()
-        self.load_dataset(self.directory, 2, True)
+        self.load_dataset(self.directory, 10, True)
 
     def setupUi(self, main_window):
         super().setupUi(main_window)

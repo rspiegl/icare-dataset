@@ -11,6 +11,7 @@ class DatasetLoader:
     DATASET_ROTIMA = 'datasets/chessboard/symmetry/rot_images_diff%s/'
     DATASET_SVRT = 'datasets/svrt/results_problem_%s/'
     DATASET_PSVRT = 'datasets/psvrt/%s/'
+    DATASET_CATDOG = 'datasets/catdog/'
 
     IDENTIFIER_CAMROT = 'camrot'
     IDENTIFIER_RANBOA = 'ranboa'
