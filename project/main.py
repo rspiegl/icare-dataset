@@ -99,6 +99,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.directory = DatasetLoader.DATASET_CATDOG
+        self.mode = 'debug'
         self.pics, self.pics_iter = None, None
         self.pic, self.pixmap = None, None
         self.timer_start, self.timer_end = 0, 0
@@ -174,9 +175,10 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         # disable buttons
         self._disable_buttons(True)
 
-        self.process_thread = ProcessThread(self.data[-1], self.pic_geometry)
-        self.process_thread.signal.sig.connect(self.show_histogram_calibration)
-        self.process_thread.start()
+        if self.mode == 'debug':
+            self.process_thread = ProcessThread(self.data[-1], self.pic_geometry)
+            self.process_thread.signal.sig.connect(self.show_histogram_calibration)
+            self.process_thread.start()
 
         try:
             if self.success_counter >= 7:
