@@ -44,6 +44,8 @@ class DatasetLoader:
             path = DatasetLoader.DATASET_SVRT % specifier
 
         elif identifier is DatasetLoader.IDENTIFIER_PSVRT:
+            if specifier not in ['sd', 'sr']:
+                raise Exception("Wrong identifier for dataset psvrt.")
             path = DatasetLoader.DATASET_PSVRT % specifier
         else:
             raise Exception("Wrong dataset identifier.")
