@@ -98,7 +98,23 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.directory = DatasetLoader.DATASET_CATDOG
+        self.test_sequence = [
+            (DatasetLoader.DATASET_CATDOG, 10, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 5), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 1), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 5), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 1), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 5), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 1), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 1), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 19), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 20), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 21), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sr'), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sd'), 35, True),
+        ]
+        self.sequence_iter = iter(self.test_sequence)
+        self.directory = next(self.sequence_iter)
         self.mode = 'debug'
         self.pics, self.pics_iter = None, None
         self.pic, self.pixmap = None, None
@@ -113,6 +129,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tracker = None
         self.eyetracker_data, self.calibration_data = [], []
         self.calibrate_pixmap = QPixmap(DatasetLoader.CALIBRATE_PICTURE)
+        self.picShow.setPixmap(self.calibrate_pixmap)
         self.central_widget_geometry, self.pic_geometry = None, None
 
         self.process_thread = None
@@ -122,7 +139,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.save_thread.signal.sig.connect(self.saving_complete)
 
         self.init_eyetracker()
-        self.load_dataset(self.directory, 10, True)
+        self.load_dataset(self.directory[0], self.directory[1], self.directory[2])
 
     def setupUi(self, main_window):
         super().setupUi(main_window)
@@ -169,7 +186,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             classified = "Incorrect!"
             self.picShow.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
         self.picShow.setPixmap(self.calibrate_pixmap)
-        self.inter_trial = True
 
         self.descriptionLabel.setText(classified + " Press Enter to continue")
         # disable buttons
@@ -203,10 +219,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
             if self.start:
-                self.start = False
                 self.start_test()
             elif self.inter_trial:
-                self.inter_trial = False
                 self.start_trial()
         else:
             super().keyPressEvent(event)
@@ -231,6 +245,17 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def remove_response(self):
         self.picShow.setStyleSheet("")
         self.picShow.clear()
+        if not self.inter_trial and not self.start:
+            try:
+                self.directory = next(self.sequence_iter)
+                self.load_dataset(self.directory[0], self.directory[1], self.directory[2])
+            except StopIteration:
+                self.descriptionLabel.setText("Completed all tests.")
+                self.picShow.setText("You're done. Good job.")
+                return
+
+            self.start = True
+            self.picShow.setText("Start next test by pressing Enter.")
 
     def start_test(self):
         central_widget_global_top_left = self.centralWidget.mapToGlobal(QPoint(0, 0))
@@ -247,6 +272,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.success_counter = 0
 
+        self.inter_trial = True
+        self.start = False
         self.start_trial()
 
     def start_trial(self):
@@ -276,6 +303,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def reset(self):
+        self.start = True
         self.remove_response()
         self.picShow.setPixmap(self.calibrate_pixmap)
         self.pics = self.dataset.data
@@ -284,8 +312,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.data = []
         self.listPicturesTrue.clear()
         self.listPicturesFalse.clear()
-        self.start = True
-        self.inter_trial = True
         self._disable_buttons(True)
         self.descriptionLabel.setText("Press Enter key to start.")
 
