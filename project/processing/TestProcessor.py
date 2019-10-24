@@ -5,6 +5,7 @@ import re
 import statistics
 
 import matplotlib
+matplotlib.use('qt5agg')
 import numpy as np
 import seaborn as sns
 from PIL import Image
@@ -15,7 +16,6 @@ import Utilities
 import processing.Eyetracker as Eyetracker
 from processing import Evaluation
 
-matplotlib.use('qt5agg')
 W = 1920
 H = 1200
 RES = (W, H)
