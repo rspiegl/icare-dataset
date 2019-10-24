@@ -275,7 +275,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.inter_trial = True
         self.start = False
-        self.start_trial()
+        self.picShow.setPixmap(self.calibrate_pixmap)
 
     def start_trial(self):
         # remove background
@@ -306,7 +306,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def reset(self):
         self.start = True
         self.remove_response()
-        self.picShow.setPixmap(self.calibrate_pixmap)
+        self.picShow.setText("Press Enter key to start.")
         self.picLeft.clear()
         self.picRight.clear()
         self.pics = self.dataset.data
