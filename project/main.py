@@ -307,6 +307,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.start = True
         self.remove_response()
         self.picShow.setPixmap(self.calibrate_pixmap)
+        self.picLeft.clear()
+        self.picRight.clear()
         self.pics = self.dataset.data
         self.pics_iter = iter(self.pics)
         self.pic = next(self.pics_iter)
