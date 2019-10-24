@@ -86,7 +86,8 @@ class ProcessThread(QThread):
             if not cali_heat:
                 print("no data after creation of calibration")
                 return
-            cali_trim = Processor.trim_heatmap(cali_heat, self.pic_geometry)
+            cali_offset = Processor.offset_calibration(cali_heat, self.pic_geometry)
+            cali_trim = Processor.trim_heatmap(cali_offset, self.pic_geometry)
             calibration = Processor.create_histogram_temp(cali_trim, DatasetLoader.CALIBRATE_PICTURE, name='cali')
             calibration = QPixmap(calibration)
 
