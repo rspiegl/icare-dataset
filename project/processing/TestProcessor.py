@@ -5,6 +5,7 @@ import re
 import statistics
 
 import matplotlib
+
 matplotlib.use('qt5agg')
 import numpy as np
 import seaborn as sns
@@ -123,7 +124,7 @@ def trim_heatmaps(heatmaps, pic_geometry):
         xs, ys = trim_heatmap(heatmap[1], pic_geometry)
         buf.append([xs, ys])
 
-        if len(heatmap) >= 3:
+        if len(heatmap) >= 3 and heatmap[2]:
             cali_x, cali_y = trim_heatmap(heatmap[2], pic_geometry)
             buf.append([cali_x, cali_y])
         else:
@@ -160,7 +161,7 @@ def create_plots(heatmaps, participant_id):
 
         pic_name = re.findall(identifier_regex, heatmap[0])[0]
 
-        if len(heatmap) >= 3:
+        if len(heatmap) >= 3 and heatmap[2]:
             create_quadruple_plot(heatmap, participant_id, plot_path + pic_name)
         else:
             create_triple_plot(heatmap, participant_id, plot_path + pic_name)
@@ -180,12 +181,17 @@ def offset_calibration(heatmap, geometry):
     xybins = 40
     middle = geometry[2] / xybins / 2
     rang = [[geometry[0], geometry[0] + geometry[2]], [geometry[1], geometry[1] + geometry[3]]]
-    H, xedges, yedges = np.histogram2d(heatmap[2][0], heatmap[2][1], bins=xybins, range=rang)
-    x_cent, y_cent = np.unravel_index(H.argmax(), H.shape)
-    x_offset = xedges[x_cent] + middle - (geometry[0] + geometry[2] // 2)
-    y_offset = yedges[y_cent] + middle - (geometry[1] + geometry[3] // 2)
+    # TODO save previous calibration point for image in the same dataset
+    if not heatmap[2]:
+        calibrated.append(heatmap[1])
+    else:
+        H, xedges, yedges = np.histogram2d(heatmap[2][0], heatmap[2][1], bins=xybins, range=rang)
+        x_cent, y_cent = np.unravel_index(H.argmax(), H.shape)
+        x_offset = xedges[x_cent] + middle - (geometry[0] + geometry[2] // 2)
+        y_offset = yedges[y_cent] + middle - (geometry[1] + geometry[3] // 2)
 
-    calibrated.append([[x - x_offset for x in heatmap[1][0]], [y - y_offset for y in heatmap[1][1]]])
+        calibrated.append([[x - x_offset for x in heatmap[1][0]], [y - y_offset for y in heatmap[1][1]]])
+
     calibrated.append(heatmap[2])
 
     return calibrated
