@@ -182,7 +182,7 @@ def offset_calibration(heatmap, geometry):
     middle = geometry[2] / xybins / 2
     rang = [[geometry[0], geometry[0] + geometry[2]], [geometry[1], geometry[1] + geometry[3]]]
     # TODO save previous calibration point for image in the same dataset
-    if not heatmap[2]:
+    if len(heatmap) < 3 or not heatmap[2]:
         calibrated.append(heatmap[1])
     else:
         H, xedges, yedges = np.histogram2d(heatmap[2][0], heatmap[2][1], bins=xybins, range=rang)
@@ -192,7 +192,7 @@ def offset_calibration(heatmap, geometry):
 
         calibrated.append([[x - x_offset for x in heatmap[1][0]], [y - y_offset for y in heatmap[1][1]]])
 
-    calibrated.append(heatmap[2])
+        calibrated.append(heatmap[2])
 
     return calibrated
 
