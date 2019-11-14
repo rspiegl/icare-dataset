@@ -101,24 +101,24 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.test_sequence = [
             (DatasetLoader.DATASET_CATDOG, 10, True),
-            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 5), 35, True),
-            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 1), 35, True),
-            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 5), 35, True),
-            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 1), 35, True),
-            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 5), 35, True),
-            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 1), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sr'), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sd'), 35, True),
             (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 1), 35, True),
             (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 19), 35, True),
             (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 20), 35, True),
             (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 21), 35, True),
-            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sr'), 35, True),
-            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sd'), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 5), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 1), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 5), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 1), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 5), 35, True),
+            (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 1), 35, True),
         ]
+        self.dataset_order = [x[0] for x in self.test_sequence]
         self.sequence_iter = iter(self.test_sequence)
-        self.directory = next(self.sequence_iter)
         self.mode = 'debug'
         self.pics, self.pics_iter = None, None
-        self.pic, self.pixmap = None, None
+        self.pic, self.pixmap, self.directory = None, None, None
         self.timer_start, self.timer_end = 0, 0
         self.success_counter = 0
         self.done = False
@@ -140,7 +140,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.save_thread.signal.sig.connect(self.saving_complete)
 
         self.init_eyetracker()
-        self.load_dataset(self.directory[0], self.directory[1], self.directory[2])
+        self._load_dataset_iter()
 
     def setupUi(self, main_window):
         super().setupUi(main_window)
@@ -172,6 +172,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tracker.subscribe_to(tr.EYETRACKER_GAZE_DATA, self.gaze_data_callback, as_dictionary=True)
         else:
             print("No EyeTrackers found.")
+
+        return found
 
     def end_trial(self, classification: int):
         self.picShow.clear()
@@ -252,8 +254,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.picShow.clear()
         if not self.inter_trial and not self.start:
             try:
-                self.directory = next(self.sequence_iter)
-                self.load_dataset(self.directory[0], self.directory[1], self.directory[2])
+                self._load_dataset_iter()
             except StopIteration:
                 self.descriptionLabel.setText("Completed all tests.")
                 self.picShow.setText("You're done. Good job.")
@@ -323,69 +324,98 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.descriptionLabel.setText("Press Enter key to start.")
 
     @QtCore.pyqtSlot()
+    def restart(self):
+        self.sequence_iter = iter(self.test_sequence)
+        self._load_dataset_iter()
+
+    @QtCore.pyqtSlot()
+    def connectEyeTracker(self):
+        if self.init_eyetracker():
+            self.descriptionLabel.setText("Connected to eyetracker.")
+        else:
+            self.descriptionLabel.setText("Couldn't connect to eyetracker.")
+
+    @QtCore.pyqtSlot()
     def selectDirectory(self):
-        self.directory = str(QFileDialog.getExistingDirectory(self, "Select Directory")) + '/'
-        self.load_dataset(self.directory)
+        self.directory = (str(QFileDialog.getExistingDirectory(self, "Select Directory")) + '/', 35, True)
+        self.sequence_iter = iter([])
+        self.load_dataset(self.directory[0], self.directory[1], self.directory[2])
 
     @QtCore.pyqtSlot()
     def menuCamRot_1(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 1)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 1)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuCamRot_5(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 5)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_CAMROT, 5)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuRanBoa_1(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 1)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 1)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuRanBoa_5(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 5)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_RANBOA, 5)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuRotIma_1(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 1)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 1)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuRotIma_5(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 5)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 5)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuSVRT_1(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 1)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 1)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuSVRT_19(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 19)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 19)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuSVRT_20(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 20)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 20)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuSVRT_21(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 21)
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_SVRT, 21)
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuPSVRT_SD(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sd')
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sd')
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
 
     @QtCore.pyqtSlot()
     def menuPSVRT_SR(self):
-        self.directory = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sr')
-        self.load_dataset(self.directory)
+        dataset_path = DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_PSVRT, 'sr')
+        self.sequence_iter = iter(self.test_sequence[self.dataset_order.index(dataset_path):])
+        self._load_dataset_iter()
+
+    def _load_dataset_iter(self):
+        self.directory = next(self.sequence_iter)
+        self.load_dataset(self.directory[0], self.directory[1], self.directory[2])
 
     def _disable_buttons(self, disable):
         self.pushButtonFalse.setDisabled(disable)

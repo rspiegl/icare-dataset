@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
@@ -162,8 +162,14 @@ class Ui_MainWindow(object):
         self.actionPSVRT_SD.setObjectName("actionPSVRT_SD")
         self.actionPSVRT_SR = QtWidgets.QAction(MainWindow)
         self.actionPSVRT_SR.setObjectName("actionPSVRT_SR")
+        self.actionRestart = QtWidgets.QAction(MainWindow)
+        self.actionRestart.setObjectName("actionRestart")
+        self.actionConnect_EyeTracker = QtWidgets.QAction(MainWindow)
+        self.actionConnect_EyeTracker.setObjectName("actionConnect_EyeTracker")
         self.menuFile.addAction(self.actionSelectDirectory)
+        self.menuFile.addAction(self.actionConnect_EyeTracker)
         self.menuFile.addAction(self.actionReset)
+        self.menuFile.addAction(self.actionRestart)
         self.menuFile.addAction(self.actionExit)
         self.menuCamera_Rotation.addAction(self.actionCamRot_5)
         self.menuCamera_Rotation.addAction(self.actionCamRot_1)
@@ -171,19 +177,19 @@ class Ui_MainWindow(object):
         self.menuRandom_Board_Images.addAction(self.actionRanBoa_1)
         self.menuRotated_Images.addAction(self.actionRotIm_5)
         self.menuRotated_Images.addAction(self.actionRotIm_1)
-        self.menuDatasets.addAction(self.menuCamera_Rotation.menuAction())
         self.menuDatasets.addAction(self.menuRandom_Board_Images.menuAction())
+        self.menuDatasets.addAction(self.menuCamera_Rotation.menuAction())
         self.menuDatasets.addAction(self.menuRotated_Images.menuAction())
         self.menuSVRT.addAction(self.actionSVRT_1)
         self.menuSVRT.addAction(self.actionSVRT_19)
         self.menuSVRT.addAction(self.actionSVRT_20)
         self.menuSVRT.addAction(self.actionSVRT_21)
-        self.menuPSVRT.addAction(self.actionPSVRT_SD)
         self.menuPSVRT.addAction(self.actionPSVRT_SR)
+        self.menuPSVRT.addAction(self.actionPSVRT_SD)
         self.menuBar.addAction(self.menuFile.menuAction())
-        self.menuBar.addAction(self.menuDatasets.menuAction())
-        self.menuBar.addAction(self.menuSVRT.menuAction())
         self.menuBar.addAction(self.menuPSVRT.menuAction())
+        self.menuBar.addAction(self.menuSVRT.menuAction())
+        self.menuBar.addAction(self.menuDatasets.menuAction())
 
         self.retranslateUi(MainWindow)
         self.actionReset.triggered.connect(MainWindow.reset)
@@ -203,6 +209,8 @@ class Ui_MainWindow(object):
         self.actionSVRT_21.triggered.connect(MainWindow.menuSVRT_21)
         self.actionPSVRT_SD.triggered.connect(MainWindow.menuPSVRT_SD)
         self.actionPSVRT_SR.triggered.connect(MainWindow.menuPSVRT_SR)
+        self.actionRestart.triggered.connect(MainWindow.restart)
+        self.actionConnect_EyeTracker.triggered.connect(MainWindow.connectEyeTracker)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -238,3 +246,7 @@ class Ui_MainWindow(object):
         self.actionSVRT_21.setText(_translate("MainWindow", "21"))
         self.actionPSVRT_SD.setText(_translate("MainWindow", "SD"))
         self.actionPSVRT_SR.setText(_translate("MainWindow", "SR"))
+        self.actionRestart.setText(_translate("MainWindow", "Restart"))
+        self.actionConnect_EyeTracker.setText(_translate("MainWindow", "Connect EyeTracker"))
+
+

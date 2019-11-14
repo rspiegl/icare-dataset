@@ -281,7 +281,9 @@ background-color: rgb(186, 189, 182);</string>
      <string>File</string>
     </property>
     <addaction name="actionSelectDirectory"/>
+    <addaction name="actionConnect_EyeTracker"/>
     <addaction name="actionReset"/>
+    <addaction name="actionRestart"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuDatasets">
@@ -309,8 +311,8 @@ background-color: rgb(186, 189, 182);</string>
      <addaction name="actionRotIm_5"/>
      <addaction name="actionRotIm_1"/>
     </widget>
-    <addaction name="menuCamera_Rotation"/>
     <addaction name="menuRandom_Board_Images"/>
+    <addaction name="menuCamera_Rotation"/>
     <addaction name="menuRotated_Images"/>
    </widget>
    <widget class="QMenu" name="menuSVRT">
@@ -326,13 +328,13 @@ background-color: rgb(186, 189, 182);</string>
     <property name="title">
      <string>PSVRT</string>
     </property>
-    <addaction name="actionPSVRT_SD"/>
     <addaction name="actionPSVRT_SR"/>
+    <addaction name="actionPSVRT_SD"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuDatasets"/>
-   <addaction name="menuSVRT"/>
    <addaction name="menuPSVRT"/>
+   <addaction name="menuSVRT"/>
+   <addaction name="menuDatasets"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="enabled">
@@ -421,6 +423,16 @@ background-color: rgb(186, 189, 182);</string>
   <action name="actionPSVRT_SR">
    <property name="text">
     <string>SR</string>
+   </property>
+  </action>
+  <action name="actionRestart">
+   <property name="text">
+    <string>Restart</string>
+   </property>
+  </action>
+  <action name="actionConnect_EyeTracker">
+   <property name="text">
+    <string>Connect EyeTracker</string>
    </property>
   </action>
  </widget>
@@ -699,6 +711,38 @@ background-color: rgb(186, 189, 182);</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionRestart</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>restart()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionConnect_EyeTracker</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>connectEyeTracker()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>categoryTrue()</slot>
@@ -721,5 +765,7 @@ background-color: rgb(186, 189, 182);</string>
   <slot>menuSVRT_22()</slot>
   <slot>menuPSVRT_SD()</slot>
   <slot>menuPSVRT_SR()</slot>
+  <slot>restart()</slot>
+  <slot>connectEyeTracker()</slot>
  </slots>
 </ui>
