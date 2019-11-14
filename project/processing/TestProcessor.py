@@ -200,7 +200,7 @@ def offset_calibration(heatmap, geometry):
 def create_triple_plot(heatmap, participant_id, plot_path):
     img = Image.open(heatmap[0])
     img = img.resize(plot_size)
-    figure = Figure(figsize=(8.4, 4.8), dpi=100)
+    figure = Figure(figsize=(8.4, 4.8), dpi=dpi)
     canvas = FigureCanvas(figure)
     axes = figure.subplots(ncols=3, nrows=1)
     axes[0].set_title('Original')
@@ -223,7 +223,7 @@ def create_quadruple_plot(heatmap, participant_id, plot_path):
     img = Image.open(heatmap[0])
     img = img.resize(plot_size)
 
-    figure = Figure(figsize=(8.4, 8.4), dpi=100)
+    figure = Figure(figsize=(8.4, 8.4), dpi=dpi)
     canvas = FigureCanvas(figure)
     axes = figure.subplots(ncols=2, nrows=2)
 
