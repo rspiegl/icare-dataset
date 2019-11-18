@@ -131,7 +131,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.eyetracker_data, self.calibration_data = [], []
         self.calibrate_pixmap = QPixmap(DatasetLoader.CALIBRATE_PICTURE)
         self.picShow.setPixmap(self.calibrate_pixmap)
-        self.central_widget_geometry, self.pic_geometry = None, None
+        self.pic_geometry = None
 
         self.process_thread = None
         self.response_thread = SleepThread(1)
@@ -218,7 +218,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.evaluation.evaluate(self.data)
 
         self.evaluation.set_pic_geometry(self.pic_geometry)
-        self.evaluation.set_central_widget_geometry(self.central_widget_geometry)
 
         self.save_thread.set_evaluation(self.evaluation)
         self.save_thread.start()
@@ -264,13 +263,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.picShow.setText("Start next test by pressing Enter.")
 
     def start_test(self):
-        central_widget_global_top_left = self.centralWidget.mapToGlobal(QPoint(0, 0))
-        pic_global_top_left = self.centralWidget.mapToGlobal(self.picShow.geometry().topLeft())
-
-        self.central_widget_geometry = (central_widget_global_top_left.x(),
-                                        central_widget_global_top_left.y(),
-                                        self.centralWidget.geometry().width(),
-                                        self.centralWidget.geometry().height())
+        pic_global_top_left = self.picShow.mapToGlobal(QPoint(0, 0))
         self.pic_geometry = (pic_global_top_left.x(),
                              pic_global_top_left.y(),
                              self.picShow.geometry().width(),

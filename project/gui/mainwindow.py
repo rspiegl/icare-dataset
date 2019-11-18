@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 
 class Ui_MainWindow(object):
@@ -127,11 +127,6 @@ class Ui_MainWindow(object):
         self.menuPSVRT = QtWidgets.QMenu(self.menuBar)
         self.menuPSVRT.setObjectName("menuPSVRT")
         MainWindow.setMenuBar(self.menuBar)
-        self.mainToolBar = QtWidgets.QToolBar(MainWindow)
-        self.mainToolBar.setEnabled(False)
-        self.mainToolBar.setMovable(False)
-        self.mainToolBar.setObjectName("mainToolBar")
-        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.mainToolBar)
         self.actionSelectDirectory = QtWidgets.QAction(MainWindow)
         self.actionSelectDirectory.setObjectName("actionSelectDirectory")
         self.actionReset = QtWidgets.QAction(MainWindow)

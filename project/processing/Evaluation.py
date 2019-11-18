@@ -83,6 +83,13 @@ class Evaluation:
         for item in dictionary.items():
             self.__setattr__(item[0], item[1])
 
+        # offset wrong global coordination calculation before 18.11.19
+        if self.pic_geometry_global[0] < 650:
+            self.pic_geometry_global = (self.pic_geometry_global[0] + 108,
+                                        self.pic_geometry_global[1] + 28,
+                                        self.pic_geometry_global[2],
+                                        self.pic_geometry_global[3])
+
         return self
 
     @classmethod
