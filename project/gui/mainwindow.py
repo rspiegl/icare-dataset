@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
@@ -215,7 +215,7 @@ class Ui_MainWindow(object):
         self.pushButtonTrue.setToolTip(_translate("MainWindow", "Shortcut: Left Arrow"))
         self.pushButtonTrue.setText(_translate("MainWindow", "Category 1"))
         self.pushButtonTrue.setShortcut(_translate("MainWindow", "Left"))
-        self.descriptionLabel.setText(_translate("MainWindow", "Description"))
+        self.descriptionLabel.setText(_translate("MainWindow", "Welcome!"))
         self.pushButtonFalse.setToolTip(_translate("MainWindow", "Shortcut: Right Arrow"))
         self.pushButtonFalse.setText(_translate("MainWindow", "Category 2"))
         self.pushButtonFalse.setShortcut(_translate("MainWindow", "Right"))

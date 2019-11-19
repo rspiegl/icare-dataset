@@ -236,7 +236,7 @@ background-color: rgb(186, 189, 182);</string>
           </size>
          </property>
          <property name="text">
-          <string>Description</string>
+          <string>Welcome!</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
