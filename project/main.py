@@ -168,7 +168,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def end_calibration(self):
         if self.tracker:
             self.calibration_data = self.eyetracker_data[-30:]
-            self.eyetracker_data = []
         else:
             # because show_calibration won't be called without eyetracking data
             self.inter_trial = True
