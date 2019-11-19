@@ -220,7 +220,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.success_counter = 0
             classified = "Incorrect!"
             self.picShow.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
-        self.picShow.setText(classified + " Press Enter to continue")
+        self.picShow.setText(classified)
 
         # disable buttons
         self._disable_buttons(True)
@@ -282,9 +282,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.descriptionLabel.setText("Completed all tests.")
                 self.picShow.setText("You're done. Good job.")
                 return
-
+            self.picShow.setText("Time for questions...")
             self.start = True
-            self.picShow.setText("Start next test by pressing Enter.")
 
     @QtCore.pyqtSlot()
     def categoryTrue(self):
@@ -307,7 +306,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.listPicturesTrue.clear()
         self.listPicturesFalse.clear()
         self._disable_buttons(True)
-        self.descriptionLabel.setText("Press Enter key to start.")
 
     @QtCore.pyqtSlot()
     def restart(self):
