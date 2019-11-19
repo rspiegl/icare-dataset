@@ -122,8 +122,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.timer_start, self.timer_end = 0, 0
         self.success_counter = 0
         self.done = False
-        self.start = True
-        self.inter_trial = False
+        self.start, self.calibration, self.inter_trial = True, False, False
         self.dataset = None
         self.evaluation = None
         self.data = []
@@ -147,13 +146,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.listPicturesFalse.setSpacing(2)
         self.listPicturesTrue.setSpacing(2)
 
-    def classify(self, category):
-        duration = self.timer_end - self.timer_start
-        self.data.append([self.pic, category, duration,
-                          (self.timer_start, self.timer_end), self.eyetracker_data,
-                          self.calibration_data])
-        self.eyetracker_data = []
-
     def load_dataset(self, dir_path, number=35, balance=True):
         self.dataset = DatasetLoader.load_problem(dir_path, number=number, balance=balance)
         if dir_path is DatasetLoader.DATASET_CATDOG:
@@ -174,6 +166,43 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             print("No EyeTrackers found.")
 
         return found
+
+    def start_test(self):
+        pic_global_top_left = self.picShow.mapToGlobal(QPoint(0, 0))
+        self.pic_geometry = (pic_global_top_left.x(),
+                             pic_global_top_left.y(),
+                             self.picShow.geometry().width(),
+                             self.picShow.geometry().height())
+
+        self.success_counter = 0
+
+        self.inter_trial = True
+        self.start = False
+        self.picShow.setPixmap(self.calibrate_pixmap)
+
+    def start_trial(self):
+        # remove background
+        self.remove_response()
+        self.descriptionLabel.clear()
+        if self.tracker:
+            self.calibration_data = self.eyetracker_data[-30:]
+            self.eyetracker_data = []
+        # enable buttons
+        self._disable_buttons(False)
+        # start timer
+        self.timer_start = current_micro_time()
+        # show next picture
+        self.picRight.clear()
+        self.picLeft.clear()
+        self.pixmap = QPixmap(self.pic[0]).scaledToWidth(512)
+        self.picShow.setPixmap(self.pixmap)
+
+    def classify(self, category):
+        duration = self.timer_end - self.timer_start
+        self.data.append([self.pic, category, duration,
+                          (self.timer_start, self.timer_end), self.eyetracker_data,
+                          self.calibration_data])
+        self.eyetracker_data = []
 
     def end_trial(self, classification: int):
         self.picShow.clear()
@@ -226,6 +255,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
             if self.start:
                 self.start_test()
+            elif self.calibration:
+                self.end_calibration()
             elif self.inter_trial:
                 self.start_trial()
         else:
@@ -261,36 +292,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
             self.start = True
             self.picShow.setText("Start next test by pressing Enter.")
-
-    def start_test(self):
-        pic_global_top_left = self.picShow.mapToGlobal(QPoint(0, 0))
-        self.pic_geometry = (pic_global_top_left.x(),
-                             pic_global_top_left.y(),
-                             self.picShow.geometry().width(),
-                             self.picShow.geometry().height())
-
-        self.success_counter = 0
-
-        self.inter_trial = True
-        self.start = False
-        self.picShow.setPixmap(self.calibrate_pixmap)
-
-    def start_trial(self):
-        # remove background
-        self.remove_response()
-        self.descriptionLabel.clear()
-        if self.tracker:
-            self.calibration_data = self.eyetracker_data[-30:]
-            self.eyetracker_data = []
-        # enable buttons
-        self._disable_buttons(False)
-        # start timer
-        self.timer_start = current_micro_time()
-        # show next picture
-        self.picRight.clear()
-        self.picLeft.clear()
-        self.pixmap = QPixmap(self.pic[0]).scaledToWidth(512)
-        self.picShow.setPixmap(self.pixmap)
 
     @QtCore.pyqtSlot()
     def categoryTrue(self):
