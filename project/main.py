@@ -137,10 +137,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def load_dataset(self, dir_path, number=35, balance=True):
         self.dataset = DatasetLoader.load_problem(dir_path, number=number, balance=balance)
-        if dir_path is DatasetLoader.DATASET_CATDOG:
-            self.mode = 'debug'
-        else:
-            self.mode = 'live'
         self.reset()
 
     def gaze_data_callback(self, gaze_data):
