@@ -10,20 +10,8 @@
     <height>1170</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>1920</width>
-    <height>1170</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>1920</width>
-    <height>1170</height>
-   </size>
-  </property>
   <property name="windowTitle">
-   <string>Study Foo Bar</string>
+   <string>Humans vs CNNs</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(186, 189, 182);</string>
@@ -32,6 +20,12 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="1">
      <widget class="QListWidget" name="listPicturesFalse">
+      <property name="maximumSize">
+       <size>
+        <width>800</width>
+        <height>532</height>
+       </size>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(186, 189, 182);
 gridline-color: rgb(0, 0, 0);</string>
@@ -48,16 +42,13 @@ gridline-color: rgb(0, 0, 0);</string>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
       </property>
-      <property name="dragDropMode">
-       <enum>QAbstractItemView::DragDrop</enum>
-      </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::NoSelection</enum>
       </property>
       <property name="iconSize">
        <size>
-        <width>128</width>
-        <height>128</height>
+        <width>256</width>
+        <height>256</height>
        </size>
       </property>
       <property name="viewMode">
@@ -67,6 +58,12 @@ gridline-color: rgb(0, 0, 0);</string>
     </item>
     <item row="1" column="0">
      <widget class="QListWidget" name="listPicturesTrue">
+      <property name="maximumSize">
+       <size>
+        <width>800</width>
+        <height>532</height>
+       </size>
+      </property>
       <property name="styleSheet">
        <string notr="true">gridline-color: rgb(0, 0, 0);
 background-color: rgb(186, 189, 182);</string>
@@ -83,10 +80,13 @@ background-color: rgb(186, 189, 182);</string>
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
       </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::NoSelection</enum>
+      </property>
       <property name="iconSize">
        <size>
-        <width>128</width>
-        <height>128</height>
+        <width>256</width>
+        <height>256</height>
        </size>
       </property>
       <property name="viewMode">
@@ -103,18 +103,34 @@ background-color: rgb(186, 189, 182);</string>
        </size>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="picLeft">
+         <property name="maximumSize">
+          <size>
+           <width>512</width>
+           <height>512</height>
+          </size>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QLabel" name="picShow">
          <property name="minimumSize">
           <size>
-           <width>350</width>
-           <height>350</height>
+           <width>512</width>
+           <height>512</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>350</width>
-           <height>350</height>
+           <width>512</width>
+           <height>512</height>
           </size>
          </property>
          <property name="frameShape">
@@ -128,6 +144,25 @@ background-color: rgb(186, 189, 182);</string>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="picRight">
+         <property name="minimumSize">
+          <size>
+           <width>512</width>
+           <height>512</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>512</width>
+           <height>512</height>
+          </size>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -189,7 +224,7 @@ background-color: rgb(186, 189, 182);</string>
           </size>
          </property>
          <property name="text">
-          <string>Description</string>
+          <string>Welcome!</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -234,7 +269,9 @@ background-color: rgb(186, 189, 182);</string>
      <string>File</string>
     </property>
     <addaction name="actionSelectDirectory"/>
+    <addaction name="actionConnect_EyeTracker"/>
     <addaction name="actionReset"/>
+    <addaction name="actionRestart"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuDatasets">
@@ -245,7 +282,6 @@ background-color: rgb(186, 189, 182);</string>
      <property name="title">
       <string>Camrot</string>
      </property>
-     <addaction name="actionCamRot_10"/>
      <addaction name="actionCamRot_5"/>
      <addaction name="actionCamRot_1"/>
     </widget>
@@ -253,7 +289,6 @@ background-color: rgb(186, 189, 182);</string>
      <property name="title">
       <string>Ranboaima</string>
      </property>
-     <addaction name="actionRanBoa_10"/>
      <addaction name="actionRanBoa_5"/>
      <addaction name="actionRanBoa_1"/>
     </widget>
@@ -264,8 +299,8 @@ background-color: rgb(186, 189, 182);</string>
      <addaction name="actionRotIm_5"/>
      <addaction name="actionRotIm_1"/>
     </widget>
-    <addaction name="menuCamera_Rotation"/>
     <addaction name="menuRandom_Board_Images"/>
+    <addaction name="menuCamera_Rotation"/>
     <addaction name="menuRotated_Images"/>
    </widget>
    <widget class="QMenu" name="menuSVRT">
@@ -273,38 +308,21 @@ background-color: rgb(186, 189, 182);</string>
      <string>SVRT</string>
     </property>
     <addaction name="actionSVRT_1"/>
-    <addaction name="actionSVRT_5"/>
-    <addaction name="actionSVRT_7"/>
-    <addaction name="actionSVRT_15"/>
     <addaction name="actionSVRT_19"/>
     <addaction name="actionSVRT_20"/>
     <addaction name="actionSVRT_21"/>
-    <addaction name="actionSVRT_22"/>
    </widget>
    <widget class="QMenu" name="menuPSVRT">
     <property name="title">
      <string>PSVRT</string>
     </property>
+    <addaction name="actionPSVRT_SR"/>
     <addaction name="actionPSVRT_SD"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuDatasets"/>
-   <addaction name="menuSVRT"/>
    <addaction name="menuPSVRT"/>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="movable">
-    <bool>false</bool>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
+   <addaction name="menuSVRT"/>
+   <addaction name="menuDatasets"/>
   </widget>
   <action name="actionSelectDirectory">
    <property name="text">
@@ -329,11 +347,6 @@ background-color: rgb(186, 189, 182);</string>
   <action name="actionCamRot_5">
    <property name="text">
     <string>5</string>
-   </property>
-  </action>
-  <action name="actionCamRot_10">
-   <property name="text">
-    <string>10</string>
    </property>
   </action>
   <action name="actionRanBoa_1">
@@ -361,21 +374,6 @@ background-color: rgb(186, 189, 182);</string>
     <string>1</string>
    </property>
   </action>
-  <action name="actionSVRT_5">
-   <property name="text">
-    <string>5</string>
-   </property>
-  </action>
-  <action name="actionSVRT_7">
-   <property name="text">
-    <string>7</string>
-   </property>
-  </action>
-  <action name="actionSVRT_15">
-   <property name="text">
-    <string>15</string>
-   </property>
-  </action>
   <action name="actionSVRT_19">
    <property name="text">
     <string>19</string>
@@ -396,14 +394,19 @@ background-color: rgb(186, 189, 182);</string>
     <string>SD</string>
    </property>
   </action>
-  <action name="actionSVRT_22">
+  <action name="actionPSVRT_SR">
    <property name="text">
-    <string>22</string>
+    <string>SR</string>
    </property>
   </action>
-  <action name="actionRanBoa_10">
+  <action name="actionRestart">
    <property name="text">
-    <string>10</string>
+    <string>Restart</string>
+   </property>
+  </action>
+  <action name="actionConnect_EyeTracker">
+   <property name="text">
+    <string>Connect EyeTracker</string>
    </property>
   </action>
  </widget>
@@ -465,8 +468,8 @@ background-color: rgb(186, 189, 182);</string>
    <slot>categoryFalse()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>869</x>
-     <y>676</y>
+     <x>1521</x>
+     <y>1151</y>
     </hint>
     <hint type="destinationlabel">
      <x>639</x>
@@ -481,8 +484,8 @@ background-color: rgb(186, 189, 182);</string>
    <slot>categoryTrue()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>412</x>
-     <y>676</y>
+     <x>493</x>
+     <y>1151</y>
     </hint>
     <hint type="destinationlabel">
      <x>639</x>
@@ -523,22 +526,6 @@ background-color: rgb(186, 189, 182);</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionCamRot_10</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>menuCamRot_10()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>959</x>
-     <y>584</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionRanBoa_1</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -559,22 +546,6 @@ background-color: rgb(186, 189, 182);</string>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>menuRanBoa_5()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>959</x>
-     <y>584</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRanBoa_10</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>menuRanBoa_10()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -635,22 +606,6 @@ background-color: rgb(186, 189, 182);</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionSVRT_15</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>menuSVRT_15()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>959</x>
-     <y>584</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionSVRT_19</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -699,58 +654,58 @@ background-color: rgb(186, 189, 182);</string>
    </hints>
   </connection>
   <connection>
-   <sender>actionSVRT_22</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>menuSVRT_22()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>959</x>
-     <y>584</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionSVRT_5</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>menuSVRT_5()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>959</x>
-     <y>584</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionSVRT_7</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>menuSVRT_7()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>959</x>
-     <y>584</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionPSVRT_SD</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>menuPSVRT_SD()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPSVRT_SR</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>menuPSVRT_SR()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRestart</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>restart()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>959</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionConnect_EyeTracker</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>connectEyeTracker()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -770,10 +725,8 @@ background-color: rgb(186, 189, 182);</string>
   <slot>selectDirectory()</slot>
   <slot>menuCamRot_1()</slot>
   <slot>menuCamRot_5()</slot>
-  <slot>menuCamRot_10()</slot>
   <slot>menuRanBoa_1()</slot>
   <slot>menuRanBoa_5()</slot>
-  <slot>menuRanBoa_10()</slot>
   <slot>menuRotIma_1()</slot>
   <slot>menuRotIma_5()</slot>
   <slot>menuSVRT_1()</slot>
@@ -785,5 +738,8 @@ background-color: rgb(186, 189, 182);</string>
   <slot>menuSVRT_21()</slot>
   <slot>menuSVRT_22()</slot>
   <slot>menuPSVRT_SD()</slot>
+  <slot>menuPSVRT_SR()</slot>
+  <slot>restart()</slot>
+  <slot>connectEyeTracker()</slot>
  </slots>
 </ui>
