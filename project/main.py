@@ -1,3 +1,4 @@
+import re
 import sys
 import time
 
@@ -10,7 +11,6 @@ from PyQt5.QtWidgets import QFileDialog
 import processing.TestProcessor as Processor
 from Utilities import DatasetLoader
 from gui.mainwindow import Ui_MainWindow
-from processing.Evaluation import Evaluation
 
 
 def current_micro_time(): return tr.get_system_time_stamp()
@@ -42,16 +42,22 @@ class SleepThread(QThread):
 class SaveThread(QThread):
     """Handles the saving of data that, for longer trials, can take over half a second."""
 
-    def __init__(self):
+    def __init__(self, data, calibration, geometry):
         QThread.__init__(self)
-        self.evaluation = None
+        self.data = data
+        self.calibration = calibration
+        self.geometry = geometry
         self.signal = Signal()
 
-    def set_evaluation(self, evaluation):
-        self.evaluation = evaluation
-
     def run(self):
-        self.evaluation.save_to_file()
+        dataset_identifier = re.findall(r'([^/]+)/[^/]+\.', self.data[0][0][0])[0]
+        timestamp = time.strftime('%m-%d_%H-%M', time.localtime())
+        dir_path = 'processing/'
+        dic = {'geometry': self.geometry, 'calibration': self.calibration, 'eyetracking': self.data}
+
+        with open(dir_path + dataset_identifier + '_' + timestamp + '.txt', 'w') as file:
+            file.write(str(dic))
+
         self.signal.sig.emit()
 
 
@@ -121,11 +127,9 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.picShow.setPixmap(self.calibrate_pixmap)
         self.pic_geometry = None
 
-        self.process_thread = None
+        self.process_thread, self.save_thread = None, None
         self.response_thread = SleepThread(1)
         self.response_thread.signal.sig.connect(self.remove_response)
-        self.save_thread = SaveThread()
-        self.save_thread.signal.sig.connect(self.saving_complete)
 
         self.init_eyetracker()
         self._load_dataset_iter()
@@ -234,13 +238,9 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def end_test(self):
         self.inter_trial = False
         self.descriptionLabel.setText("Saving...")
-        self.evaluation = Evaluation()
-        self.evaluation.set_calibration_data(self.calibration_data)
-        self.evaluation.evaluate(self.data)
 
-        self.evaluation.set_pic_geometry(self.pic_geometry)
-
-        self.save_thread.set_evaluation(self.evaluation)
+        self.save_thread = SaveThread(self.data, self.calibration_data, self.pic_geometry)
+        self.save_thread.signal.sig.connect(self.saving_complete)
         self.save_thread.start()
 
     def keyPressEvent(self, event):
