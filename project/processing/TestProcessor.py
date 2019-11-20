@@ -211,26 +211,6 @@ def create_quadruple_plot(heatmap, participant_id, plot_path):
     figure.clf()
 
 
-def create_calibration_plot(heatmap, participant_id, plot_path):
-    figure = Figure(figsize=fig_size, dpi=dpi, frameon=False)  # frameoff for transparent background
-    canvas = FigureCanvas(figure)
-
-    img = Image.open(Utilities.DatasetLoader.CALIBRATE_PICTURE)
-    img = img.resize(plot_size)
-
-    ax = figure.gca()
-    ax.axis('off')
-    ax.hist2d(heatmap[2][0], heatmap[2][1], bins=40, range=plot_range, alpha=0.6, zorder=2, cmin=0.01)
-    ax.invert_yaxis()
-    ax.imshow(img, zorder=1)
-
-    path = plot_path + "_calibration_{}.png".format(participant_id)
-    path = _duplicate_path(path)
-    figure.canvas.print_png(path)
-    figure.clf()
-    pass
-
-
 def create_histogram_temp(heatmap, img_path, name='cali'):
     figure = Figure(figsize=fig_size, dpi=dpi, frameon=False)  # frameoff for transparent background
     canvas = FigureCanvas(figure)
