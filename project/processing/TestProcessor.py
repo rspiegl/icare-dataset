@@ -235,11 +235,12 @@ def main_pipeline(paths, participant_id):
     total_time = 0
     for index, path in enumerate(paths):
         print("Starting process of test {} of {} -- {}".format(index + 1, len(paths), path))
-        e = Evaluation.Evaluation.create_from_file(path)
-        processed = process(e.picture_data)
+        with open(path, 'r') as file:
+            dic = eval(file.read(), Evaluation.CUSTOM_EVAL_NAN)
+        processed = process(dic['eyetracking'])
 
         heatmaps = create_heatmaps(processed)
-        trimmed = trim_heatmaps(heatmaps, e.pic_geometry_global)
+        trimmed = trim_heatmaps(heatmaps, dic['geometry'])
         create_plots(trimmed, participant_id)
 
         total_time += calculate_stats(processed)
