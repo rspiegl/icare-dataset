@@ -72,7 +72,7 @@ class Evaluation:
         return self.__dict__
 
     def save_to_file(self):
-        dataset_identifier = re.findall(r'([^\/]+)\/[^\/]+\.', self.picture_data[0][0][0])[0]
+        dataset_identifier = re.findall(r'([^/]+)/[^/]+\.', self.picture_data[0][0][0])[0]
         timestamp = time.strftime('%m-%d_%H-%M', time.localtime())
         dir_path = 'processing/'
 
