@@ -7,14 +7,13 @@ CUSTOM_EVAL_NAN = {'nan': float('nan')}
 
 class Evaluation:
 
-    def __init__(self, calibration_data):
+    def __init__(self):
         self.screen_resolution = (1920, 1200)
         self.p, self.n, self.tp, self.fn, self.fp, self.tn = (0,) * 6
         self.precision, self.recall, self.tnr, self.fnr, self.accuracy = (0,) * 5
         self.f1, self.mean, self.variance, self.number = (0,) * 4
-        self.pic_geometry_global, self.central_widget_geometry_global = None, None
-        self.picture_data = None
-        self.calibration_data = calibration_data
+        self.pic_geometry_global = None
+        self.picture_data, self.calibration_data = None, None
 
     def evaluate(self, picture_data, number=35):
         self.number = number
@@ -66,8 +65,8 @@ class Evaluation:
     def set_pic_geometry(self, geometry):
         self.pic_geometry_global = geometry
 
-    def set_central_widget_geometry(self, geometry):
-        self.central_widget_geometry_global = geometry
+    def set_calibration_data(self, calibration_data):
+        self.calibration_data = calibration_data
 
     def as_dict(self):
         return self.__dict__

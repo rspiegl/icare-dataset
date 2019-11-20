@@ -7,7 +7,6 @@ import statistics
 import matplotlib
 
 matplotlib.use('qt5agg')
-import numpy as np
 import seaborn as sns
 from PIL import Image
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -61,9 +60,7 @@ def process_picture(picture_data):
     data.append(picture_data[0])
     data.append(picture_data[1])
     data.append(round(picture_data[2] / 1000, 2))
-    data.append(process_picture_eyetracking_data(picture_data[4]))
-    if len(picture_data) >= 5:
-        data.append(process_picture_eyetracking_data(picture_data[5]))
+    data.append(process_picture_eyetracking_data(picture_data[3]))
 
     return data
 
@@ -100,11 +97,7 @@ def create_heatmaps(processed_data):
     heatmaps = list()
     for picture in processed_data:
         buf = create_heatmap(picture[3])
-        buf_cali = list()
-        if len(picture) >= 5:
-            buf_cali = create_heatmap(picture[4])
-        if buf:
-            heatmaps.append([picture[0][0], buf, buf_cali])
+        heatmaps.append([picture[0][0], buf])
 
     return heatmaps
 
@@ -122,13 +115,7 @@ def trim_heatmaps(heatmaps, pic_geometry):
         buf.append(heatmap[0])
 
         xs, ys = trim_heatmap(heatmap[1], pic_geometry)
-        buf.append([xs, ys])
-
-        if len(heatmap) >= 3 and heatmap[2]:
-            cali_x, cali_y = trim_heatmap(heatmap[2], pic_geometry)
-            buf.append([cali_x, cali_y])
-        else:
-            buf.append([])
+        buf.append([list(xs), list(ys)])
 
         maps.append(buf)
 
@@ -138,10 +125,10 @@ def trim_heatmaps(heatmaps, pic_geometry):
 def trim_heatmap(heatmap, pic_geometry):
     xpic, ypic, width, height = pic_geometry
 
-    xs = [width if x > xpic + width else x - xpic if x > xpic else 0 for x in heatmap[0]]
-    ys = [height if y > ypic + height else y - ypic if y > ypic else 0 for y in heatmap[1]]
+    coords = [[x - xpic, y - ypic] for x, y in zip(*heatmap) if
+              xpic <= x <= xpic + width and ypic <= y <= ypic + height]
 
-    return xs, ys
+    return list(zip(*coords))
 
 
 def create_plots(heatmaps, participant_id):
@@ -165,36 +152,6 @@ def create_plots(heatmaps, participant_id):
             create_quadruple_plot(heatmap, participant_id, plot_path + pic_name)
         else:
             create_triple_plot(heatmap, participant_id, plot_path + pic_name)
-
-
-def offset_calibrations(heatmaps, geometry):
-    calibrated = list()
-    for heatmap in heatmaps:
-        calibrated.append(offset_calibration(heatmap, geometry))
-
-    return calibrated
-
-
-def offset_calibration(heatmap, geometry):
-    calibrated = list()
-    calibrated.append(heatmap[0])
-    xybins = 40
-    middle = geometry[2] / xybins / 2
-    rang = [[geometry[0], geometry[0] + geometry[2]], [geometry[1], geometry[1] + geometry[3]]]
-    # TODO save previous calibration point for image in the same dataset
-    if len(heatmap) < 3 or not heatmap[2]:
-        calibrated.append(heatmap[1])
-    else:
-        H, xedges, yedges = np.histogram2d(heatmap[2][0], heatmap[2][1], bins=xybins, range=rang)
-        x_cent, y_cent = np.unravel_index(H.argmax(), H.shape)
-        x_offset = xedges[x_cent] + middle - (geometry[0] + geometry[2] // 2)
-        y_offset = yedges[y_cent] + middle - (geometry[1] + geometry[3] // 2)
-
-        calibrated.append([[x - x_offset for x in heatmap[1][0]], [y - y_offset for y in heatmap[1][1]]])
-
-        calibrated.append(heatmap[2])
-
-    return calibrated
 
 
 def create_triple_plot(heatmap, participant_id, plot_path):
@@ -302,8 +259,7 @@ def main_pipeline(paths, participant_id):
         processed = process(e.picture_data)
 
         heatmaps = create_heatmaps(processed)
-        calibrated = offset_calibrations(heatmaps, e.pic_geometry_global)
-        trimmed = trim_heatmaps(calibrated, e.pic_geometry_global)
+        trimmed = trim_heatmaps(heatmaps, e.pic_geometry_global)
         create_plots(trimmed, participant_id)
 
         total_time += calculate_stats(processed)

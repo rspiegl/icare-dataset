@@ -198,8 +198,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def classify(self, category):
         duration = self.timer_end - self.timer_start
-        self.data.append([self.pic, category, duration,
-                          (self.timer_start, self.timer_end), self.eyetracker_data])
+        self.data.append([self.pic, category, duration, self.eyetracker_data])
         self.eyetracker_data = []
 
     def end_trial(self, classification: int):
@@ -235,7 +234,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def end_test(self):
         self.inter_trial = False
         self.descriptionLabel.setText("Saving...")
-        self.evaluation = Evaluation(self.calibration_data)
+        self.evaluation = Evaluation()
+        self.evaluation.set_calibration_data(self.calibration_data)
         self.evaluation.evaluate(self.data)
 
         self.evaluation.set_pic_geometry(self.pic_geometry)
