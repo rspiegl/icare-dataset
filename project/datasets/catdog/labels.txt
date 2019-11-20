@@ -1,0 +1,10 @@
+cat.1262.jpg 0
+cat.6984.jpg 0
+cat.9101.jpg 0
+cat.9495.jpg 0
+cat.9819.jpg 0
+dog.10125.jpg 1
+dog.5677.jpg 1
+dog.702.jpg 1
+dog.8188.jpg 1
+dog.9952.jpg 1

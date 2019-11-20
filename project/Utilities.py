@@ -10,7 +10,8 @@ class DatasetLoader:
     DATASET_RANBOA = 'datasets/chessboard/similarity/random_board_images_big_diff%s/'
     DATASET_ROTIMA = 'datasets/chessboard/symmetry/rot_images_diff%s/'
     DATASET_SVRT = 'datasets/svrt/results_problem_%s/'
-    DATASET_PSVRT = 'datasets/psvrt/'
+    DATASET_PSVRT = 'datasets/psvrt/%s/'
+    DATASET_CATDOG = 'datasets/catdog/'
 
     IDENTIFIER_CAMROT = 'camrot'
     IDENTIFIER_RANBOA = 'ranboa'
@@ -18,39 +19,41 @@ class DatasetLoader:
     IDENTIFIER_SVRT = 'svrt'
     IDENTIFIER_PSVRT = 'psvrt'
 
-    EXAMPLE_PICTURE = 'datasets/nan_test.jpg'
+    CALIBRATE_PICTURE = 'datasets/calibrate_point.png'
 
     @staticmethod
-    def get_dataset_path(identifier='camrot', number=1):
+    def get_dataset_path(identifier='camrot', specifier=1):
         if identifier is DatasetLoader.IDENTIFIER_CAMROT:
-            if number not in [1, 5, 10]:
+            if specifier not in [1, 5]:
                 raise Exception("Wrong number for dataset camerarot.")
-            path = DatasetLoader.DATASET_CAMROT % number
+            path = DatasetLoader.DATASET_CAMROT % specifier
 
         elif identifier is DatasetLoader.IDENTIFIER_RANBOA:
-            if number not in [1, 5, 10]:
+            if specifier not in [1, 5]:
                 raise Exception("Wrong number for dataset random_board.")
-            path = DatasetLoader.DATASET_RANBOA % number
+            path = DatasetLoader.DATASET_RANBOA % specifier
 
         elif identifier is DatasetLoader.IDENTIFIER_ROTIMA:
-            if number not in [1, 5]:
+            if specifier not in [1, 5]:
                 raise Exception("Wrong number for dataset rot_images.")
-            path = DatasetLoader.DATASET_ROTIMA % number
+            path = DatasetLoader.DATASET_ROTIMA % specifier
 
         elif identifier is DatasetLoader.IDENTIFIER_SVRT:
-            if number not in [1, 5, 7, 15, 19, 20, 21, 22]:
+            if specifier not in [1, 19, 20, 21]:
                 raise Exception("Wrong number for dataset svrt.")
-            path = DatasetLoader.DATASET_SVRT % number
+            path = DatasetLoader.DATASET_SVRT % specifier
 
         elif identifier is DatasetLoader.IDENTIFIER_PSVRT:
-            path = DatasetLoader.DATASET_PSVRT
+            if specifier not in ['sd', 'sr']:
+                raise Exception("Wrong identifier for dataset psvrt.")
+            path = DatasetLoader.DATASET_PSVRT % specifier
         else:
             raise Exception("Wrong dataset identifier.")
 
         return path
 
     @staticmethod
-    def load_problem(path=(DATASET_CAMROT % 1), number=50, balance=True):
+    def load_problem(path=(DATASET_CAMROT % 1), number=35, balance=True):
         button1 = 'Category 1'
         button2 = 'Category 2'
         try:
@@ -89,9 +92,12 @@ class DatasetLoader:
             set_true = [x for x in splitted_lines if x[1] == 1]
             random.shuffle(set_false)
             random.shuffle(set_true)
-            half = int(number/2)
+            half = int((number + 1) / 2)
             splitted_lines = set_false[:half] + set_true[:half]
 
         random.shuffle(splitted_lines)
+
+        if number % 2 == 1:
+            del splitted_lines[-1]
 
         return Dataset(splitted_lines, text1=button1, text2=button2)
