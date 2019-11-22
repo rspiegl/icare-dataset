@@ -5,6 +5,7 @@ import re
 import statistics
 
 import matplotlib
+import numpy as np
 
 matplotlib.use('qt5agg')
 import seaborn as sns
@@ -106,6 +107,36 @@ def create_heatmap(processed_data):
     buf = [e.get() for e in processed_data]
 
     return list(zip(*buf))
+
+
+def offset_calibrations(heatmaps, geometry):
+    calibrated = list()
+    for heatmap in heatmaps:
+        calibrated.append(offset_calibration(heatmap, geometry))
+
+    return calibrated
+
+
+def offset_calibration(heatmap, geometry):
+    calibrated = list()
+    calibrated.append(heatmap[0])
+    xybins = 40
+    middle = geometry[2] / xybins / 2
+    rang = [[geometry[0], geometry[0] + geometry[2]], [geometry[1], geometry[1] + geometry[3]]]
+    # TODO save previous calibration point for image in the same dataset
+    if len(heatmap) < 3 or not heatmap[2]:
+        calibrated.append(heatmap[1])
+    else:
+        H, xedges, yedges = np.histogram2d(heatmap[2][0], heatmap[2][1], bins=xybins, range=rang)
+        x_cent, y_cent = np.unravel_index(H.argmax(), H.shape)
+        x_offset = xedges[x_cent] + middle - (geometry[0] + geometry[2] // 2)
+        y_offset = yedges[y_cent] + middle - (geometry[1] + geometry[3] // 2)
+
+        calibrated.append([[x - x_offset for x in heatmap[1][0]], [y - y_offset for y in heatmap[1][1]]])
+
+        calibrated.append(heatmap[2])
+
+    return calibrated
 
 
 def trim_heatmaps(heatmaps, pic_geometry):
@@ -237,20 +268,25 @@ def main_pipeline(paths, participant_id):
         with open(path, 'r') as file:
             dic = eval(file.read(), Evaluation.CUSTOM_EVAL_NAN)
 
-        processed = process(dic['eyetracking'])
-        heatmaps = create_heatmaps(processed)
-        trimmed = trim_heatmaps(heatmaps, dic['geometry'])
-
-        processed_cali = process_picture_eyetracking_data(dic['calibration'])
-        cali_heat = create_heatmap(processed_cali)
-        cali_trim = trim_heatmap(cali_heat, dic['geometry'])
-
-        create_plots(trimmed, cali_trim, participant_id)
-
-        total_time += calculate_stats(processed)
+        # use plot generation for trial-wide calibration
+        if 'calibration' not in dic:
+            total_time += trial_calibration(dic, participant_id)
 
     print("Total time of this session and participant: {0:.3f} sec or {1} min and {2:.3f} sec".format(
         total_time, (total_time // 60), (total_time % 60)))
+
+
+def trial_calibration(dic, participant_id):
+    processed = process(dic['eyetracking'])
+    heatmaps = create_heatmaps(processed)
+    trimmed = trim_heatmaps(heatmaps, dic['geometry'])
+
+    processed_cali = process_picture_eyetracking_data(dic['calibration'])
+    cali_heat = create_heatmap(processed_cali)
+    cali_trim = trim_heatmap(cali_heat, dic['geometry'])
+
+    create_plots(trimmed, cali_trim, participant_id)
+    return calculate_stats(processed)
 
 
 def calculate_stats(processed):

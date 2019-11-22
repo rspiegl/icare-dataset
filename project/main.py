@@ -42,10 +42,9 @@ class SleepThread(QThread):
 class SaveThread(QThread):
     """Handles the saving of data that, for longer trials, can take over half a second."""
 
-    def __init__(self, data, calibration, geometry):
+    def __init__(self, data, geometry):
         QThread.__init__(self)
         self.data = data
-        self.calibration = calibration
         self.geometry = geometry
         self.signal = Signal()
 
@@ -53,7 +52,7 @@ class SaveThread(QThread):
         dataset_identifier = re.findall(r'([^/]+)/[^/]+\.', self.data[0][0][0])[0]
         timestamp = time.strftime('%m-%d_%H-%M', time.localtime())
         dir_path = 'processing/'
-        dic = {'geometry': self.geometry, 'calibration': self.calibration, 'eyetracking': self.data}
+        dic = {'geometry': self.geometry, 'eyetracking': self.data}
 
         with open(dir_path + dataset_identifier + '_' + timestamp + '.txt', 'w') as file:
             file.write(str(dic))
@@ -111,28 +110,28 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             (DatasetLoader.get_dataset_path(DatasetLoader.IDENTIFIER_ROTIMA, 1), 35, True),
         ]
         self.dataset_order = [x[0] for x in self.test_sequence]
-        self.sequence_iter = iter(self.test_sequence)
-        self.pics, self.pics_iter = None, None
+        self.pics, self.pics_iter, self.sequence_iter = None, None, None
         self.pic, self.pixmap, self.directory = None, None, None
         self.timer_start, self.timer_end = 0, 0
         self.success_counter = 0
         self.done = False
-        self.start, self.calibration, self.inter_trial = True, False, False
+        self.start, self.inter_trial = True, False
         self.dataset = None
         self.evaluation = None
         self.data = []
         self.tracker = None
         self.eyetracker_data, self.calibration_data = [], []
         self.calibrate_pixmap = QPixmap(DatasetLoader.CALIBRATE_PICTURE)
-        self.picShow.setPixmap(self.calibrate_pixmap)
         self.pic_geometry = None
 
         self.process_thread, self.save_thread = None, None
         self.response_thread = SleepThread(1)
         self.response_thread.signal.sig.connect(self.remove_response)
+        self.inter_trial_thread = SleepThread(0.5)
+        self.inter_trial_thread.signal.sig.connect(self.switch_intertrial)
 
         self.init_eyetracker()
-        self._load_dataset_iter()
+        self.restart()
 
     def setupUi(self, main_window):
         super().setupUi(main_window)
@@ -165,31 +164,16 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.success_counter = 0
 
-        self.calibration = True
         self.start = False
+        self.inter_trial = True
         self.picShow.setPixmap(self.calibrate_pixmap)
-
-    def end_calibration(self):
-        if self.tracker:
-            self.calibration_data = self.eyetracker_data[-30:]
-        else:
-            # because show_calibration won't be called without eyetracking data
-            self.inter_trial = True
-
-        self.process_thread = ProcessThread(self.calibration_data, self.pic_geometry)
-        self.process_thread.signal.sig.connect(self.show_calibration)
-        self.process_thread.start()
-
-        self.picShow.setText("If the yellow colored box in the image on the left\n"
-                             "is near the center of the cross, press Enter to start\n"
-                             "else recalibrate.")
-        self.calibration = False
 
     def start_trial(self):
         # remove background
         self.remove_response()
         self.descriptionLabel.clear()
         if self.tracker:
+            self.calibration_data = self.eyetracker_data[-30:]
             self.eyetracker_data = []
         # enable buttons
         self._disable_buttons(False)
@@ -202,7 +186,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def classify(self, category):
         duration = self.timer_end - self.timer_start
-        self.data.append([self.pic, category, duration, self.eyetracker_data])
+        self.data.append([self.pic, category, duration, self.eyetracker_data, self.calibration_data])
         self.eyetracker_data = []
 
     def end_trial(self, classification: int):
@@ -222,8 +206,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.success_counter = 0
             classified = "Incorrect!"
             self.picShow.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
-        self.picShow.setText(classified)
-
+        self.picShow.setPixmap(self.calibrate_pixmap)
         # disable buttons
         self._disable_buttons(True)
 
@@ -231,6 +214,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             if self.success_counter >= 7:
                 raise StopIteration
             self.pic = next(self.pics_iter)
+            self.inter_trial = False
+            self.inter_trial_thread.start()
         except StopIteration:
             self.response_thread.start()
             self.end_test()
@@ -239,7 +224,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.inter_trial = False
         self.descriptionLabel.setText("Saving...")
 
-        self.save_thread = SaveThread(self.data, self.calibration_data, self.pic_geometry)
+        self.save_thread = SaveThread(self.data, self.pic_geometry)
         self.save_thread.signal.sig.connect(self.saving_complete)
         self.save_thread.start()
 
@@ -247,8 +232,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
             if self.start:
                 self.start_test()
-            elif self.calibration:
-                self.end_calibration()
             elif self.inter_trial:
                 self.start_trial()
         else:
@@ -261,6 +244,9 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def show_calibration(self, calibration):
         self.picLeft.setPixmap(calibration)
+        self.inter_trial = True
+
+    def switch_intertrial(self):
         self.inter_trial = True
 
     @QtCore.pyqtSlot()
@@ -281,7 +267,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.descriptionLabel.setText("Completed all tests.")
                 self.picShow.setText("You're done. Good job.")
                 return
-            self.picShow.setText("Time for questions...")
+            self.picShow.setText("Time for questions...\nAfterwards recalibrate please..")
             self.start = True
 
     @QtCore.pyqtSlot()
@@ -296,7 +282,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def reset(self):
         self.start = True
         self.remove_response()
-        self.picShow.setText("Press Enter key to start.")
+        self.picShow.setText("Calibrate the eye tracker!")
+        self.picShow.setStyleSheet("font: 22pt \"Cantarell\";")
         self.picLeft.clear()
         self.pics = self.dataset.data
         self.pics_iter = iter(self.pics)
