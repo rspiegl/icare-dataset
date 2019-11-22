@@ -26,7 +26,7 @@ dpi = 100
 fig_size = [plot_width / dpi, plot_height / dpi]
 plot_range = [[0, plot_width], [0, plot_height]]
 
-identifier_regex = r'([^\/]+\/[^\/]+)\.'
+identifier_regex = r'[^\/]+\/([^\/]+)\.'
 
 
 def process_gaze_data(gaze_data):
@@ -131,13 +131,14 @@ def trim_heatmap(heatmap, pic_geometry):
     return list(zip(*coords))
 
 
-def create_plots(heatmaps, participant_id):
-    plot_path = "plots/{}/".format(participant_id)
+def create_plots(heatmaps, calibration, participant_id):
     dataset_identifier = re.findall(r'([^\/]+\/)[^\/]+\.', heatmaps[0][0])[0]
+    plot_path = "plots/{}/{}".format(participant_id, dataset_identifier)
     print("Dataset identifier: {}".format(dataset_identifier))
-    if not os.path.isdir(plot_path + dataset_identifier):
-        os.makedirs(plot_path + dataset_identifier)
+    if not os.path.isdir(plot_path):
+        os.makedirs(plot_path)
 
+    create_calibration_histogram(calibration, plot_path + '0calibration')
     print("Creating {} plots".format(len(heatmaps)))
 
     for index, heatmap in enumerate(heatmaps):
@@ -146,15 +147,15 @@ def create_plots(heatmaps, participant_id):
             print("Gazedata less than 5 for {}".format(heatmap[0]))
             continue
 
-        pic_name = re.findall(identifier_regex, heatmap[0])[0]
+        pic_name = "_" + re.findall(identifier_regex, heatmap[0])[0] + ".png"
 
         if len(heatmap) >= 3 and heatmap[2]:
-            create_quadruple_plot(heatmap, participant_id, plot_path + pic_name)
+            create_quadruple_plot(heatmap, participant_id, plot_path + str(index + 1) + pic_name)
         else:
-            create_triple_plot(heatmap, participant_id, plot_path + pic_name)
+            create_triple_plot(heatmap, participant_id, plot_path + str(index + 1) + pic_name)
 
 
-def create_triple_plot(heatmap, participant_id, plot_path):
+def create_triple_plot(heatmap, participant_id, full_path):
     img = Image.open(heatmap[0])
     img = img.resize(plot_size)
     figure = Figure(figsize=(8.4, 4.8), dpi=dpi)
@@ -170,9 +171,7 @@ def create_triple_plot(heatmap, participant_id, plot_path):
     axes[2].hist2d(heatmap[1][0], heatmap[1][1], bins=40, range=plot_range, alpha=0.6, zorder=2, cmin=0.01)
     axes[2].invert_yaxis()
     axes[2].imshow(img, zorder=1)
-    path = plot_path + "_{}.png".format(participant_id)
-    path = _duplicate_path(path)
-    figure.canvas.print_png(path)
+    figure.canvas.print_png(full_path)
     figure.clf()
 
 
@@ -237,11 +236,16 @@ def main_pipeline(paths, participant_id):
         print("Starting process of test {} of {} -- {}".format(index + 1, len(paths), path))
         with open(path, 'r') as file:
             dic = eval(file.read(), Evaluation.CUSTOM_EVAL_NAN)
-        processed = process(dic['eyetracking'])
 
+        processed = process(dic['eyetracking'])
         heatmaps = create_heatmaps(processed)
         trimmed = trim_heatmaps(heatmaps, dic['geometry'])
-        create_plots(trimmed, participant_id)
+
+        processed_cali = process_picture_eyetracking_data(dic['calibration'])
+        cali_heat = create_heatmap(processed_cali)
+        cali_trim = trim_heatmap(cali_heat, dic['geometry'])
+
+        create_plots(trimmed, cali_trim, participant_id)
 
         total_time += calculate_stats(processed)
 
