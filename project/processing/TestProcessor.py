@@ -269,7 +269,7 @@ def main_pipeline(paths, participant_id):
             dic = eval(file.read(), Evaluation.CUSTOM_EVAL_NAN)
 
         # use plot generation for trial-wide calibration
-        if 'calibration' not in dic:
+        if 'calibration' in dic:
             total_time += trial_calibration(dic, participant_id)
 
     print("Total time of this session and participant: {0:.3f} sec or {1} min and {2:.3f} sec".format(
