@@ -78,7 +78,7 @@ class ProcessThread(QThread):
     def run(self):
         if self.data:
             processed_cali = Processor.process_picture_eyetracking_data(self.data)
-            cali_heat = Processor.create_heatmap(processed_cali)
+            cali_heat = Processor.get_coords_for_heatmap(processed_cali)
             if not cali_heat:
                 print("no data after creation of calibration")
                 return

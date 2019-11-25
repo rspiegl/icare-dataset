@@ -59,8 +59,11 @@ def process_picture(picture_data):
     data = list()
     data.append(picture_data[0])
     data.append(picture_data[1])
-    data.append(round(picture_data[2] / 1000, 2))
+    data.append(round(picture_data[2] / 1000, 3))
     data.append(process_picture_eyetracking_data(picture_data[3]))
+
+    if len(picture_data) > 4:
+        data.append(process_picture_eyetracking_data(picture_data[4]))
 
     return data
 
@@ -93,16 +96,20 @@ def check_nan_counter(processed_data):
     print("Pictures with over 75% nan: {}".format(high_percent))
 
 
-def create_heatmaps(processed_data):
+def get_coords_for_heatmaps(processed_data):
     heatmaps = list()
     for picture in processed_data:
-        buf = create_heatmap(picture[3])
-        heatmaps.append([picture[0][0], buf])
+        tmp = list()
+        tmp.append(picture[0][0])
+        tmp.append(get_coords_for_heatmap(picture[3]))
+        if len(picture) > 4:
+            tmp.append(get_coords_for_heatmap(picture[4]))
+        heatmaps.append(tmp)
 
     return heatmaps
 
 
-def create_heatmap(processed_data):
+def get_coords_for_heatmap(processed_data):
     buf = [e.get() for e in processed_data]
 
     return list(zip(*buf))
@@ -124,16 +131,21 @@ def offset_calibration(heatmap, geometry):
     """
     calibrated = list()
     calibrated.append(heatmap[0])
+
+    if not heatmap[2]:
+        calibrated.append(heatmap[1])
+        return calibrated
+
     xybins = 40
-    middle = geometry[2] / xybins / 2
+    bin_middle = geometry[2] / xybins / 2
     rang = [[geometry[0], geometry[0] + geometry[2]], [geometry[1], geometry[1] + geometry[3]]]
     H, xedges, yedges = np.histogram2d(heatmap[2][0], heatmap[2][1], bins=xybins, range=rang)
     x_cent, y_cent = np.unravel_index(H.argmax(), H.shape)
-    x_offset = xedges[x_cent] + middle - (geometry[0] + geometry[2] // 2)
-    y_offset = yedges[y_cent] + middle - (geometry[1] + geometry[3] // 2)
+    x_offset = xedges[x_cent] + bin_middle - (geometry[0] + geometry[2] // 2)
+    y_offset = yedges[y_cent] + bin_middle - (geometry[1] + geometry[3] // 2)
 
     calibrated.append([[x - x_offset for x in heatmap[1][0]], [y - y_offset for y in heatmap[1][1]]])
-
+    calibrated.append(heatmap[2])
     return calibrated
 
 
@@ -145,6 +157,10 @@ def trim_heatmaps(heatmaps, pic_geometry):
 
         xs, ys = trim_heatmap(heatmap[1], pic_geometry)
         buf.append([list(xs), list(ys)])
+
+        if len(heatmap) > 2:
+            xs, ys = trim_heatmap(heatmap[2], pic_geometry)
+            buf.append([list(xs), list(ys)])
 
         maps.append(buf)
 
@@ -160,14 +176,16 @@ def trim_heatmap(heatmap, pic_geometry):
     return list(zip(*coords))
 
 
-def create_plots(heatmaps, calibration, participant_id):
+def create_plots(heatmaps, participant_id, calibration=None):
     dataset_identifier = re.findall(r'([^\/]+\/)[^\/]+\.', heatmaps[0][0])[0]
     plot_path = "plots/{}/{}".format(participant_id, dataset_identifier)
     print("Dataset identifier: {}".format(dataset_identifier))
     if not os.path.isdir(plot_path):
         os.makedirs(plot_path)
 
-    create_calibration_histogram(calibration, plot_path + '0calibration')
+    if calibration:
+        create_calibration_histogram(calibration, plot_path + '0calibration')
+
     print("Creating {} plots".format(len(heatmaps)))
 
     for index, heatmap in enumerate(heatmaps):
@@ -204,7 +222,7 @@ def create_triple_plot(heatmap, participant_id, full_path):
     figure.clf()
 
 
-def create_quadruple_plot(heatmap, participant_id, plot_path):
+def create_quadruple_plot(heatmap, participant_id, full_path):
     img = Image.open(heatmap[0])
     img = img.resize(plot_size)
 
@@ -233,9 +251,7 @@ def create_quadruple_plot(heatmap, participant_id, plot_path):
     axes[1][1].invert_yaxis()
     axes[1][1].imshow(img, zorder=1)
 
-    path = plot_path + "_{}.png".format(participant_id)
-    path = _duplicate_path(path)
-    figure.canvas.print_png(path)
+    figure.canvas.print_png(full_path)
     figure.clf()
 
 
@@ -259,7 +275,7 @@ def create_calibration_histogram(heatmap, full_path='cali'):
     return path
 
 
-def main_pipeline(paths, participant_id):
+def plots_from_raws(paths, participant_id):
     total_time = 0
     for index, path in enumerate(paths):
         print("Starting process of test {} of {} -- {}".format(index + 1, len(paths), path))
@@ -267,6 +283,8 @@ def main_pipeline(paths, participant_id):
 
         # use plot generation for trial-wide calibration
         if 'calibration' in dic:
+            total_time += test_calibration(dic, participant_id)
+        else:
             total_time += trial_calibration(dic, participant_id)
 
     print("Total time of this session and participant: {0:.3f} sec or {1} min and {2:.3f} sec".format(
@@ -275,14 +293,24 @@ def main_pipeline(paths, participant_id):
 
 def trial_calibration(dic, participant_id):
     processed = process(dic['eyetracking'])
-    heatmaps = create_heatmaps(processed)
+    heatmaps = get_coords_for_heatmaps(processed)
+    offset = offset_calibrations(heatmaps, dic['geometry'])
+    trimmed = trim_heatmaps(offset, dic['geometry'])
+    create_plots(trimmed, participant_id)
+
+    return calculate_stats(processed)
+
+
+def test_calibration(dic, participant_id):
+    processed = process(dic['eyetracking'])
+    heatmaps = get_coords_for_heatmaps(processed)
     trimmed = trim_heatmaps(heatmaps, dic['geometry'])
 
     processed_cali = process_picture_eyetracking_data(dic['calibration'])
-    cali_heat = create_heatmap(processed_cali)
+    cali_heat = get_coords_for_heatmap(processed_cali)
     cali_trim = trim_heatmap(cali_heat, dic['geometry'])
 
-    create_plots(trimmed, cali_trim, participant_id)
+    create_plots(trimmed, participant_id, calibration=cali_trim)
     return calculate_stats(processed)
 
 
@@ -312,4 +340,4 @@ def _copy_path(path, counter):
 
 if __name__ == '__main__':
     paths = [f for f in glob.glob('*.txt')]
-    main_pipeline(paths, 1)
+    plots_from_raws(paths, 1)
