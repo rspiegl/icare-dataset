@@ -1,8 +1,17 @@
+import glob
 import os.path
 import random
 import sys
+from enum import Enum
 
 from datasets.Dataset import Dataset
+
+CUSTOM_EVAL_NAN = {'nan': float('nan')}
+
+
+class RawDataVersion(Enum):
+    TESTCALIBRATION = 1
+    TRIALCALIBRATION = 2
 
 
 class DatasetLoader:
@@ -101,3 +110,13 @@ class DatasetLoader:
             del splitted_lines[-1]
 
         return Dataset(splitted_lines, text1=button1, text2=button2)
+
+
+def list_files(path):
+    return glob.glob(path)
+
+
+def read_dic(file):
+    with open(file, 'r') as f:
+        dic = eval(f.read(), CUSTOM_EVAL_NAN)
+    return dic

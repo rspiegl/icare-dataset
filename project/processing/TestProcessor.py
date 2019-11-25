@@ -15,7 +15,6 @@ from matplotlib.figure import Figure
 
 import Utilities
 import processing.Eyetracker as Eyetracker
-from processing import Evaluation
 
 W = 1920
 H = 1200
@@ -43,7 +42,7 @@ def process_gaze_data(gaze_data):
     if not math.isnan(right[0]):
         right = tuple(round(r) for r in right)
 
-    return Eyetracker.GazePoint(left, right)
+    return Eyetracker.GazePoint(left, right, timestamp=gaze_data['system_time_stamp'])
 
 
 def process_picture_eyetracking_data(eyetracking_data):
@@ -118,23 +117,22 @@ def offset_calibrations(heatmaps, geometry):
 
 
 def offset_calibration(heatmap, geometry):
+    """
+    :param heatmap: 3 tuple of path, eyetracking, calibration
+    :param geometry: picture geometry
+    :return: 2 tuple of path, calibrated eyetracking
+    """
     calibrated = list()
     calibrated.append(heatmap[0])
     xybins = 40
     middle = geometry[2] / xybins / 2
     rang = [[geometry[0], geometry[0] + geometry[2]], [geometry[1], geometry[1] + geometry[3]]]
-    # TODO save previous calibration point for image in the same dataset
-    if len(heatmap) < 3 or not heatmap[2]:
-        calibrated.append(heatmap[1])
-    else:
-        H, xedges, yedges = np.histogram2d(heatmap[2][0], heatmap[2][1], bins=xybins, range=rang)
-        x_cent, y_cent = np.unravel_index(H.argmax(), H.shape)
-        x_offset = xedges[x_cent] + middle - (geometry[0] + geometry[2] // 2)
-        y_offset = yedges[y_cent] + middle - (geometry[1] + geometry[3] // 2)
+    H, xedges, yedges = np.histogram2d(heatmap[2][0], heatmap[2][1], bins=xybins, range=rang)
+    x_cent, y_cent = np.unravel_index(H.argmax(), H.shape)
+    x_offset = xedges[x_cent] + middle - (geometry[0] + geometry[2] // 2)
+    y_offset = yedges[y_cent] + middle - (geometry[1] + geometry[3] // 2)
 
-        calibrated.append([[x - x_offset for x in heatmap[1][0]], [y - y_offset for y in heatmap[1][1]]])
-
-        calibrated.append(heatmap[2])
+    calibrated.append([[x - x_offset for x in heatmap[1][0]], [y - y_offset for y in heatmap[1][1]]])
 
     return calibrated
 
@@ -265,8 +263,7 @@ def main_pipeline(paths, participant_id):
     total_time = 0
     for index, path in enumerate(paths):
         print("Starting process of test {} of {} -- {}".format(index + 1, len(paths), path))
-        with open(path, 'r') as file:
-            dic = eval(file.read(), Evaluation.CUSTOM_EVAL_NAN)
+        dic = Utilities.read_dic(path)
 
         # use plot generation for trial-wide calibration
         if 'calibration' in dic:
