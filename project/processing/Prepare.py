@@ -66,13 +66,14 @@ def prepare_dataframes(directory, pid):
 
             processed = tp.process_picture(trial)
             coords = tp.get_coords_for_heatmaps([processed])
-            calibrated = tp.offset_calibrations(coords, dic['geometry'])[0]
+            calibrated = tp.offset_calibrations(coords, dic['geometry'])
+            trimmed = tp.trim_heatmaps(calibrated, dic['geometry'])[0]
 
-            image_df = pd.DataFrame({'x': calibrated[1][0], 'y': calibrated[1][1]})
+            image_df = pd.DataFrame({'x': trimmed[1][0], 'y': trimmed[1][1]})
             image_df.to_pickle(image_path + '.pkl')
 
-            if version == RawDataVersion.TRIALCALIBRATION and len(calibrated) == 3:
-                image_df = pd.DataFrame({'x': calibrated[2][0], 'y': calibrated[2][1]})
+            if version == RawDataVersion.TRIALCALIBRATION and len(trimmed) == 3:
+                image_df = pd.DataFrame({'x': trimmed[2][0], 'y': trimmed[2][1]})
                 image_df.to_pickle(image_path + '_calibration.pkl')
 
             image_duration = round(processed[2] / 1000, 3)
