@@ -1,7 +1,7 @@
 import statistics
 
 
-class Evaluation:
+class TestEvaluation:
 
     def __init__(self):
         self.p, self.n, self.tp, self.fn, self.fp, self.tn = (0,) * 6

@@ -6,7 +6,7 @@ import pandas as pd
 import Utilities
 import processing.TestProcessor as tp
 from Utilities import RawDataVersion
-from processing.Evaluation import Evaluation
+from processing.TestEvaluation import TestEvaluation
 
 BASE_PATH = 'processing/prepared/'
 PATH = BASE_PATH + '{}/'
@@ -51,7 +51,7 @@ def prepare_dataframes(directory, pid):
         dataset = re.findall(tp.identifier_regex, file)[0]
         dataset_path = path + dataset + '/'
         version = determine_version(dic)
-        e = Evaluation()
+        e = TestEvaluation()
         e.evaluate(dic['eyetracking'])
         evals = {'participant': pid, 'dataset': dataset}
         evals.update(e.__dict__)
