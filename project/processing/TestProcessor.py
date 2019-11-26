@@ -132,7 +132,7 @@ def offset_calibration(heatmap, geometry):
     calibrated = list()
     calibrated.append(heatmap[0])
 
-    if not heatmap[2]:
+    if len(heatmap) < 3 or not heatmap[2]:
         calibrated.append(heatmap[1])
         return calibrated
 
