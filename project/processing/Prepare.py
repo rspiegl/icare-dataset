@@ -51,6 +51,7 @@ def prepare_dataframes(directory, pid):
         dataset = re.findall(tp.identifier_regex, file)[0]
         dataset_path = path + dataset + '/'
         version = determine_version(dic)
+        geometry = dic['geometry']
         e = TestEvaluation()
         e.evaluate(dic['eyetracking'])
         evals = {'participant': pid, 'dataset': dataset}
@@ -65,15 +66,17 @@ def prepare_dataframes(directory, pid):
             image_path = dataset_path + str(index) + '_' + image_name
 
             processed = tp.process_picture(trial)
+            timestamps = tp.get_timestamps(processed[3])
             coords = tp.get_coords_for_heatmaps([processed])
-            calibrated = tp.offset_calibrations(coords, dic['geometry'])
-            trimmed = tp.trim_heatmaps(calibrated, dic['geometry'])[0]
+            calibrated = tp.offset_calibrations(coords, geometry)[0]
+            trimmed, timestamps = tp.trim_heatmap_timestamps(calibrated[1], timestamps, geometry)
 
-            image_df = pd.DataFrame({'x': trimmed[1][0], 'y': trimmed[1][1]})
+            image_df = pd.DataFrame({'x': trimmed[0], 'y': trimmed[1], 'times': timestamps})
             image_df.to_pickle(image_path + '.pkl')
 
-            if version == RawDataVersion.TRIALCALIBRATION and len(trimmed) == 3:
-                image_df = pd.DataFrame({'x': trimmed[2][0], 'y': trimmed[2][1]})
+            if version == RawDataVersion.TRIALCALIBRATION and len(calibrated) == 3:
+                xs, ys = tp.trim_heatmap(calibrated[2], geometry)
+                image_df = pd.DataFrame({'x': list(xs), 'y': list(ys)})
                 image_df.to_pickle(image_path + '_calibration.pkl')
 
             image_duration = round(processed[2] / 1000, 3)
@@ -84,7 +87,7 @@ def prepare_dataframes(directory, pid):
     part_score_df = pd.DataFrame(score_dics)
     image_duration_df = pd.DataFrame(image_duration_dics)
 
-    save_dataframes(image_duration_df, part_score_df)
+    # save_dataframes(image_duration_df, part_score_df)
 
 
 def save_dataframes(image_duration_df, part_score_df):

@@ -42,7 +42,9 @@ def process_gaze_data(gaze_data):
     if not math.isnan(right[0]):
         right = tuple(round(r) for r in right)
 
-    return Eyetracker.GazePoint(left, right, timestamp=gaze_data['system_time_stamp'])
+    t = round(gaze_data['system_time_stamp'] / 1000, 1)  # convert to ms
+
+    return Eyetracker.GazePoint(left, right, timestamp=t)
 
 
 def process_picture_eyetracking_data(eyetracking_data):
@@ -115,6 +117,12 @@ def get_coords_for_heatmap(processed_data):
     return list(zip(*buf))
 
 
+def get_timestamps(processed_data):
+    times = [e.timestamp for e in processed_data]
+    times = [round(x - times[0], 1) for x in times]
+    return times
+
+
 def offset_calibrations(heatmaps, geometry):
     calibrated = list()
     for heatmap in heatmaps:
@@ -175,6 +183,15 @@ def trim_heatmap(heatmap, pic_geometry):
 
     return list(zip(*coords))
 
+
+def trim_heatmap_timestamps(heatmap, timestamps, pic_geometry):
+    xpic, ypic, width, height = pic_geometry
+
+    coords = [[[c[0] - xpic, c[1] - ypic], times] for c, times in zip(zip(*heatmap), timestamps) if
+              xpic <= c[0] <= xpic + width and ypic <= c[1] <= ypic + height]
+
+    coord, times = list(zip(*coords))
+    return list(zip(*coord)), times
 
 def create_plots(heatmaps, participant_id, calibration=None):
     dataset_identifier = re.findall(r'([^\/]+\/)[^\/]+\.', heatmaps[0][0])[0]
