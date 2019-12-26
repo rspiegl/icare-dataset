@@ -1,6 +1,6 @@
 class Dataset:
 
-    def __init__(self, data, text1, text2):
+    def __init__(self, data, text1='Category 1', text2='Category 2'):
         self.data = data
         self.text1 = text1
         self.text2 = text2
