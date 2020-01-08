@@ -25,7 +25,7 @@ class DatasetLoader:
     PSVRT_DIFF_H = 'datasets/psvrt/diff/horizontal/'
     PSVRT_DIFF_V = 'datasets/psvrt/diff/vertical/'
     PSVRT = {'sd': [[PSVRT_SAME_H, 1], [PSVRT_SAME_V, 1], [PSVRT_DIFF_H, 0], [PSVRT_DIFF_V, 0]],
-             'sr': [[PSVRT_SAME_V, 1], [PSVRT_DIFF_V, 1], [PSVRT_SAME_H, 0], [PSVRT_SAME_H, 0]]}
+             'sr': [[PSVRT_SAME_V, 1], [PSVRT_DIFF_V, 1], [PSVRT_SAME_H, 0], [PSVRT_DIFF_H, 0]]}
 
     IDENTIFIER_CAMROT = 'camrot'
     IDENTIFIER_RANBOA = 'ranboa'
