@@ -133,7 +133,7 @@ class DatasetLoader:
             files = glob.glob(dirpath + '*.png')
             random.shuffle(files)
             files = files[:samples[index]]
-            data_lines += [[f, val] for f in files]
+            data_lines += [[f.replace('\\', '/'), val] for f in files]
 
         random.shuffle(data_lines)
 

@@ -193,10 +193,10 @@ def trim_heatmap_timestamps(heatmap, timestamps, pic_geometry):
     coord, times = list(zip(*coords))
     return list(zip(*coord)), times
 
-def create_plots(heatmaps, participant_id, calibration=None):
-    dataset_identifier = re.findall(r'([^\/]+\/)[^\/]+\.', heatmaps[0][0])[0]
-    plot_path = "plots/{}/{}".format(participant_id, dataset_identifier)
-    print("Dataset identifier: {}".format(dataset_identifier))
+
+def create_plots(heatmaps, participant_id, dataset_name, calibration=None):
+    plot_path = "plots/{}/{}/".format(participant_id, dataset_name)
+    print("Dataset identifier: {}".format(dataset_name))
     if not os.path.isdir(plot_path):
         os.makedirs(plot_path)
 
@@ -297,28 +297,28 @@ def plots_from_raws(paths, participant_id):
     for index, path in enumerate(paths):
         print("Starting process of test {} of {} -- {}".format(index + 1, len(paths), path))
         dic = Utilities.read_dic(path)
-
+        dataset_name = re.findall(r'([^\/]+)\.', path)[0][:-12]
         # use plot generation for trial-wide calibration
         if 'calibration' in dic:
-            total_time += test_calibration(dic, participant_id)
+            total_time += test_calibration(dic, participant_id, dataset_name)
         else:
-            total_time += trial_calibration(dic, participant_id)
+            total_time += trial_calibration(dic, participant_id, dataset_name)
 
     print("Total time of this session and participant: {0:.3f} sec or {1} min and {2:.3f} sec".format(
         total_time, (total_time // 60), (total_time % 60)))
 
 
-def trial_calibration(dic, participant_id):
+def trial_calibration(dic, participant_id, dataset_name):
     processed = process(dic['eyetracking'])
     heatmaps = get_coords_for_heatmaps(processed)
     offset = offset_calibrations(heatmaps, dic['geometry'])
     trimmed = trim_heatmaps(offset, dic['geometry'])
-    create_plots(trimmed, participant_id)
+    create_plots(trimmed, participant_id, dataset_name)
 
     return calculate_stats(processed)
 
 
-def test_calibration(dic, participant_id):
+def test_calibration(dic, participant_id, dataset_name):
     processed = process(dic['eyetracking'])
     heatmaps = get_coords_for_heatmaps(processed)
     trimmed = trim_heatmaps(heatmaps, dic['geometry'])
@@ -327,7 +327,7 @@ def test_calibration(dic, participant_id):
     cali_heat = get_coords_for_heatmap(processed_cali)
     cali_trim = trim_heatmap(cali_heat, dic['geometry'])
 
-    create_plots(trimmed, participant_id, calibration=cali_trim)
+    create_plots(trimmed, participant_id, dataset_name, calibration=cali_trim)
     return calculate_stats(processed)
 
 

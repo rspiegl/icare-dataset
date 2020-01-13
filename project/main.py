@@ -123,6 +123,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.eyetracker_data, self.calibration_data = [], []
         self.calibrate_pixmap = QPixmap(DatasetLoader.CALIBRATE_PICTURE)
         self.pic_geometry = None
+        self.mode = 'debug'
 
         self.process_thread, self.save_thread = None, None
         self.response_thread = SleepThread(1)
@@ -139,6 +140,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.listPicturesTrue.setSpacing(2)
 
     def load_dataset(self, dir_path, number=35, balance=True):
+        if dir_path is DatasetLoader.DATASET_CATDOG:
+            self.mode = 'debug'
+        else:
+            self.mode = 'live'
+
         self.dataset = DatasetLoader.load_problem(dir_path, number=number, balance=balance)
         self.reset()
 
@@ -210,6 +216,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         # disable buttons
         self._disable_buttons(True)
 
+        if self.mode == 'debug':
+            self.process_thread = ProcessThread(self.calibration_data, self.pic_geometry)
+            self.process_thread.signal.sig.connect(self.show_calibration)
+            self.process_thread.start()
+
         try:
             if self.success_counter >= 7:
                 raise StopIteration
@@ -244,7 +255,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def show_calibration(self, calibration):
         self.picLeft.setPixmap(calibration)
-        self.inter_trial = True
 
     def switch_intertrial(self):
         self.inter_trial = True
@@ -407,6 +417,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     mw = MainWindowUI()
-    mw.show()
+    mw.showMaximized()
     app.exec()
     sys.exit()
