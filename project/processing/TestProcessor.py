@@ -126,6 +126,9 @@ def get_timestamps(processed_data):
 def offset_calibrations(heatmaps, geometry):
     calibrated = list()
     for heatmap in heatmaps:
+        if not heatmap[1]:
+            print('no eyetracking data for ' + heatmap[0])
+            continue
         calibrated.append(offset_calibration(heatmap, geometry))
 
     return calibrated
@@ -180,8 +183,10 @@ def trim_heatmap(heatmap, pic_geometry):
 
     coords = [[x - xpic, y - ypic] for x, y in zip(*heatmap) if
               xpic <= x <= xpic + width and ypic <= y <= ypic + height]
-
-    return list(zip(*coords))
+    if coords:
+        return list(zip(*coords))
+    else:
+        return [[], []]
 
 
 def trim_heatmap_timestamps(heatmap, timestamps, pic_geometry):
@@ -189,9 +194,11 @@ def trim_heatmap_timestamps(heatmap, timestamps, pic_geometry):
 
     coords = [[[c[0] - xpic, c[1] - ypic], times] for c, times in zip(zip(*heatmap), timestamps) if
               xpic <= c[0] <= xpic + width and ypic <= c[1] <= ypic + height]
-
-    coord, times = list(zip(*coords))
-    return list(zip(*coord)), times
+    if coords:
+        coord, times = list(zip(*coords))
+        return list(zip(*coord)), times
+    else:
+        return [[], []], []
 
 
 def create_plots(heatmaps, participant_id, dataset_name, calibration=None):
@@ -297,7 +304,7 @@ def plots_from_raws(paths, participant_id):
     for index, path in enumerate(paths):
         print("Starting process of test {} of {} -- {}".format(index + 1, len(paths), path))
         dic = Utilities.read_dic(path)
-        dataset_name = re.findall(r'([^\/]+)\.', path)[0][:-12]
+        dataset_name = re.findall(r'([^\/]+)\.', path)[0]
         # use plot generation for trial-wide calibration
         if 'calibration' in dic:
             total_time += test_calibration(dic, participant_id, dataset_name)

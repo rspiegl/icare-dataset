@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 
 import pandas as pd
 
@@ -14,15 +15,17 @@ PATH = BASE_PATH + '{}/'
 SCORE_CSV_PATH = BASE_PATH + 'scores.csv'
 IMAGE_DURATION_CSV_PATH = BASE_PATH + 'images.csv'
 
-SCORE_CSV_COLUMNS = ['participant', 'dataset', 'p', 'n', 'tp', 'fn', 'fp', 'tn', 'precision', 'recall', 'tnr',
-                     'fnr', 'accuracy', 'f1', 'mean', 'variance', 'duration', 'number']
+SCORE_CSV_COLUMNS = ['participant', 'dataset', 'number', 'p', 'n', 'tp', 'fn', 'fp', 'tn', 'precision', 'recall',
+                     'tnr', 'fnr', 'accuracy', 'f1',
+                     'total_duration', 'images_mean', 'images_variance', 'images_duration', 'images_duration_min',
+                     'images_duration_max',
+                     'pause_mean', 'pause_variance', 'pause_duration', 'pause_duration_min', 'pause_duration_max']
 SCORE_CSV_INDEX = SCORE_CSV_COLUMNS[:2]
 IMAGE_DURATION_CSV_COLUMNS = ['participant', 'dataset', 'image', 'true_value', 'pred_value', 'duration']
 IMAGE_DURATION_CSV_INDEX = IMAGE_DURATION_CSV_COLUMNS[:3]
 
 
 def determine_version(dic):
-    version = None
     if 'calibration' in dic:
         version = RawDataVersion.TESTCALIBRATION
     else:
@@ -37,7 +40,7 @@ def clean_timestamps_from_raws(directory):
         os.rename(file, new_file)
 
 
-def prepare_dataframes(directory, pid):
+def prepare_dataframes(directory, pid, scores=True, images=True):
     files = Utilities.list_files(directory + '*.txt')
     path = PATH.format(pid)
     if not os.path.isdir(path):
@@ -52,55 +55,61 @@ def prepare_dataframes(directory, pid):
         dataset_path = path + dataset + '/'
         version = determine_version(dic)
         geometry = dic['geometry']
+        # score evaluation
         e = TestEvaluation()
         e.evaluate(dic['eyetracking'])
         evals = {'participant': pid, 'dataset': dataset}
         evals.update(e.__dict__)
         score_dics.append(evals)
 
+        if not images:
+            continue
+
         if not os.path.isdir(dataset_path):
             os.makedirs(dataset_path)
 
+        # image evaluation
         for index, trial in enumerate(dic['eyetracking']):
             image_name = re.findall(tp.identifier_regex, trial[0][0])[0]
             image_path = dataset_path + str(index) + '_' + image_name
 
+            # copy file
+            if os.path.exists(trial[0][0]):
+                shutil.copyfile(trial[0][0], image_path + trial[0][0][-4:])
+
             processed = tp.process_picture(trial)
-            timestamps = tp.get_timestamps(processed[3])
-            coords = tp.get_coords_for_heatmaps([processed])
-            calibrated = tp.offset_calibrations(coords, geometry)[0]
-            trimmed, timestamps = tp.trim_heatmap_timestamps(calibrated[1], timestamps, geometry)
+            if processed[3] and not os.path.exists(image_path + '.pkl'):
+                timestamps = tp.get_timestamps(processed[3])
+                coords = tp.get_coords_for_heatmaps([processed])
+                calibrated = tp.offset_calibrations(coords, geometry)[0]
+                trimmed, timestamps = tp.trim_heatmap_timestamps(calibrated[1], timestamps, geometry)
 
-            image_df = pd.DataFrame({'x': trimmed[0], 'y': trimmed[1], 'times': timestamps})
-            image_df.to_pickle(image_path + '.pkl')
+                image_df = pd.DataFrame({'x': trimmed[0], 'y': trimmed[1], 'times': timestamps})
+                image_df.to_pickle(image_path + '.pkl')
 
-            if version == RawDataVersion.TRIALCALIBRATION and len(calibrated) == 3:
-                xs, ys = tp.trim_heatmap(calibrated[2], geometry)
-                image_df = pd.DataFrame({'x': list(xs), 'y': list(ys)})
-                image_df.to_pickle(image_path + '_calibration.pkl')
+                if version == RawDataVersion.TRIALCALIBRATION and len(calibrated) == 3:
+                    xs, ys = tp.trim_heatmap(calibrated[2], geometry)
+                    image_df = pd.DataFrame({'x': list(xs), 'y': list(ys)})
+                    image_df.to_pickle(image_path + '_calibration.pkl')
 
             image_duration = round(processed[2] / 1000, 3)
             image_duration_dic = {'participant': pid, 'dataset': dataset, 'image': image_name,
                                   'true_value': processed[0][1], 'pred_value': processed[1], 'duration': image_duration}
             image_duration_dics.append(image_duration_dic)
 
-    part_score_df = pd.DataFrame(score_dics)
-    image_duration_df = pd.DataFrame(image_duration_dics)
+    if scores:
+        part_score_df = pd.DataFrame(score_dics)
+        save_dataframes(SCORE_CSV_PATH, SCORE_CSV_COLUMNS, part_score_df)
+    if images:
+        image_duration_df = pd.DataFrame(image_duration_dics)
+        save_dataframes(IMAGE_DURATION_CSV_PATH, IMAGE_DURATION_CSV_COLUMNS, image_duration_df)
 
-    # save_dataframes(image_duration_df, part_score_df)
 
-
-def save_dataframes(image_duration_df, part_score_df):
-    if os.path.exists(SCORE_CSV_PATH):
-        score_csv_df = pd.read_csv(SCORE_CSV_PATH)
-        score_csv_df = score_csv_df.append(part_score_df)
+def save_dataframes(path, columns, df):
+    if os.path.exists(path):
+        temp_df = pd.read_csv(path)
+        temp_df = temp_df.append(df, sort=False)
     else:
-        score_csv_df = part_score_df
-    if os.path.exists(IMAGE_DURATION_CSV_PATH):
-        image_csv_df = pd.read_csv(IMAGE_DURATION_CSV_PATH)
-        image_csv_df = image_csv_df.append(image_duration_df)
-    else:
-        image_csv_df = image_duration_df
+        temp_df = df
 
-    score_csv_df.to_csv(SCORE_CSV_PATH, index=False)
-    image_csv_df.to_csv(IMAGE_DURATION_CSV_PATH, index=False)
+    temp_df.to_csv(path, columns=columns, index=False)

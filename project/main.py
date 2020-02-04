@@ -83,6 +83,9 @@ class ProcessThread(QThread):
                 print("no data after creation of calibration")
                 return
             cali_trim = Processor.trim_heatmap(cali_heat, self.pic_geometry)
+            if not cali_trim:
+                print("no data after trimming of calibration")
+                return
             calibration = Processor.create_calibration_histogram(cali_trim, full_path='cali')
             calibration = QPixmap(calibration)
 
@@ -146,7 +149,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.mode = 'live'
 
         self.dataset = DatasetLoader.load_problem(dir_path, number=number, balance=balance)
-        self.reset()
+        self._reset()
 
     def gaze_data_callback(self, gaze_data):
         self.eyetracker_data.append(gaze_data)
@@ -192,7 +195,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def classify(self, category):
         duration = self.timer_end - self.timer_start
-        self.data.append([self.pic, category, duration, self.eyetracker_data, self.calibration_data])
+        self.data.append([self.pic, category, duration, self.eyetracker_data, self.calibration_data,
+                          [self.timer_start, self.timer_end]])
         self.eyetracker_data = []
 
     def end_trial(self, classification: int):
@@ -212,7 +216,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             self.success_counter = 0
             classified = "Incorrect!"
             self.picShow.setStyleSheet("background-color: rgb(255, 51, 51);")  # light red
-        self.picShow.setPixmap(self.calibrate_pixmap)
         # disable buttons
         self._disable_buttons(True)
 
@@ -225,6 +228,7 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
             if self.success_counter >= 7:
                 raise StopIteration
             self.pic = next(self.pics_iter)
+            self.picShow.setPixmap(self.calibrate_pixmap)
             self.inter_trial = False
             self.inter_trial_thread.start()
         except StopIteration:
@@ -242,6 +246,8 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
             if self.start:
+                self.listPicturesTrue.clear()
+                self.listPicturesFalse.clear()
                 self.start_test()
             elif self.inter_trial:
                 self.start_trial()
@@ -290,6 +296,11 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def reset(self):
+        self.listPicturesTrue.clear()
+        self.listPicturesFalse.clear()
+        self._reset()
+
+    def _reset(self):
         self.start = True
         self.remove_response()
         self.picShow.setText("Calibrate the eye tracker!")
@@ -299,8 +310,6 @@ class MainWindowUI(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pics_iter = iter(self.pics)
         self.pic = next(self.pics_iter)
         self.data = []
-        self.listPicturesTrue.clear()
-        self.listPicturesFalse.clear()
         self._disable_buttons(True)
 
     @QtCore.pyqtSlot()
