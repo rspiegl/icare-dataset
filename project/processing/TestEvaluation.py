@@ -48,6 +48,12 @@ class TestEvaluation:
                     continue
                 breaks.append(round((case[3][0]['system_time_stamp'] - prev) / 1000 / 1000, 3))
                 prev = case[3][-1]['system_time_stamp']
+            elif case[5]:
+                if i is 0:
+                    prev = case[5][1]
+                    continue
+                breaks.append(round((case[5][0] - prev) / 1000 / 1000, 3))
+                prev = case[5][1]
 
         self.tp = tp
         self.fn = fn
