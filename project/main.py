@@ -83,7 +83,7 @@ class ProcessThread(QThread):
                 print("no data after creation of calibration")
                 return
             cali_trim = Processor.trim_heatmap(cali_heat, self.pic_geometry)
-            if not cali_trim:
+            if not cali_trim or not cali_trim[0]:
                 print("no data after trimming of calibration")
                 return
             calibration = Processor.create_calibration_histogram(cali_trim, full_path='cali')
