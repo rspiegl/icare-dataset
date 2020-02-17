@@ -21,9 +21,8 @@ SCORE_CSV_COLUMNS = ['participant', 'dataset', 'number', 'p', 'n', 'tp', 'fn', '
                      'images_duration_max',
                      'pause_mean', 'pause_variance', 'pause_duration', 'pause_duration_min', 'pause_duration_max']
 SCORE_CSV_INDEX = SCORE_CSV_COLUMNS[:2]
-IMAGE_DURATION_CSV_COLUMNS = ['participant', 'dataset', 'image', 'true_value', 'pred_value', 'duration']
+IMAGE_DURATION_CSV_COLUMNS = ['participant', 'dataset', 'image', 'true_value', 'pred_value', 'duration', 'break']
 IMAGE_DURATION_CSV_INDEX = IMAGE_DURATION_CSV_COLUMNS[:3]
-
 
 def determine_version(dic):
     if 'calibration' in dic:
@@ -40,7 +39,7 @@ def clean_timestamps_from_raws(directory):
         os.rename(file, new_file)
 
 
-def prepare_dataframes(directory, pid, scores=True, images=True):
+def prepare_dataframes(directory, pid, scores=True, images=True, image_generation=True):
     files = Utilities.list_files(directory + '*.txt')
     path = PATH.format(pid)
     if not os.path.isdir(path):
@@ -62,12 +61,12 @@ def prepare_dataframes(directory, pid, scores=True, images=True):
         evals.update(e.__dict__)
         score_dics.append(evals)
 
-        if not images:
+        if not images and not image_generation:
             continue
 
         if not os.path.isdir(dataset_path):
             os.makedirs(dataset_path)
-
+        prev = 0
         # image evaluation
         for index, trial in enumerate(dic['eyetracking']):
             image_name = re.findall(tp.identifier_regex, trial[0][0])[0]
@@ -78,24 +77,42 @@ def prepare_dataframes(directory, pid, scores=True, images=True):
                 shutil.copyfile(trial[0][0], image_path + trial[0][0][-4:])
 
             processed = tp.process_picture(trial)
-            if processed[3] and not os.path.exists(image_path + '.pkl'):
+            if processed[3] and not os.path.exists(image_path + '.pkl') and image_generation:
                 timestamps = tp.get_timestamps(processed[3])
-                coords = tp.get_coords_for_heatmaps([processed])
-                calibrated = tp.offset_calibrations(coords, geometry)[0]
-                trimmed, timestamps = tp.trim_heatmap_timestamps(calibrated[1], timestamps, geometry)
+                coords = tp.get_coords_for_heatmaps([processed])[0]
 
-                image_df = pd.DataFrame({'x': trimmed[0], 'y': trimmed[1], 'times': timestamps})
+                image_df = pd.DataFrame({'x': coords[1][0], 'y': coords[1][1], 'times': timestamps})
                 image_df.to_pickle(image_path + '.pkl')
 
-                if version == RawDataVersion.TRIALCALIBRATION and len(calibrated) == 3:
-                    xs, ys = tp.trim_heatmap(calibrated[2], geometry)
+                if version == RawDataVersion.TRIALCALIBRATION and len(coords) == 3 and coords[2]:
+                    xs, ys = tp.trim_heatmap(coords[2], geometry)
                     image_df = pd.DataFrame({'x': list(xs), 'y': list(ys)})
                     image_df.to_pickle(image_path + '_calibration.pkl')
 
-            image_duration = round(processed[2] / 1000, 3)
-            image_duration_dic = {'participant': pid, 'dataset': dataset, 'image': image_name,
-                                  'true_value': processed[0][1], 'pred_value': processed[1], 'duration': image_duration}
-            image_duration_dics.append(image_duration_dic)
+            if images:
+                image_duration = round(processed[2] / 1000, 3)
+                # break calculation
+                image_break = None
+                if index == 0:
+                    if len(trial) > 5:
+                        prev = trial[5][1]
+                    elif trial[3]:
+                        prev = trial[3][-1]['system_time_stamp']
+                    elif not trial[3]:
+                        prev = (image_duration + 0.5) * 1000 * 1000
+                else:
+                    if len(trial) > 5:
+                        image_break = round((trial[5][0] - prev) / 1000 / 1000, 3)
+                        prev = trial[5][-1]
+                    elif trial[3]:
+                        image_break = round((trial[3][0]['system_time_stamp'] - prev) / 1000 / 1000, 3)
+                        prev = trial[3][-1]['system_time_stamp']
+                    elif not trial[3]:
+                        prev += (image_duration + 0.5) * 1000 * 1000
+                image_duration_dic = {'participant': pid, 'dataset': dataset, 'image': image_name,
+                                      'true_value': processed[0][1], 'pred_value': processed[1],
+                                      'duration': image_duration, 'break': image_break}
+                image_duration_dics.append(image_duration_dic)
 
     if scores:
         part_score_df = pd.DataFrame(score_dics)
@@ -113,3 +130,7 @@ def save_dataframes(path, columns, df):
         temp_df = df
 
     temp_df.to_csv(path, columns=columns, index=False)
+
+
+def load_scores_dataframe():
+    return pd.read_csv(SCORE_CSV_PATH)

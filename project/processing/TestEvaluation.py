@@ -7,8 +7,9 @@ class TestEvaluation:
         self.p, self.n, self.tp, self.fn, self.fp, self.tn = (0,) * 6
         self.precision, self.recall, self.tnr, self.fnr, self.accuracy = (0,) * 5
         self.f1, self.images_mean, self.images_variance, self.images_duration, self.number = (0,) * 5
-        self.pause_mean, self.pause_variance, self.pause_duration, self.total_duration = (0,) * 4
-        self.images_duration_min, self.images_duration_max, self.pause_duration_min, self.pause_duration_max = (0,) * 4
+        self.total_duration, self.images_duration_min, self.images_duration_max, = (0,) * 3
+        self.pause_mean, self.pause_variance, self.pause_duration, self.pause_duration_min, self.pause_duration_max = (
+                                                                                                                      None,) * 5
 
     def evaluate(self, picture_data, number=35):
         self.number = number
@@ -42,18 +43,21 @@ class TestEvaluation:
                 else:
                     tn = tn + 1
             # break calculation
-            if case[3]:
-                if i is 0:
-                    prev = case[3][-1]['system_time_stamp']
-                    continue
-                breaks.append(round((case[3][0]['system_time_stamp'] - prev) / 1000 / 1000, 3))
-                prev = case[3][-1]['system_time_stamp']
-            elif case[5]:
+            if len(case) > 5 and case[5]:
                 if i is 0:
                     prev = case[5][1]
                     continue
                 breaks.append(round((case[5][0] - prev) / 1000 / 1000, 3))
                 prev = case[5][1]
+            elif case[3]:
+                if i is 0:
+                    prev = case[3][-1]['system_time_stamp']
+                    continue
+                breaks.append(round((case[3][0]['system_time_stamp'] - prev) / 1000 / 1000, 3))
+                prev = case[3][-1]['system_time_stamp']
+            elif not case[3]:
+                # if data is missing for one case add duration of that image to previous timestamp
+                prev += (durations[i] + 0.5) * 1000 * 1000
 
         self.tp = tp
         self.fn = fn

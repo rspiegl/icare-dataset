@@ -141,7 +141,9 @@ class DatasetLoader:
 
 
 def list_files(path):
-    return glob.glob(path)
+    files = glob.glob(path)
+    files.sort(key=os.path.getmtime)
+    return files
 
 
 def read_dic(file):
