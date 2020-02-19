@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 
+import numpy as np
 import pandas as pd
 
 import Utilities
@@ -82,12 +83,14 @@ def prepare_dataframes(directory, pid, scores=True, images=True, image_generatio
                 coords = tp.get_coords_for_heatmaps([processed])[0]
 
                 image_df = pd.DataFrame({'x': coords[1][0], 'y': coords[1][1], 'times': timestamps})
-                image_df.to_pickle(image_path + '.pkl')
+                if not (np.isnan(image_df['x'].values)).all():
+                    image_df.to_pickle(image_path + '.pkl')
 
                 if version == RawDataVersion.TRIALCALIBRATION and len(coords) == 3 and coords[2]:
                     xs, ys = tp.trim_heatmap(coords[2], geometry)
-                    image_df = pd.DataFrame({'x': list(xs), 'y': list(ys)})
-                    image_df.to_pickle(image_path + '_calibration.pkl')
+                    if xs and ys:
+                        image_df = pd.DataFrame({'x': list(xs), 'y': list(ys)})
+                        image_df.to_pickle(image_path + '_calibration.pkl')
 
             if images:
                 image_duration = round(processed[2] / 1000, 3)

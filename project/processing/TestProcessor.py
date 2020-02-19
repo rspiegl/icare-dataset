@@ -51,8 +51,7 @@ def process_picture_eyetracking_data(eyetracking_data):
     gazes = []
     for gaze_data in eyetracking_data:
         gaze = process_gaze_data(gaze_data)
-        if not gaze.is_nan():
-            gazes.append(gaze)
+        gazes.append(gaze)
 
     return gazes
 
