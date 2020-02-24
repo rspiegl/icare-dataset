@@ -1,8 +1,17 @@
+import glob
 import os.path
 import random
 import sys
+from enum import Enum
 
 from datasets.Dataset import Dataset
+
+CUSTOM_EVAL_NAN = {'nan': float('nan')}
+
+
+class RawDataVersion(Enum):
+    TESTCALIBRATION = 1
+    TRIALCALIBRATION = 2
 
 
 class DatasetLoader:
@@ -10,8 +19,13 @@ class DatasetLoader:
     DATASET_RANBOA = 'datasets/chessboard/similarity/random_board_images_big_diff%s/'
     DATASET_ROTIMA = 'datasets/chessboard/symmetry/rot_images_diff%s/'
     DATASET_SVRT = 'datasets/svrt/results_problem_%s/'
-    DATASET_PSVRT = 'datasets/psvrt/%s/'
     DATASET_CATDOG = 'datasets/catdog/'
+    PSVRT_SAME_H = 'datasets/psvrt/same/horizontal/'
+    PSVRT_SAME_V = 'datasets/psvrt/same/vertical/'
+    PSVRT_DIFF_H = 'datasets/psvrt/diff/horizontal/'
+    PSVRT_DIFF_V = 'datasets/psvrt/diff/vertical/'
+    PSVRT = {'sd': [[PSVRT_SAME_H, 1], [PSVRT_SAME_V, 1], [PSVRT_DIFF_H, 0], [PSVRT_DIFF_V, 0]],
+             'sr': [[PSVRT_SAME_V, 1], [PSVRT_DIFF_V, 1], [PSVRT_SAME_H, 0], [PSVRT_DIFF_H, 0]]}
 
     IDENTIFIER_CAMROT = 'camrot'
     IDENTIFIER_RANBOA = 'ranboa'
@@ -46,7 +60,7 @@ class DatasetLoader:
         elif identifier is DatasetLoader.IDENTIFIER_PSVRT:
             if specifier not in ['sd', 'sr']:
                 raise Exception("Wrong identifier for dataset psvrt.")
-            path = DatasetLoader.DATASET_PSVRT % specifier
+            path = specifier
         else:
             raise Exception("Wrong dataset identifier.")
 
@@ -54,6 +68,9 @@ class DatasetLoader:
 
     @staticmethod
     def load_problem(path=(DATASET_CAMROT % 1), number=35, balance=True):
+        if path in ['sd', 'sr']:
+            return DatasetLoader._load_psvrt(path, number)
+
         button1 = 'Category 1'
         button2 = 'Category 2'
         try:
@@ -101,3 +118,35 @@ class DatasetLoader:
             del splitted_lines[-1]
 
         return Dataset(splitted_lines, text1=button1, text2=button2)
+
+    @staticmethod
+    def _load_psvrt(type='sd', number=35):
+        samples = []
+        data_lines = []
+        if number % 4 == 0:
+            samples = [number//4]*4
+        else:
+            q, r = divmod(number, 4)
+            samples = [q + 1] * r + [q] * (4 - r)
+
+        for index, (dirpath, val) in enumerate(DatasetLoader.PSVRT[type]):
+            files = glob.glob(dirpath + '*.png')
+            random.shuffle(files)
+            files = files[:samples[index]]
+            data_lines += [[f.replace('\\', '/'), val] for f in files]
+
+        random.shuffle(data_lines)
+
+        return Dataset(data_lines)
+
+
+def list_files(path):
+    files = glob.glob(path)
+    files.sort(key=os.path.getmtime)
+    return files
+
+
+def read_dic(file):
+    with open(file, 'r') as f:
+        dic = eval(f.read(), CUSTOM_EVAL_NAN)
+    return dic

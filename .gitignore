@@ -561,4 +561,3 @@ project/datasets/chessboard
 project/datasets/psvrt
 project/datasets/svrt
 project/*.txt
-tests/
