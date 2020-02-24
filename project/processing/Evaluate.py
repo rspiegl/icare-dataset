@@ -7,6 +7,8 @@ from PIL import Image
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+from processing.pygazeanalyser import detectors, gazeplotter
+
 DATASETS = ['sr', 'svrt1', 'random_board_images_big_diff5',
             'random_board_images_big_diff1', 'sd', 'svrt19', 'camerarot_diff5',
             'camerarot_diff1', 'svrt20', 'svrt21', 'rot_images_diff5',
@@ -20,6 +22,7 @@ RANGE_PIC = [[0, 512], [0, 512]]
 PLOT_SIZE = [512, 512]
 DPI = 100
 FIG_SIZE = [51.2, 51.2]
+MAX_VEL = 120
 
 
 def range_from_geo(g):
@@ -63,6 +66,29 @@ def trim_image(listxy):
     return np.asarray([c[:, 0], c[:, 1]])
 
 
+def trim_fixations(fix: dict):
+    tx, ty, tdur = [], [], []
+    xpic, ypic, width, height = GEOMETRY
+
+    for x, y, dur in zip(fix['x'], fix['y'], fix['dur']):
+        if xpic <= x <= xpic + width and ypic <= y <= ypic + height:
+            tx.append(x - xpic)
+            ty.append(y - ypic)
+            tdur.append(dur)
+    return {'x': np.asarray(tx), 'y': np.asarray(ty), 'dur': np.asarray(tdur)}
+
+
+def trim_saccades(sac: list):
+    n = []
+    xpic, ypic, width, height = GEOMETRY
+    for st, et, dur, sx, sy, ex, ey in sac:
+        if (xpic <= sx <= xpic + width and ypic <= sy <= ypic + height
+                and xpic <= ex <= xpic + width and ypic <= ey <= ypic + height):
+            n.append([st, et, dur, sx - xpic, sy - ypic, ex - xpic, ey - ypic])
+
+    return n
+
+
 def offset_calibration(image_df: pd.DataFrame, calibration_df: pd.DataFrame):
     xy = image_df.drop('times', axis=1).values
     xy_cali = calibration_df.values
@@ -78,36 +104,68 @@ def offset_calibration(image_df: pd.DataFrame, calibration_df: pd.DataFrame):
     return np.asarray(new, dtype=np.int)
 
 
-def draw_plots(trim: np.ndarray, cali_trim: np.ndarray, image_path: str, save_path: str):
+def draw_plots(trim: np.ndarray, cali_trim: np.ndarray, image_path: str, save_path: str, trim_fix: dict,
+               trim_sac: list, good_path):
     img = Image.open(image_path)
     img = img.resize(PLOT_SIZE)
-    figure = Figure(figsize=(8.4, 4.8), dpi=DPI)
+    figure = Figure(figsize=(18, 11.5), dpi=DPI)
     canvas = FigureCanvas(figure)
-    axes = figure.subplots(ncols=3, nrows=1)
-    axes[0].set_title('Original')
-    axes[0].imshow(img, zorder=1)
+    axes = figure.subplots(ncols=3, nrows=2)
+    axes[0][0].set_title('Original')
+    axes[0][0].imshow(img, zorder=1)
     if trim is not None:
-        axes[1].set_title('Uncalibrated')
-        axes[1].hist2d(trim[0], trim[1], bins=40, range=RANGE_PIC, alpha=0.6, zorder=2, cmin=0.01)
-        axes[1].invert_yaxis()
-        axes[1].imshow(img, zorder=1)
+        axes[0][1].set_title('Uncalibrated')
+        axes[0][1].hist2d(trim[0], trim[1], bins=40, range=RANGE_PIC, alpha=0.6, zorder=2, cmin=0.01)
+        axes[0][1].invert_yaxis()
+        axes[0][1].imshow(img, zorder=1)
     else:
-        axes[1].axis('off')
+        axes[0][1].axis('off')
     if cali_trim is not None:
-        axes[2].set_title('Calibrated')
-        axes[2].hist2d(cali_trim[0], cali_trim[1], bins=40, range=RANGE_PIC, alpha=0.6, zorder=2, cmin=0.01)
-        axes[2].invert_yaxis()
-        axes[2].imshow(img, zorder=1)
+        axes[0][2].set_title('Calibrated')
+        axes[0][2].hist2d(cali_trim[0], cali_trim[1], bins=40, range=RANGE_PIC, alpha=0.6, zorder=2, cmin=0.01)
+        axes[0][2].invert_yaxis()
+        axes[0][2].imshow(img, zorder=1)
     else:
-        axes[2].axis('off')
+        axes[0][2].axis('off')
+    if trim_fix:
+        siz = 3 * (trim_fix['dur'] / 30)
+        axes[1][0].set_title('Fixations')
+        axes[1][0].imshow(img, zorder=1)
+        axes[1][0].scatter(trim_fix['x'], trim_fix['y'], s=siz, marker='o', color='g', alpha=0.7, zorder=2)
+
+        axes[1][1].set_title('Scanpath')
+        axes[1][1].imshow(img, zorder=1)
+        for i in range(len(trim_fix['x'])):
+            axes[1][1].annotate(str(i), (trim_fix['x'][i], trim_fix['y'][i]), zorder=4, alpha=1,
+                                horizontalalignment='center', verticalalignment='center',
+                                multialignment='center')
+
+        if trim_sac:
+            axes[1][2].set_title('Scanpath zoomed with saccades')
+            axes[1][2].scatter(trim_fix['x'], trim_fix['y'], s=siz, marker='o', color='g', alpha=0.2, zorder=2)
+            for i in range(len(trim_fix['x'])):
+                axes[1][2].annotate(str(i), (trim_fix['x'][i], trim_fix['y'][i]), zorder=4, alpha=1,
+                                    horizontalalignment='center', verticalalignment='center',
+                                    multialignment='center')
+            for st, et, dur, sx, sy, ex, ey in trim_sac:
+                axes[1][2].arrow(sx, sy, ex - sx, ey - sy, alpha=0.7, zorder=3, fill=True, shape='full', width=10,
+                                 head_width=20, head_starts_at_zero=False, overhang=0)
+            axes[1][2].invert_yaxis()
+        else:
+            axes[1][2].axis('off')
+    else:
+        axes[1][0].axis('off')
+        axes[1][1].axis('off')
 
     figure.canvas.print_png(save_path)
+    if len(trim_fix['x']) > 4:
+        figure.canvas.print_png(good_path)
     figure.clf()
 
 
-def create_plots(ids=(3, 14)):
+def create_plots(ids=(3, 14), dats=DATASETS):
     for i in range(ids[0], ids[1]):
-        for d in DATASETS:
+        for d in dats:
             print('id: {}, dat: {}'.format(i, d))
             ici = get_file_paths(PATH.format(i, d))
             for im, cali, im_path in ici:
@@ -118,12 +176,22 @@ def create_plots(ids=(3, 14)):
                     cali_trim = trim_image(im_cali)
 
                 trim = trim_image(impk.dropna().drop('times', axis=1).values)
+                _, fixations = detectors.fixation_detection(impk['x'].values, impk['y'].values, impk['times'].values,
+                                                            maxdist=50, mindur=100)
+                _, saccades = detectors.saccade_detection(impk['x'].values, impk['y'].values, impk['times'].values,
+                                                          minlen=20, maxvel=MAX_VEL)
+                trim_fix = trim_fixations(gazeplotter.parse_fixations(fixations))
+                trim_sac = trim_saccades(saccades)
 
                 path = 'plots/{}/{}/'.format(i, d)
                 if not os.path.exists(path):
                     os.makedirs(path)
+                good_path = 'plots/{}/'.format(d)
+                if not os.path.exists(good_path):
+                    os.makedirs(good_path)
                 save_path = path + im.rpartition('/')[-1][:-4] + '.png'
-                draw_plots(trim, cali_trim, im_path, save_path)
+                good_path += str(i) + '_' + im.rpartition('/')[-1][:-4] + '.png'
+                draw_plots(trim, cali_trim, im_path, save_path, trim_fix, trim_sac, good_path)
 
 
 if __name__ == '__main__':
