@@ -83,7 +83,7 @@ class TestEvaluation:
             self.pause_duration = round(sum(breaks), 3)
             self.pause_duration_min = describe.minmax[0]
             self.pause_duration_max = describe.minmax[1]
-        self.total_duration = self.images_duration + int(self.pause_duration or 0)
+        self.total_duration = self.images_duration + float(self.pause_duration or 0)
 
     def as_dict(self):
         return self.__dict__

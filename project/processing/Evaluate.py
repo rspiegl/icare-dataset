@@ -13,7 +13,7 @@ DATASETS = ['sr', 'svrt1', 'random_board_images_big_diff5',
             'random_board_images_big_diff1', 'sd', 'svrt19', 'camerarot_diff5',
             'camerarot_diff1', 'svrt20', 'svrt21', 'rot_images_diff5',
             'rot_images_diff1']
-
+IDS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 GEOMETRY = (703, 54, 512, 512)
 PATH = "processing/prepared/{}/{}/"
 
@@ -138,7 +138,7 @@ def draw_plots(trim: np.ndarray, cali_trim: np.ndarray, image_path: str, save_pa
         for i in range(len(trim_fix['x'])):
             axes[1][1].annotate(str(i), (trim_fix['x'][i], trim_fix['y'][i]), zorder=4, alpha=1,
                                 horizontalalignment='center', verticalalignment='center',
-                                multialignment='center')
+                                multialignment='center', color='g')
 
         if trim_sac:
             axes[1][2].set_title('Scanpath zoomed with saccades')
@@ -177,7 +177,7 @@ def create_plots(ids=(3, 14), dats=DATASETS):
 
                 trim = trim_image(impk.dropna().drop('times', axis=1).values)
                 _, fixations = detectors.fixation_detection(impk['x'].values, impk['y'].values, impk['times'].values,
-                                                            maxdist=50, mindur=100)
+                                                            maxdist=42, mindur=100)
                 _, saccades = detectors.saccade_detection(impk['x'].values, impk['y'].values, impk['times'].values,
                                                           minlen=20, maxvel=MAX_VEL)
                 trim_fix = trim_fixations(gazeplotter.parse_fixations(fixations))

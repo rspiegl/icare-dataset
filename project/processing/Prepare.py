@@ -137,3 +137,7 @@ def save_dataframes(path, columns, df):
 
 def load_scores_dataframe():
     return pd.read_csv(SCORE_CSV_PATH)
+
+
+def load_images_dataframe():
+    return pd.read_csv(IMAGE_DURATION_CSV_PATH)
