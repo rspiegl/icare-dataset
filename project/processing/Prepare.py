@@ -47,7 +47,7 @@ def prepare_dataframes(directory, pid, scores=True, images=True, image_generatio
         os.makedirs(path)
 
     score_dics = []
-    image_duration_dics = []
+    image_dics = []
 
     for file in files:
         dic = Utilities.read_dic(file)
@@ -115,13 +115,13 @@ def prepare_dataframes(directory, pid, scores=True, images=True, image_generatio
                 image_duration_dic = {'participant': pid, 'dataset': dataset, 'image': image_name,
                                       'true_value': processed[0][1], 'pred_value': processed[1],
                                       'duration': image_duration, 'break': image_break}
-                image_duration_dics.append(image_duration_dic)
+                image_dics.append(image_duration_dic)
 
     if scores:
         part_score_df = pd.DataFrame(score_dics)
         save_dataframes(SCORE_CSV_PATH, SCORE_CSV_COLUMNS, part_score_df)
     if images:
-        image_duration_df = pd.DataFrame(image_duration_dics)
+        image_duration_df = pd.DataFrame(image_dics)
         save_dataframes(IMAGE_DURATION_CSV_PATH, IMAGE_DURATION_CSV_COLUMNS, image_duration_df)
 
 

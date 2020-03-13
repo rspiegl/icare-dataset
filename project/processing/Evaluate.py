@@ -23,6 +23,7 @@ PLOT_SIZE = [512, 512]
 DPI = 100
 FIG_SIZE = [51.2, 51.2]
 MAX_VEL = 120
+DEFAULT_CALIBRATION = (6.4, 32.0)
 
 
 def range_from_geo(g):
@@ -104,8 +105,14 @@ def offset_calibration(image_df: pd.DataFrame, calibration_df: pd.DataFrame):
     return np.asarray(new, dtype=np.int)
 
 
+def offset_calibration_default(image_df: pd.DataFrame):
+    xy = image_df.drop('times', axis=1).values
+    new = [[x - DEFAULT_CALIBRATION[0], y - DEFAULT_CALIBRATION[1]] for x, y in xy]
+    return np.asarray(new, dtype=np.int)
+
+
 def draw_plots(trim: np.ndarray, cali_trim: np.ndarray, image_path: str, save_path: str, trim_fix: dict,
-               trim_sac: list, good_path):
+               trim_sac: list, good_path: str = None):
     img = Image.open(image_path)
     img = img.resize(PLOT_SIZE)
     figure = Figure(figsize=(18, 11.5), dpi=DPI)
@@ -158,22 +165,24 @@ def draw_plots(trim: np.ndarray, cali_trim: np.ndarray, image_path: str, save_pa
         axes[1][1].axis('off')
 
     figure.canvas.print_png(save_path)
-    if len(trim_fix['x']) > 4:
+    if good_path and len(trim_fix['x']) > 4:
         figure.canvas.print_png(good_path)
     figure.clf()
 
 
-def create_plots(ids=(3, 14), dats=DATASETS):
+def create_plots(ids=(3, 14), dats=DATASETS, good_pic=True):
     for i in range(ids[0], ids[1]):
         for d in dats:
             print('id: {}, dat: {}'.format(i, d))
             ici = get_file_paths(PATH.format(i, d))
             for im, cali, im_path in ici:
                 impk = pd.read_pickle(im)
-                cali_trim = None
+                im_cali = None
                 if cali:
                     im_cali = offset_calibration(impk.dropna(), pd.read_pickle(cali))
-                    cali_trim = trim_image(im_cali)
+                else:
+                    im_cali = offset_calibration_default(impk.dropna())
+                cali_trim = trim_image(im_cali)
 
                 trim = trim_image(impk.dropna().drop('times', axis=1).values)
                 _, fixations = detectors.fixation_detection(impk['x'].values, impk['y'].values, impk['times'].values,
@@ -191,7 +200,25 @@ def create_plots(ids=(3, 14), dats=DATASETS):
                     os.makedirs(good_path)
                 save_path = path + im.rpartition('/')[-1][:-4] + '.png'
                 good_path += str(i) + '_' + im.rpartition('/')[-1][:-4] + '.png'
-                draw_plots(trim, cali_trim, im_path, save_path, trim_fix, trim_sac, good_path)
+                draw_plots(trim, cali_trim, im_path, save_path, trim_fix, trim_sac, good_path if good_pic else None)
+
+
+def find_middle_lines(ids=(3, 14), dats=DATASETS):
+    for i in range(ids[0], ids[1]):
+        for d in dats:
+            print('id: {}, dat: {}'.format(i, d))
+            ici = get_file_paths(PATH.format(i, d))
+            for im, cali, im_path in ici:
+                pass
+            cont = input(d + " done, e for exit")
+            if cont == "e":
+                print("stopped after {} {}".format(i, d))
+                return
+
+        cont = input("ID " + str(i) + " done, e for exit")
+        if cont == "e":
+            print("stopped at {}".format(i))
+            return
 
 
 if __name__ == '__main__':
