@@ -61,6 +61,6 @@ def get_line_coords(x, y, image_path):
 
     plt.show()
     while True:
-        if plt.waitforbuttonpress():
+        if plt.waitforbuttonpress(10):
             break
     return list(zip(cursor.xs, cursor.ys))

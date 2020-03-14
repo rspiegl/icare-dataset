@@ -1,5 +1,6 @@
 import glob
 import os.path
+import re
 
 import numpy as np
 import pandas as pd
@@ -7,6 +8,7 @@ from PIL import Image
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+from processing import Prepare, InteractiveSelectors
 from processing.pygazeanalyser import detectors, gazeplotter
 
 DATASETS = ['sr', 'svrt1', 'random_board_images_big_diff5',
@@ -16,6 +18,7 @@ DATASETS = ['sr', 'svrt1', 'random_board_images_big_diff5',
 IDS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 GEOMETRY = (703, 54, 512, 512)
 PATH = "processing/prepared/{}/{}/"
+IMAGE_NAME_REGEX = r'[^\/]+\/\d+_([^\/]+)\.'
 
 RANGE_GUI = [[0, 1920], [0, 1160]]
 RANGE_PIC = [[0, 512], [0, 512]]
@@ -204,21 +207,34 @@ def create_plots(ids=(3, 14), dats=DATASETS, good_pic=True):
 
 
 def find_middle_lines(ids=(3, 14), dats=DATASETS):
+    image_df = Prepare.load_images_dataframe().set_index(Prepare.IMAGE_DURATION_CSV_COLUMNS[:3])
+    cont = "c"
     for i in range(ids[0], ids[1]):
         for d in dats:
             print('id: {}, dat: {}'.format(i, d))
             ici = get_file_paths(PATH.format(i, d))
             for im, cali, im_path in ici:
-                pass
+                image_name = re.findall(IMAGE_NAME_REGEX, im_path)[0]
+                impk = pd.read_pickle(im)
+
+                trim = trim_image(impk.dropna().drop('times', axis=1).values)
+                x, y, = trim
+                line_start, line_end = InteractiveSelectors.get_line_coords(x, y, im_path)
+                image_df.at[(i, d, image_name), 'line_start_x'] = line_start[0]
+                image_df.at[(i, d, image_name), 'line_start_y'] = line_start[1]
+                image_df.at[(i, d, image_name), 'line_end_x'] = line_end[0]
+                image_df.at[(i, d, image_name), 'line_end_y'] = line_end[1]
             cont = input(d + " done, e for exit")
             if cont == "e":
                 print("stopped after {} {}".format(i, d))
-                return
-
-        cont = input("ID " + str(i) + " done, e for exit")
+                break
+        if cont != "e":
+            cont = input("ID " + str(i) + " done, e for exit")
         if cont == "e":
             print("stopped at {}".format(i))
-            return
+            break
+
+    image_df.to_csv(Prepare.IMAGE_DURATION_CSV_PATH, columns=Prepare.IMAGE_DURATION_CSV_COLUMNS[3:])
 
 
 if __name__ == '__main__':

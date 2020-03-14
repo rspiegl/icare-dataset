@@ -22,7 +22,8 @@ SCORE_CSV_COLUMNS = ['participant', 'dataset', 'number', 'p', 'n', 'tp', 'fn', '
                      'images_duration_max',
                      'pause_mean', 'pause_variance', 'pause_duration', 'pause_duration_min', 'pause_duration_max']
 SCORE_CSV_INDEX = SCORE_CSV_COLUMNS[:2]
-IMAGE_DURATION_CSV_COLUMNS = ['participant', 'dataset', 'image', 'true_value', 'pred_value', 'duration', 'break']
+IMAGE_DURATION_CSV_COLUMNS = ['participant', 'dataset', 'image', 'true_value', 'pred_value', 'duration', 'break',
+                              'line_start_x', 'line_start_y', 'line_end_x', 'line_end_y', 'switches']
 IMAGE_DURATION_CSV_INDEX = IMAGE_DURATION_CSV_COLUMNS[:3]
 
 def determine_version(dic):
@@ -114,7 +115,8 @@ def prepare_dataframes(directory, pid, scores=True, images=True, image_generatio
                         prev += (image_duration + 0.5) * 1000 * 1000
                 image_duration_dic = {'participant': pid, 'dataset': dataset, 'image': image_name,
                                       'true_value': processed[0][1], 'pred_value': processed[1],
-                                      'duration': image_duration, 'break': image_break}
+                                      'duration': image_duration, 'break': image_break, 'line_start_x': None,
+                                      'line_start_y': None, 'line_end_x': None, 'line_end_y': None, 'switches': None}
                 image_dics.append(image_duration_dic)
 
     if scores:
