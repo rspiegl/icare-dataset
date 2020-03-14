@@ -218,12 +218,13 @@ def find_middle_lines(ids=(3, 14), dats=DATASETS):
                 impk = pd.read_pickle(im)
 
                 trim = trim_image(impk.dropna().drop('times', axis=1).values)
-                x, y, = trim
-                line_start, line_end = InteractiveSelectors.get_line_coords(x, y, im_path)
-                image_df.at[(i, d, image_name), 'line_start_x'] = line_start[0]
-                image_df.at[(i, d, image_name), 'line_start_y'] = line_start[1]
-                image_df.at[(i, d, image_name), 'line_end_x'] = line_end[0]
-                image_df.at[(i, d, image_name), 'line_end_y'] = line_end[1]
+                if trim:
+                    x, y, = trim
+                    line_start, line_end = InteractiveSelectors.get_line_coords(x, y, im_path)
+                    image_df.at[(i, d, image_name), 'line_start_x'] = line_start[0]
+                    image_df.at[(i, d, image_name), 'line_start_y'] = line_start[1]
+                    image_df.at[(i, d, image_name), 'line_end_x'] = line_end[0]
+                    image_df.at[(i, d, image_name), 'line_end_y'] = line_end[1]
             cont = input(d + " done, e for exit")
             if cont == "e":
                 print("stopped after {} {}".format(i, d))
