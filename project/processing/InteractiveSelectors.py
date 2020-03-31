@@ -51,7 +51,7 @@ def get_line_coords(x, y, image_path):
     fig, ax = plt.subplots()
     img = Image.open(image_path)
     img = img.resize((512, 512))
-    ax.hist2d(x, y, bins=40, range=[[0, 512], [0, 512]], alpha=0.6, zorder=2, cmin=0.01)
+    ax.hist2d(x, y, bins=40, range=[[0, 512], [0, 512]], alpha=0.4, zorder=2, cmin=0.01)
     ax.invert_yaxis()
     ax.imshow(img, zorder=1)
     cursor = Cursor(ax)

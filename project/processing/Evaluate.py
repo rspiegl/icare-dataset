@@ -1,4 +1,5 @@
 import glob
+import itertools
 import os.path
 import re
 
@@ -206,7 +207,7 @@ def create_plots(ids=(3, 14), dats=DATASETS, good_pic=True):
                 draw_plots(trim, cali_trim, im_path, save_path, trim_fix, trim_sac, good_path if good_pic else None)
 
 
-def find_middle_lines(ids=(3, 14), dats=DATASETS):
+def find_middle_lines(ids=(3, 15), dats=DATASETS):
     image_df = Prepare.load_images_dataframe().set_index(Prepare.IMAGE_DURATION_CSV_COLUMNS[:3])
     cont = "c"
     for i in range(ids[0], ids[1]):
@@ -218,22 +219,43 @@ def find_middle_lines(ids=(3, 14), dats=DATASETS):
                 impk = pd.read_pickle(im)
 
                 trim = trim_image(impk.dropna().drop('times', axis=1).values)
-                if trim:
+                if trim is not None:
                     x, y, = trim
                     line_start, line_end = InteractiveSelectors.get_line_coords(x, y, im_path)
                     image_df.at[(i, d, image_name), 'line_start_x'] = line_start[0]
                     image_df.at[(i, d, image_name), 'line_start_y'] = line_start[1]
                     image_df.at[(i, d, image_name), 'line_end_x'] = line_end[0]
                     image_df.at[(i, d, image_name), 'line_end_y'] = line_end[1]
-            cont = input(d + " done, e for exit")
-            if cont == "e":
-                print("stopped after {} {}".format(i, d))
-                break
-        if cont != "e":
-            cont = input("ID " + str(i) + " done, e for exit")
+
+        cont = input("ID " + str(i) + " done, e for exit")
         if cont == "e":
             print("stopped at {}".format(i))
             break
+
+    image_df.to_csv(Prepare.IMAGE_DURATION_CSV_PATH, columns=Prepare.IMAGE_DURATION_CSV_COLUMNS[3:])
+
+
+def calculate_switches(ids=(3, 4), dats=['sr']):
+    image_df = Prepare.load_images_dataframe().set_index(Prepare.IMAGE_DURATION_CSV_COLUMNS[:3])
+    for i in range(ids[0], ids[1]):
+        for d in dats:
+            print('id: {}, dat: {}'.format(i, d))
+            ici = get_file_paths(PATH.format(i, d))
+            for im, cali, im_path in ici:
+                image_name = re.findall(IMAGE_NAME_REGEX, im_path)[0]
+                impk = pd.read_pickle(im)
+
+                trim = trim_image(impk.dropna().drop('times', axis=1).values)
+                if trim is not None:
+                    xy = np.column_stack(trim)
+                    line_start = np.array((image_df.at[(i, d, image_name), 'line_start_x'], image_df.at[(i, d, image_name), 'line_start_y']))
+                    line_end = np.array((image_df.at[(i, d, image_name), 'line_end_x'], image_df.at[(i, d, image_name), 'line_end_y']))
+                    line_vec = line_end - line_start
+                    calculate_cross = lambda x: np.cross(line_vec, (x - line_start))
+                    cross_product = calculate_cross(xy)
+                    # remove 1 because first number is no sign switch
+                    switches = len(list(itertools.groupby(cross_product, lambda y: y > 0))) - 1
+                    image_df.at[(i, d, image_name), 'switches'] = switches
 
     image_df.to_csv(Prepare.IMAGE_DURATION_CSV_PATH, columns=Prepare.IMAGE_DURATION_CSV_COLUMNS[3:])
 
