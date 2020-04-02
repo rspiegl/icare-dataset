@@ -208,7 +208,7 @@ def create_plots(ids=(3, 14), dats=DATASETS, good_pic=True):
 
 
 def find_middle_lines(ids=(3, 15), dats=DATASETS):
-    image_df = Prepare.load_images_dataframe().set_index(Prepare.IMAGE_DURATION_CSV_COLUMNS[:3])
+    image_df = Prepare.load_images_dataframe()
     cont = "c"
     for i in range(ids[0], ids[1]):
         for d in dats:
@@ -232,11 +232,11 @@ def find_middle_lines(ids=(3, 15), dats=DATASETS):
             print("stopped at {}".format(i))
             break
 
-    image_df.to_csv(Prepare.IMAGE_DURATION_CSV_PATH, columns=Prepare.IMAGE_DURATION_CSV_COLUMNS[3:])
+    image_df.to_csv(Prepare.IMAGE_CSV_PATH, columns=Prepare.IMAGE_CSV_COLUMNS[3:])
 
 
 def calculate_switches(ids=(3, 4), dats=['sr']):
-    image_df = Prepare.load_images_dataframe().set_index(Prepare.IMAGE_DURATION_CSV_COLUMNS[:3])
+    image_df = Prepare.load_images_dataframe()
     for i in range(ids[0], ids[1]):
         for d in dats:
             print('id: {}, dat: {}'.format(i, d))
@@ -257,7 +257,7 @@ def calculate_switches(ids=(3, 4), dats=['sr']):
                     switches = len(list(itertools.groupby(cross_product, lambda y: y > 0))) - 1
                     image_df.at[(i, d, image_name), 'switches'] = switches
 
-    image_df.to_csv(Prepare.IMAGE_DURATION_CSV_PATH, columns=Prepare.IMAGE_DURATION_CSV_COLUMNS[3:])
+    image_df.to_csv(Prepare.IMAGE_CSV_PATH, columns=Prepare.IMAGE_CSV_COLUMNS[3:])
 
 
 if __name__ == '__main__':

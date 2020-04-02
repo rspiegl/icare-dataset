@@ -14,7 +14,7 @@ BASE_PATH = 'processing/prepared/'
 PATH = BASE_PATH + '{}/'
 
 SCORE_CSV_PATH = BASE_PATH + 'scores.csv'
-IMAGE_DURATION_CSV_PATH = BASE_PATH + 'images.csv'
+IMAGE_CSV_PATH = BASE_PATH + 'images.csv'
 
 SCORE_CSV_COLUMNS = ['participant', 'dataset', 'number', 'p', 'n', 'tp', 'fn', 'fp', 'tn', 'precision', 'recall',
                      'tnr', 'fnr', 'accuracy', 'f1',
@@ -22,9 +22,10 @@ SCORE_CSV_COLUMNS = ['participant', 'dataset', 'number', 'p', 'n', 'tp', 'fn', '
                      'images_duration_max',
                      'pause_mean', 'pause_variance', 'pause_duration', 'pause_duration_min', 'pause_duration_max']
 SCORE_CSV_INDEX = SCORE_CSV_COLUMNS[:2]
-IMAGE_DURATION_CSV_COLUMNS = ['participant', 'dataset', 'image', 'true_value', 'pred_value', 'duration', 'break',
-                              'line_start_x', 'line_start_y', 'line_end_x', 'line_end_y', 'switches']
-IMAGE_DURATION_CSV_INDEX = IMAGE_DURATION_CSV_COLUMNS[:3]
+IMAGE_CSV_COLUMNS = ['participant', 'dataset', 'image', 'true_value', 'pred_value', 'duration', 'break',
+                     'line_start_x', 'line_start_y', 'line_end_x', 'line_end_y', 'switches']
+IMAGE_CSV_INDEX = IMAGE_CSV_COLUMNS[:3]
+
 
 def determine_version(dic):
     if 'calibration' in dic:
@@ -124,7 +125,7 @@ def prepare_dataframes(directory, pid, scores=True, images=True, image_generatio
         save_dataframes(SCORE_CSV_PATH, SCORE_CSV_COLUMNS, part_score_df)
     if images:
         image_duration_df = pd.DataFrame(image_dics)
-        save_dataframes(IMAGE_DURATION_CSV_PATH, IMAGE_DURATION_CSV_COLUMNS, image_duration_df)
+        save_dataframes(IMAGE_CSV_PATH, IMAGE_CSV_COLUMNS, image_duration_df)
 
 
 def save_dataframes(path, columns, df):
@@ -138,8 +139,8 @@ def save_dataframes(path, columns, df):
 
 
 def load_scores_dataframe():
-    return pd.read_csv(SCORE_CSV_PATH)
+    return pd.read_csv(SCORE_CSV_PATH, index_col=['participant', 'dataset'])
 
 
 def load_images_dataframe():
-    return pd.read_csv(IMAGE_DURATION_CSV_PATH)
+    return pd.read_csv(IMAGE_CSV_PATH, index_col=['participant', 'dataset', 'image'])
