@@ -37,7 +37,10 @@
 
 __author__ = "Edwin Dalmaijer"
 
+import math
 import numpy
+
+from itertools import combinations
 
 
 def blink_detection(x, y, time, missing=0.0, minlen=10):
@@ -169,6 +172,86 @@ def fixation_detection(x, y, time, maxdist=25, mindur=50):
     if len(Sfix) > len(Efix):
         Efix.append([Sfix[-1][0], time[len(x) - 1], time[len(x) - 1] - Sfix[-1][0], x[si], y[si]])
     return Sfix, Efix
+
+
+def fixation_detection_dd(x, y, time, maxdist=25, mindur=50):
+    """Detects fixations, defined as consecutive samples with an inter-sample
+    distance of less than a set amount of pixels (disregarding missing data)
+
+    arguments
+
+    x		-	numpy array of x positions
+    y		-	numpy array of y positions
+    time		-	numpy array of EyeTribe timestamps
+
+    keyword arguments
+
+    missing	-	value to be used for missing data (default = 0.0)
+    maxdist	-	maximal inter sample distance in pixels (default = 25)
+    mindur	-	minimal duration of a fixation in milliseconds; detected
+                fixation cadidates will be disregarded if they are below
+                this duration (default = 100)
+
+    returns
+    Sfix, Efix
+                Sfix	-	list of lists, each containing [starttime]
+                Efix	-	list of lists, each containing [starttime, endtime, duration, endx, endy]
+    """
+
+    x, y, time = remove_missing(x, y, time)
+
+    # empty list to contain data
+    Sfix = []
+    Efix = []
+    # loop through all coordinates
+    si = 0
+    fixstart = False
+    timeframe_points = mindur / 1000 * 60
+    i = 0
+    while si < len(x):
+        points = numpy.array([[x[si], y[si]]])
+        i = math.ceil(si + timeframe_points) + 1
+        if i >= len(x):
+            break
+
+        for a in range(si+1, i):
+            points = numpy.append(points, [[x[a], y[a]]], axis=0)
+        dist = get_max_dist_points(points)
+
+        if dist <= maxdist:
+            p = numpy.array([x[i],y[i]])
+            dist = get_max_dist(points, p)
+            while dist <= maxdist:
+                points = numpy.append(points, [p], axis=0)
+                i += 1
+                if i >= len(x):
+                    break
+
+                p = numpy.array([x[i],y[i]])
+                dist = get_max_dist(points, p)
+
+            fix = numpy.average(points, axis=0)
+            Sfix.append([time[si]])
+            Efix.append([time[si], time[i-1], time[i-1] - time[si], fix[0], fix[1]])
+            si = i
+        else:
+            si += 1
+
+    return Sfix, Efix
+
+
+def get_max_dist_points(points: list):
+    vectors = numpy.array([r-s for r,s in combinations(points, 2)]).__abs__()
+    amax = numpy.amax(vectors, axis=0)
+    return dist_euclidean(amax)
+
+def get_max_dist(points: list, p: list):
+        max_vector = numpy.amax((points-p).__abs__(), axis=0)
+        return dist_euclidean(max_vector)
+
+
+def dist_euclidean(coordinate: list):
+    return (coordinate[0] ** 2 + coordinate[1] ** 2) ** 0.5
 
 
 def saccade_detection(x, y, time, minlen=5, maxvel=40, maxacc=340):

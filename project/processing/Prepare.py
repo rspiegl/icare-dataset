@@ -22,9 +22,10 @@ SCORE_CSV_COLUMNS = ['participant', 'dataset', 'number', 'p', 'n', 'tp', 'fn', '
                      'images_duration_max',
                      'pause_mean', 'pause_variance', 'pause_duration', 'pause_duration_min', 'pause_duration_max']
 SCORE_CSV_INDEX = SCORE_CSV_COLUMNS[:2]
-IMAGE_CSV_COLUMNS = ['participant', 'dataset', 'image', 'true_value', 'pred_value', 'duration', 'break',
-                     'line_start_x', 'line_start_y', 'line_end_x', 'line_end_y', 'switches']
-IMAGE_CSV_INDEX = IMAGE_CSV_COLUMNS[:3]
+IMAGE_CSV_COLUMNS = ['trial', 'true_value', 'pred_value', 'duration', 'break',
+                     'switches_fixations', 'fixations', 'p_nan', 'len', 'switches',
+                     'line_start_x', 'line_start_y', 'line_end_x', 'line_end_y']
+IMAGE_CSV_INDEX = ['participant', 'dataset', 'image']
 
 
 def determine_version(dic):
