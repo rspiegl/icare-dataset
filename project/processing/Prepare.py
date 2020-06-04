@@ -16,15 +16,18 @@ PATH = BASE_PATH + '{}/'
 SCORE_CSV_PATH = BASE_PATH + 'scores.csv'
 IMAGE_CSV_PATH = BASE_PATH + 'images.csv'
 
-SCORE_CSV_COLUMNS = ['participant', 'dataset', 'number', 'p', 'n', 'tp', 'fn', 'fp', 'tn', 'precision', 'recall',
+SCORE_CSV_COLUMNS = ['number', 'p', 'n', 'tp', 'fn', 'fp', 'tn', 'precision', 'recall',
                      'tnr', 'fnr', 'accuracy', 'f1',
                      'total_duration', 'images_mean', 'images_variance', 'images_duration', 'images_duration_min',
                      'images_duration_max',
                      'pause_mean', 'pause_variance', 'pause_duration', 'pause_duration_min', 'pause_duration_max']
-SCORE_CSV_INDEX = SCORE_CSV_COLUMNS[:2]
+SCORE_CSV_DROP = ['images_mean', 'images_variance', 'images_duration_min', 'images_duration_max',
+                  'pause_mean', 'pause_variance', 'pause_duration_min', 'pause_duration_max']
+SCORE_CSV_INDEX = ['participant', 'dataset']
 IMAGE_CSV_COLUMNS = ['trial', 'true_value', 'pred_value', 'duration', 'break',
                      'switches_fixations', 'fixations', 'p_nan', 'len', 'switches',
                      'line_start_x', 'line_start_y', 'line_end_x', 'line_end_y']
+IMAGE_CSV_DROPS = ['line_start_x', 'line_start_y', 'line_end_x', 'line_end_y']
 IMAGE_CSV_INDEX = ['participant', 'dataset', 'image']
 
 
@@ -122,10 +125,10 @@ def prepare_dataframes(directory, pid, scores=True, images=True, image_generatio
                 image_dics.append(image_duration_dic)
 
     if scores:
-        part_score_df = pd.DataFrame(score_dics)
+        part_score_df = pd.DataFrame(score_dics, index=SCORE_CSV_INDEX)
         save_dataframes(SCORE_CSV_PATH, SCORE_CSV_COLUMNS, part_score_df)
     if images:
-        image_duration_df = pd.DataFrame(image_dics)
+        image_duration_df = pd.DataFrame(image_dics, index=IMAGE_CSV_INDEX)
         save_dataframes(IMAGE_CSV_PATH, IMAGE_CSV_COLUMNS, image_duration_df)
 
 
@@ -136,12 +139,12 @@ def save_dataframes(path, columns, df):
     else:
         temp_df = df
 
-    temp_df.to_csv(path, columns=columns, index=False)
+    temp_df.to_csv(path)
 
 
 def load_scores_dataframe():
-    return pd.read_csv(SCORE_CSV_PATH, index_col=['participant', 'dataset'])
+    return pd.read_csv(SCORE_CSV_PATH, index_col=SCORE_CSV_INDEX)
 
 
 def load_images_dataframe():
-    return pd.read_csv(IMAGE_CSV_PATH, index_col=['participant', 'dataset', 'image'])
+    return pd.read_csv(IMAGE_CSV_PATH, index_col=IMAGE_CSV_INDEX)

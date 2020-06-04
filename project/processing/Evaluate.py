@@ -19,6 +19,7 @@ DATASETS = ['sr', 'svrt1', 'random_board_images_big_diff5',
 GEOMETRY = (703, 54, 512, 512)
 PATH = "processing/prepared/{}/{}/"
 IMAGE_NAME_REGEX = r'[^\/]+\/\d+_([^\/]+)\.'
+IMAGE_NUMBER_REGEX = r'[^\/]+\/(\d+)_[^\/]+\.'
 STAT_STRING = "Duration: {}\nSwitches fixations: {}\n% NaN: {}\nPredicted: {}\nTrue: {}"
 
 RANGE_GUI = [[0, 1920], [0, 1160]]
@@ -35,9 +36,13 @@ def range_from_geo(g):
     return [[g[0], g[0] + g[2]], [g[1], g[1] + g[3]]]
 
 
+def get_trial(file1: str) -> int:
+    return int(re.findall(IMAGE_NUMBER_REGEX, file1)[0])
+
+
 def get_file_paths(path):
     f = glob.glob(path + '*.pkl')
-    f.sort(key=os.path.getmtime)
+    f.sort(key=get_trial)
     images = [i for i in f if 'calibration' not in i]
     files = []
     for image in images:
