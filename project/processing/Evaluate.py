@@ -233,16 +233,25 @@ def calculate_switches(ids=(3, 15), dats=DATASETS):
                 trim = trim_image(impk.dropna().drop('times', axis=1).values)
                 if trim is not None:
                     xy = np.column_stack(trim)
-                    line_start = np.array((image_df.at[(i, d, image_name), 'line_start_x'], image_df.at[(i, d, image_name), 'line_start_y']))
-                    line_end = np.array((image_df.at[(i, d, image_name), 'line_end_x'], image_df.at[(i, d, image_name), 'line_end_y']))
-                    line_vec = line_end - line_start
-                    calculate_cross = lambda x: np.cross(line_vec, (x - line_start))
-                    cross_product = calculate_cross(xy)
-                    # remove 1 because first number is no sign switch
-                    switches = len(list(itertools.groupby(cross_product, lambda y: y > 0))) - 1
+                    switches = _calculate_switches(d, i, image_df, image_name, xy)
                     image_df.at[(i, d, image_name), 'switches'] = switches
 
     image_df.to_csv(Prepare.IMAGE_CSV_PATH)
+
+
+def _calculate_switches(d, i, image_df, image_name, xy):
+    line_start = np.array(
+        (image_df.at[(i, d, image_name), 'line_start_x'], image_df.at[(i, d, image_name), 'line_start_y']))
+    line_end = np.array((image_df.at[(i, d, image_name), 'line_end_x'], image_df.at[(i, d, image_name), 'line_end_y']))
+    line_vec = line_end - line_start
+
+    def calculate_cross(x): return np.cross(line_vec, (x - line_start))
+
+    cross_product = calculate_cross(xy)
+    # remove 1 because first number is no sign switch
+    switches = len(list(itertools.groupby(cross_product, lambda y: y > 0))) - 1
+    return switches
+
 
 def calculate_fixation_switches(ids=(3, 15), dats=DATASETS):
     image_df = Prepare.load_images_dataframe()
@@ -255,20 +264,15 @@ def calculate_fixation_switches(ids=(3, 15), dats=DATASETS):
                 impk = pd.read_pickle(im)
 
                 _, fixations = detectors.fixation_detection_dd(impk['x'].values, impk['y'].values, impk['times'].values,
-                                                            maxdist=42, mindur=100)
+                                                               maxdist=42, mindur=100)
                 trim_fix = trim_fixations(gazeplotter.parse_fixations(fixations))
                 if trim_fix['x'] is not None and trim_fix['x'].any():
                     xy = np.column_stack((trim_fix['x'], trim_fix['y']))
-                    line_start = np.array((image_df.at[(i, d, image_name), 'line_start_x'], image_df.at[(i, d, image_name), 'line_start_y']))
-                    line_end = np.array((image_df.at[(i, d, image_name), 'line_end_x'], image_df.at[(i, d, image_name), 'line_end_y']))
-                    line_vec = line_end - line_start
-                    calculate_cross = lambda x: np.cross(line_vec, (x - line_start))
-                    cross_product = calculate_cross(xy)
-                    # remove 1 because first number is no sign switch
-                    switches = len(list(itertools.groupby(cross_product, lambda y: y > 0))) - 1
+                    switches = _calculate_switches(d, i, image_df, image_name, xy)
                     image_df.at[(i, d, image_name), 'switches_fixations'] = switches
 
     image_df.to_csv(Prepare.IMAGE_CSV_PATH)
+
 
 def calculate_fixations(ids=(3, 15), dats=DATASETS):
     image_df = Prepare.load_images_dataframe()
@@ -281,11 +285,12 @@ def calculate_fixations(ids=(3, 15), dats=DATASETS):
                 impk = pd.read_pickle(im)
 
                 _, fixations = detectors.fixation_detection_dd(impk['x'].values, impk['y'].values, impk['times'].values,
-                                                            maxdist=42, mindur=100)
+                                                               maxdist=42, mindur=100)
                 trim_fix = trim_fixations(gazeplotter.parse_fixations(fixations))
                 image_df.at[(i, d, image_name), 'fixations'] = len(trim_fix['x'])
 
     image_df.to_csv(Prepare.IMAGE_CSV_PATH)
+
 
 def calculate_nan(ids=(3, 15), dats=DATASETS):
     image_df = Prepare.load_images_dataframe()
@@ -299,7 +304,7 @@ def calculate_nan(ids=(3, 15), dats=DATASETS):
                 if len(impk) == 0:
                     nan = 100
                 else:
-                    nan = round(100 - (impk['x'].count() / len(impk) * 100),2)
+                    nan = round(100 - (impk['x'].count() / len(impk) * 100), 2)
                 image_df.at[(i, d, image_name), 'p_nan'] = nan
                 image_df.at[(i, d, image_name), 'len'] = len(impk)
 
