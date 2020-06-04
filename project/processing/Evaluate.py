@@ -312,6 +312,7 @@ def calculate_nan(ids=(3, 15), dats=DATASETS):
 
 
 def fix_trial_number(ids=(3, 15), dats=DATASETS):
+    # when moving to one function use image files for trial number
     image_df = Prepare.load_images_dataframe()
     for i in range(ids[0], ids[1]):
         for d in dats:
