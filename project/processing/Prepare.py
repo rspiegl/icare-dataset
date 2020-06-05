@@ -101,7 +101,7 @@ def prepare_dataframes(directory, pid, scores=True, images=True, image_generatio
             if images:
                 image_duration = round(processed[2] / 1000, 3)
                 # break calculation
-                image_break = None
+                image_break = 0
                 if index == 0:
                     if len(trial) > 5:
                         prev = trial[5][1]
