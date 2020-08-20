@@ -20,7 +20,7 @@ GEOMETRY = (703, 54, 512, 512)
 PATH = "processing/prepared/{}/{}/"
 IMAGE_NAME_REGEX = r'[^\/]+\/\d+_([^\/]+)\.'
 IMAGE_NUMBER_REGEX = r'[^\/]+\/(\d+)_[^\/]+\.'
-STAT_STRING = "Duration: {}\nSwitches fixations: {}\n% NaN: {}\nPredicted: {}\nTrue: {}"
+STAT_STRING = "Duration: {} seconds\nSwitches fixations: {}\nFixations: {}\n% NaN: {}\nPredicted: {}\nTrue: {}"
 
 RANGE_GUI = [[0, 1920], [0, 1160]]
 RANGE_PIC = [[0, 512], [0, 512]]
@@ -121,7 +121,7 @@ def offset_calibration_default(image_df: pd.DataFrame):
     return np.asarray(new, dtype=np.int)
 
 
-def draw_plots(trim_fix: dict, cali_trim_fix: dict, stat_string: str, image_path: str, save_path: str, ):
+def draw_plots(trim_fix: dict, stat_string: str, image_path: str, save_path: str, ):
     img = Image.open(image_path)
     img = img.resize(PLOT_SIZE)
     figure = Figure(figsize=(10, 10), dpi=DPI)
@@ -135,25 +135,18 @@ def draw_plots(trim_fix: dict, cali_trim_fix: dict, stat_string: str, image_path
                       range=RANGE_PIC, alpha=0.8, zorder=2, cmin=0.0001)
     axes[0][1].invert_yaxis()
     axes[0][1].imshow(img, zorder=1)
-    axes[1][0].set_title('Stats')
-    axes[1][0].text(0.01, 0.99, stat_string, horizontalalignment='left',
-                    verticalalignment='top', multialignment='left')
-    if cali_trim_fix is not None:
-        axes[1][1].set_title('Numbered Fixations')
-        axes[1][1].imshow(img, zorder=1)
-        for i in range(len(cali_trim_fix['x'])):
-            axes[1][1].annotate(str(i), (cali_trim_fix['x'][i], cali_trim_fix['y'][i]), zorder=4, alpha=1,
-                                horizontalalignment='center', verticalalignment='center',
-                                multialignment='center', color='g')
 
-        axes[1][2].set_title('Fixation Heatmap')
-        axes[1][2].hist2d(cali_trim_fix['x'], cali_trim_fix['y'], weights=cali_trim_fix['dur'], bins=BINS,
-                          range=RANGE_PIC, alpha=0.8, zorder=2, cmin=0.001)
-        axes[1][2].invert_yaxis()
-        axes[1][2].imshow(img, zorder=1)
-    else:
-        axes[1][1].axis('off')
-        axes[1][2].axis('off')
+    axes[1][0].set_title('Numbered Fixations')
+    axes[1][0].imshow(img, zorder=1)
+    for i in range(len(trim_fix['x'])):
+        axes[1][0].annotate(str(i), (trim_fix['x'][i], trim_fix['y'][i]), zorder=4, alpha=1,
+                            horizontalalignment='center', verticalalignment='center',
+                            multialignment='center', color='g')
+
+    axes[1][1].set_title('Stats')
+    axes[1][1].text(0.01, 0.99, stat_string, horizontalalignment='left',
+                    verticalalignment='top', multialignment='left')
+
     figure.canvas.print_png(save_path)
     figure.clf()
 
@@ -164,33 +157,27 @@ def create_plots(ids=(3, 15), dats=DATASETS):
         for d in dats:
             print('id: {}, dat: {}'.format(i, d))
             ici = get_file_paths(PATH.format(i, d))
-            for im, cali, im_path in ici:
+            for im, _, im_path in ici:
                 image_name = re.findall(IMAGE_NAME_REGEX, im_path)[0]
                 impk = pd.read_pickle(im)
-                if cali:
-                    im_cali = offset_calibration(impk.dropna(), pd.read_pickle(cali))
-                else:
-                    im_cali = offset_calibration_default(impk.dropna())
 
                 _, fixations = detectors.fixation_detection_dd(impk['x'].values, impk['y'].values, impk['times'].values,
                                                                maxdist=42, mindur=100)
                 trim_fix = trim_fixations(gazeplotter.parse_fixations(fixations))
-                _, fixations = detectors.fixation_detection_dd(im_cali[:, 0], im_cali[:, 1], im_cali[:, 2],
-                                                               maxdist=42, mindur=100)
-                cali_trim_fix = trim_fixations(gazeplotter.parse_fixations(fixations))
                 stat_string = STAT_STRING.format(
-                    image_df.at[(i, d, image_name), 'duration'],
+                    round(image_df.at[(i, d, image_name), 'duration'], 2),
                     image_df.at[(i, d, image_name), 'switches_fixations'],
-                    round(100 - (impk['x'].count() / len(impk) * 100), 2),
+                    image_df.at[(i, d, image_name), 'fixations'],
+                    image_df.at[(i, d, image_name), 'p_nan'],
                     image_df.at[(i, d, image_name), 'pred_value'],
                     image_df.at[(i, d, image_name), 'true_value']
                 )
-                good_path = 'plot/{}/'.format(d)
-                if not os.path.exists(good_path):
-                    os.makedirs(good_path)
-                good_path += str(i) + '_' + im.rpartition('/')[-1][:-4] + '.png'
-                if len(trim_fix['x']) > 0 and len(cali_trim_fix['x']) > 0:
-                    draw_plots(trim_fix, cali_trim_fix, stat_string, im_path, good_path)
+                save_path = 'plots/{}/'.format(d)
+                if not os.path.exists(save_path):
+                    os.makedirs(save_path)
+                save_path += str(i) + '_' + im.rpartition('/')[-1][:-4] + '.png'
+                if len(trim_fix['x']) > 0:
+                    draw_plots(trim_fix, stat_string, im_path, save_path)
 
 
 def find_middle_lines(ids=(3, 15), dats=DATASETS):

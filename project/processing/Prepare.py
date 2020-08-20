@@ -16,20 +16,24 @@ PATH = BASE_PATH + '{}/'
 SCORE_CSV_PATH = BASE_PATH + 'scores.csv'
 IMAGE_CSV_PATH = BASE_PATH + 'images.csv'
 
-SCORE_CSV_COLUMNS = ['number', 'p', 'n', 'tp', 'fn', 'fp', 'tn', 'precision', 'recall',
+SCORE_CSV_COLUMNS = ['number', 'score', 'rule', 'solved', 'hard', 'p', 'n', 'tp', 'fn', 'fp', 'tn', 'precision',
+                     'recall',
                      'tnr', 'fnr', 'accuracy', 'f1',
                      'total_duration', 'images_mean', 'images_variance', 'images_duration', 'images_duration_min',
                      'images_duration_max',
                      'pause_mean', 'pause_variance', 'pause_duration', 'pause_duration_min', 'pause_duration_max']
-SCORE_CSV_DROP = ['images_mean', 'images_variance', 'images_duration_min', 'images_duration_max',
+SCORE_CSV_DROP = ['p', 'n', 'tp', 'fn', 'fp', 'tn', 'images_mean', 'images_variance', 'images_duration_min',
+                  'images_duration_max',
                   'pause_mean', 'pause_variance', 'pause_duration_min', 'pause_duration_max']
 SCORE_CSV_INDEX = ['participant', 'dataset']
 IMAGE_CSV_COLUMNS = ['trial', 'true_value', 'pred_value', 'duration', 'break',
                      'switches_fixations', 'fixations', 'p_nan', 'len', 'switches',
                      'line_start_x', 'line_start_y', 'line_end_x', 'line_end_y']
-IMAGE_CSV_DROPS = ['line_start_x', 'line_start_y', 'line_end_x', 'line_end_y']
+IMAGE_CSV_DROP = ['line_start_x', 'line_start_y', 'line_end_x', 'line_end_y']
 IMAGE_CSV_INDEX = ['participant', 'dataset', 'image']
 
+
+# TODO: analyse histograms of fixswitches
 
 def determine_version(dic):
     if 'calibration' in dic:
