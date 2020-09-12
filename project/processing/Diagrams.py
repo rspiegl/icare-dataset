@@ -14,12 +14,13 @@ FILE = '{}.png'
 SWITCHES = 'switches'
 REPLACE = {'sr': 'SR', 'sd': 'SD', 'svrt1': 'SVRT1', 'svrt19': 'SVRT19', 'svrt20': 'SVRT20', 'svrt21': 'SVRT21',
            'random_board_images_big_diff5': 'RBI_5', 'random_board_images_big_diff1': 'RBI_1',
-           'camerarot_diff5': 'CR_5', 'camerarot_diff1': 'CR_1', 'rot_images_diff5': 'RI_5', 'rot_images_diff1': 'RI_1'}
-DATASETS = ['SR', 'SVRT1', 'RBI_5', 'RBI_1', 'SD', 'SVRT19', 'CR_5', 'CR_1', 'SVRT20', 'SVRT21', 'RI_5', 'RI_1']
+           'camerarot_diff5': 'FP_5', 'camerarot_diff1': 'FP_1', 'rot_images_diff5': 'RI_5', 'rot_images_diff1': 'RI_1'}
+DATASETS = ['SR', 'SVRT1', 'RBI_5', 'RBI_1', 'SD', 'SVRT19', 'FP_5', 'FP_1', 'SVRT20', 'SVRT21', 'RI_5', 'RI_1']
 
 
-def switches_histogram():
-    df = load_images_dataframe()
+def switches_histogram(df=None):
+    if df is None:
+        df = load_images_dataframe()
     gb = df.groupby('dataset')
     for d in DATASETS:
         group = gb.get_group(d)
@@ -32,10 +33,11 @@ def create_histogram(data, directory: str, file: str):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     save_path += FILE.format(file)
-    bins = np.arange(0, data.max() + 1.5) - 0.5
-    data.hist(bins=bins, grid=False)
+    bins = np.arange(0, data.max() + 0.5)
+    data.hist(bins=bins, grid=False, rwidth=0.8, color='black')
+    plt.gca().set_xlim(left=-1, right=70)
     plt.gca().set_xlabel('Number of alternations of fixations over the middle line')
-    plt.gca().set_ylabel('Bin counts')
+    plt.gca().set_ylabel('Number of instances')
     plt.savefig(save_path)
     plt.clf()
 
@@ -75,7 +77,7 @@ def scatterplots(df: pd.DataFrame, columns: List[str], group_column: str = 'data
     fig.subplots_adjust(bottom=0.06)
     gb = df.groupby(group_column)
     for (dataset, ax) in zip(group_column_order, axes.flatten()):
-        ax.scatter(gb.get_group(dataset)[columns[0]], gb.get_group(dataset)[columns[1]])
+        ax.scatter(gb.get_group(dataset)[columns[0]], gb.get_group(dataset)[columns[1]], s=50, c='black')
         ax.set_xticks(range(7))
         ax.set_yticks(range(0, 36, 5))
         ax.set_title(dataset)
