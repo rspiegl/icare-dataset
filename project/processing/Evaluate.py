@@ -13,8 +13,8 @@ from processing import Prepare, InteractiveSelectors
 from processing.pygazeanalyser import detectors, gazeplotter
 
 DATASETS = ('sr', 'svrt1', 'random_board_images_big_diff5',
-            'random_board_images_big_diff1', 'sd', 'svrt19', 'camerarot_diff5',
-            'camerarot_diff1', 'svrt20', 'svrt21', 'rot_images_diff5',
+            'random_board_images_big_diff1', 'sd', 'svrt19', 'fixed_pos_diff5',
+            'fixed_pos_diff1', 'svrt20', 'svrt21', 'rot_images_diff5',
             'rot_images_diff1')
 GEOMETRY = (703, 54, 512, 512)
 PATH = "processing/prepared/{}/{}/"
@@ -22,7 +22,6 @@ IMAGE_NAME_REGEX = r'[^\/]+\/\d+_([^\/]+)\.'
 IMAGE_NUMBER_REGEX = r'[^\/]+\/(\d+)_[^\/]+\.'
 STAT_STRING = "Duration: {} seconds\nSwitches fixations: {}\nFixations: {}\n% NaN: {}\nPredicted: {}\nTrue: {}"
 
-RANGE_GUI = [[0, 1920], [0, 1160]]
 RANGE_PIC = [[0, 512], [0, 512]]
 PLOT_SIZE = [512, 512]
 BINS = 50

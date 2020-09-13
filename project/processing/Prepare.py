@@ -33,8 +33,6 @@ IMAGE_CSV_DROP = ['line_start_x', 'line_start_y', 'line_end_x', 'line_end_y']
 IMAGE_CSV_INDEX = ['participant', 'dataset', 'image']
 
 
-# TODO: analyse histograms of fixswitches
-
 def determine_version(dic):
     if 'calibration' in dic:
         version = RawDataVersion.TESTCALIBRATION
@@ -136,7 +134,7 @@ def prepare_dataframes(directory, pid, scores=True, images=True, image_generatio
         save_dataframes(IMAGE_CSV_PATH, IMAGE_CSV_COLUMNS, image_duration_df)
 
 
-def save_dataframes(path, columns, df):
+def save_dataframes(path, df):
     if os.path.exists(path):
         temp_df = pd.read_csv(path)
         temp_df = temp_df.append(df, sort=False)
@@ -152,3 +150,56 @@ def load_scores_dataframe():
 
 def load_images_dataframe():
     return pd.read_csv(IMAGE_CSV_PATH, index_col=IMAGE_CSV_INDEX)
+
+
+def transform_camerarot_fixedposition():
+    replace = ('camerarot', 'fixed_pos')
+    ending = ('.txt', '.json')
+    path_replace = ('processing', 'json')
+    base_path = 'processing/{}/*.txt'
+    import json
+
+    for i in range(3, 15):
+        dict_files = Utilities.list_files(base_path.format(i))
+        for dict_file in dict_files:
+            save_path = dict_file.replace(ending[0], ending[1]).replace(path_replace[0], path_replace[1])
+            dic = Utilities.read_dic(dict_file)
+            if replace[0] in dict_file:
+                for image in dic['eyetracking']:
+                    image[0][0] = image[0][0].replace(replace[0], replace[1])
+                save_path = save_path.replace(replace[0], replace[1])
+
+            new_dic = convert_to_upload(dic)
+
+            with open(save_path, 'w') as file:
+                json.dump(new_dic, file)
+
+
+def copy_pic_toJson():
+    path_pre = 'json/'
+    base_path = 'processing/{}/*.txt'
+    from shutil import copyfile
+
+    for i in range(3, 15):
+        dict_files = Utilities.list_files(base_path.format(i))
+        for dict_file in dict_files:
+            dic = Utilities.read_dic(dict_file)
+            for image in dic['eyetracking']:
+                picture = image[0][0]
+                dir_name = path_pre + os.path.dirname(picture)
+                if not os.path.exists(dir_name):
+                    os.makedirs(dir_name)
+                copyfile(picture, path_pre + picture)
+
+
+def convert_to_upload(dic):
+    geometry_keys = ['x', 'y', 'width', 'height']
+    screen_resolution = {'width': 1920, 'height': 1200}
+    geometry = {k: v for (k, v) in zip(geometry_keys, dic['geometry'])}
+    trials = []
+    for trial in dic['eyetracking']:
+        trial_dic = {'image_path': trial[0][0], 'true_value': trial[0][1], 'pred_value': trial[1],
+                     'duration_ms': trial[2], 'trial_capture': trial[3], 'calibration_capture': trial[4]}
+        trials.append(trial_dic)
+
+    return {'geometry': geometry, 'screen_resolution': screen_resolution, 'trials': trials}
