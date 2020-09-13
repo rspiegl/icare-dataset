@@ -13,10 +13,10 @@ PATH = 'diagrams/{}/'
 FILE = '{}.png'
 SWITCHES = 'switches'
 REPLACE = {'sr': 'SR', 'sd': 'SD', 'svrt1': 'SVRT1', 'svrt19': 'SVRT19', 'svrt20': 'SVRT20', 'svrt21': 'SVRT21',
-           'random_board_images_big_diff5': 'RBI_5', 'random_board_images_big_diff1': 'RBI_1',
+           'random_board_images_big_diff5': 'RBP_5', 'random_board_images_big_diff1': 'RBP_1',
            'fixed_pos__diff5': 'FP_5', 'fixed_pos_diff1': 'FP_1', 'rot_images_diff5': 'RI_5',
            'rot_images_diff1': 'RI_1'}
-DATASETS = ['SR', 'SVRT1', 'RBI_5', 'RBI_1', 'SD', 'SVRT19', 'FP_5', 'FP_1', 'SVRT20', 'SVRT21', 'RI_5', 'RI_1']
+DATASETS = ['SR', 'SVRT1', 'RBP_5', 'RBP_1', 'SD', 'SVRT19', 'FP_5', 'FP_1', 'SVRT20', 'SVRT21', 'RI_5', 'RI_1']
 
 
 def switches_histogram(df=None):
