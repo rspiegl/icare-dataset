@@ -154,6 +154,8 @@ def load_images_dataframe():
 
 def transform_camerarot_fixedposition():
     replace = ('camerarot', 'fixed_pos')
+    replace2 = ('rot_images', 'camera_rotation')
+    replace3 = ('random_board_images_big', 'random_board')
     ending = ('.txt', '.json')
     path_replace = ('processing', 'json')
     base_path = 'processing/{}/*.txt'
@@ -168,9 +170,19 @@ def transform_camerarot_fixedposition():
                 for image in dic['eyetracking']:
                     image[0][0] = image[0][0].replace(replace[0], replace[1])
                 save_path = save_path.replace(replace[0], replace[1])
+            elif replace2[0] in dict_file:
+                for image in dic['eyetracking']:
+                    image[0][0] = image[0][0].replace(replace2[0], replace2[1])
+                save_path = save_path.replace(replace2[0], replace2[1])
+            elif replace3[0] in dict_file:
+                for image in dic['eyetracking']:
+                    image[0][0] = image[0][0].replace(replace3[0], replace3[1])
+                save_path = save_path.replace(replace3[0], replace3[1])
 
             new_dic = convert_to_upload(dic)
 
+            if not os.path.exists('json/{}/'.format(i)):
+                os.makedirs('json/{}/'.format(i))
             with open(save_path, 'w') as file:
                 json.dump(new_dic, file)
 
@@ -199,7 +211,7 @@ def convert_to_upload(dic):
     trials = []
     for trial in dic['eyetracking']:
         trial_dic = {'image_path': trial[0][0], 'true_value': trial[0][1], 'pred_value': trial[1],
-                     'duration_ms': trial[2], 'trial_capture': trial[3], 'calibration_capture': trial[4]}
+                     'duration_ms': round(trial[2] / 1000), 'trial_capture': trial[3]}
         trials.append(trial_dic)
 
     return {'geometry': geometry, 'screen_resolution': screen_resolution, 'trials': trials}

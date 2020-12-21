@@ -3,6 +3,7 @@ import itertools
 import os.path
 import re
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -12,10 +13,10 @@ from matplotlib.figure import Figure
 from processing import Prepare, InteractiveSelectors
 from processing.pygazeanalyser import detectors, gazeplotter
 
-DATASETS = ('sr', 'svrt1', 'random_board_images_big_diff5',
-            'random_board_images_big_diff1', 'sd', 'svrt19', 'fixed_pos_diff5',
-            'fixed_pos_diff1', 'svrt20', 'svrt21', 'rot_images_diff5',
-            'rot_images_diff1')
+DATASETS = ('sr', 'svrt1', 'random_board_placement_diff5',
+            'random_board_placement_diff1', 'sd', 'svrt19', 'fixed_pos_diff5',
+            'fixed_pos_diff1', 'svrt20', 'svrt21', 'camera_rotation_diff5',
+            'camera_rotation_diff1')
 GEOMETRY = (703, 54, 512, 512)
 PATH = "processing/prepared/{}/{}/"
 IMAGE_NAME_REGEX = r'[^\/]+\/\d+_([^\/]+)\.'
@@ -27,7 +28,6 @@ PLOT_SIZE = [512, 512]
 BINS = 50
 DPI = 100
 FIG_SIZE = [51.2, 51.2]
-MAX_VEL = 120
 DEFAULT_CALIBRATION = (6.4, 32.0)
 
 
@@ -150,6 +150,23 @@ def draw_plots(trim_fix: dict, stat_string: str, image_path: str, save_path: str
     figure.clf()
 
 
+def draw_fixation_heatmap(trim_fix: dict, image_path: str, save_path: str, ):
+    img = Image.open(image_path)
+    img = img.resize(PLOT_SIZE)
+    fig = plt.figure(figsize=[5.12, 5.12], dpi=DPI)
+    fig.gca().hist2d(trim_fix['x'], trim_fix['y'], weights=trim_fix['dur'], bins=BINS,
+                     range=RANGE_PIC, alpha=0.9, zorder=2, cmin=0.0001)
+
+    plt.margins(0, 0)
+    fig.gca().invert_yaxis()
+    fig.gca().xaxis.set_major_locator(plt.NullLocator())
+    fig.gca().yaxis.set_major_locator(plt.NullLocator())
+    fig.gca().set_axis_off()
+    plt.imshow(img, zorder=1)
+    fig.savefig(save_path, bbox_inches='tight', pad_inches=0)
+    fig.clf()
+
+
 def create_plots(ids=(3, 15), dats=DATASETS):
     image_df = Prepare.load_images_dataframe()
     for i in range(ids[0], ids[1]):
@@ -177,6 +194,23 @@ def create_plots(ids=(3, 15), dats=DATASETS):
                 save_path += str(i) + '_' + im.rpartition('/')[-1][:-4] + '.png'
                 if len(trim_fix['x']) > 0:
                     draw_plots(trim_fix, stat_string, im_path, save_path)
+
+
+def create_single_fixation_heatmaps(id_dat_numbers):
+    for i, dat, numbers in id_dat_numbers:
+        ici = get_file_paths(PATH.format(i, dat))
+        for im, _, im_path in ici:
+            image_name = re.findall(IMAGE_NAME_REGEX, im_path)[0]
+            if not str(numbers) in image_name:
+                continue
+            impk = pd.read_pickle(im)
+
+            _, fixations = detectors.fixation_detection_dd(impk['x'].values, impk['y'].values, impk['times'].values,
+                                                           maxdist=42, mindur=100)
+            trim_fix = trim_fixations(gazeplotter.parse_fixations(fixations))
+            save_path = 'plots/'
+            save_path += str(i) + '_' + im.rpartition('/')[-1][:-4] + '.png'
+            draw_fixation_heatmap(trim_fix, im_path, save_path)
 
 
 def find_middle_lines(ids=(3, 15), dats=DATASETS):

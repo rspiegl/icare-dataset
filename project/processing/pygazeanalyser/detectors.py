@@ -4,6 +4,7 @@
 #
 #	PyGazeAnalyser is a Python module for easily analysing eye-tracking data
 #	Copyright (C) 2014  Edwin S. Dalmaijer
+#   Modifications were uploaded to https://github.com/rspiegl/PyGazeanalyser under GPLv3
 #
 #	This program is free software: you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -38,9 +39,9 @@
 __author__ = "Edwin Dalmaijer"
 
 import math
-import numpy
-
 from itertools import combinations
+
+import numpy
 
 
 def blink_detection(x, y, time, missing=0.0, minlen=10):
@@ -175,8 +176,11 @@ def fixation_detection(x, y, time, maxdist=25, mindur=50):
 
 
 def fixation_detection_dd(x, y, time, maxdist=25, mindur=50):
-    """Detects fixations, defined as consecutive samples with an inter-sample
-    distance of less than a set amount of pixels (disregarding missing data)
+    """Detects fixations, defined as a group of samples with a distance dispersion
+     of less than a set amount of pixels (disregarding missing data).
+     Algorithm taken from:
+     Blignaut, P. Fixation identification: The optimum threshold for a dispersion algorithm.
+     Attention, Perception, & Psychophysics 71, 881–895 (2009). https://doi.org/10.3758/APP.71.4.881
 
     arguments
 
@@ -186,7 +190,6 @@ def fixation_detection_dd(x, y, time, maxdist=25, mindur=50):
 
     keyword arguments
 
-    missing	-	value to be used for missing data (default = 0.0)
     maxdist	-	maximal inter sample distance in pixels (default = 25)
     mindur	-	minimal duration of a fixation in milliseconds; detected
                 fixation cadidates will be disregarded if they are below
@@ -205,9 +208,7 @@ def fixation_detection_dd(x, y, time, maxdist=25, mindur=50):
     Efix = []
     # loop through all coordinates
     si = 0
-    fixstart = False
     timeframe_points = mindur / 1000 * 60
-    i = 0
     while si < len(x):
         points = numpy.array([[x[si], y[si]]])
         i = math.ceil(si + timeframe_points) + 1
@@ -241,12 +242,13 @@ def fixation_detection_dd(x, y, time, maxdist=25, mindur=50):
 
 
 def get_max_dist_points(points: list):
-    vectors = numpy.array([r-s for r,s in combinations(points, 2)]).__abs__()
+    vectors = numpy.array([r - s for r, s in combinations(points, 2)]).__abs__()
     amax = numpy.amax(vectors, axis=0)
     return dist_euclidean(amax)
 
+
 def get_max_dist(points: list, p: list):
-        max_vector = numpy.amax((points-p).__abs__(), axis=0)
+    max_vector = numpy.amax((points - p).__abs__(), axis=0)
         return dist_euclidean(max_vector)
 
 
